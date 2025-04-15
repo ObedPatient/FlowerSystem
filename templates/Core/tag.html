@@ -53,20 +53,7 @@
                                     </ul>   
                                 </div>
                             </div>
-                            <div class="category-module uren-sidebar_categories">
-                                <div class="category-module_heading">
-                                    <h5>Sellers</h5>
-                                </div>
-                                <div class="module-body">
-                                    <ul class="module-list_item">
-                                        {% for v in vendors %}
-                                        <li>
-                                            <a href="{% url 'vendor_detail_view' v.vid %}">{{ v.title }}</a>
-                                        </li>
-                                        {% endfor %}
-                                    </ul>
-                                </div>
-                            </div>
+                            
                             <!--
                              <div class="uren-sidebar_categories">
                                 <div class="uren-categories_title">
@@ -110,21 +97,19 @@
                                 </div>
                             </div>
                         </div>
+                        
                         <div class="shop-product-wrap grid gridview-3 listfullwidth img-hover-effect_area row">
                             {% for p in products %}
                             <div class="col-lg-4">
                                 <div class="product-slide_item">
                                     <div class="inner-slide">
                                         <div class="single-product">
-                                            <div class="product-img">
+                                            <div class="product-img" style="margin-bottom: 15px; position: relative;">
                                                 <a href="{% url 'product_detail_view' p.pid p.slug %}">
-                                                    <img class="primary-img" src="{{ p.image.url }}" alt="{{ p.title }} - Buy On E-MariStore">
-                                                    <img class="secondary-img" src="{{ p.image.url }}" alt="{{ p.title }} - Buy On E-MariStore">
+                                                    <img class="primary-img" src="{{ p.image.url }}" alt="{{ p.title }} - Buy On E-MariStore" style="width: 100%; height: 250px; object-fit: cover;">
+                                                    <img class="secondary-img" src="{{ p.image.url }}" alt="{{ p.title }} - Buy On E-MariStore" style="width: 100%; height: 250px; object-fit: cover;">
                                                 </a>
-                                                <div class="sticker">
-                                                    <span class="sticker">-{{ p.get_percentage|floatformat:0 }}%</span>
-                                                </div>
-                                                <div class="add-actions mb-2">
+                                                <div class="add-actions mb-2" style="position: absolute; bottom: 0; left: 0; right: 0; padding: 10px; background-color: rgba(255, 255, 255, 0.8);">
                                                     <ul>
                                                         <li><input type="hidden" value="1" id="product-quantity" class="product-quantity-{{ p.id }}"></li>
                                                         <li><input type="hidden" class="product-pid-{{ p.id }}" value="{{ p.pid }}"></li>
@@ -142,62 +127,15 @@
                                                     </ul>
                                                 </div>
                                             </div>
-                                            <div class="product-content">
+                                            <div class="product-content" style="padding-top: 15px;">
                                                 <div class="product-desc_info">
                                                     <h6><a class="product-name" href="">{{ p.category.title }}</a></h6>
                                                     <h6><a class="product-name" href="{% url 'product_detail_view' p.pid p.slug %}">{{ p.title }}</a></h6>
                                                     <div class="price-box">
                                                         <span class="new-price current-product-price-{{ p.id }}">{{ p.converted_price|intcomma }}</span><span class="current-product-currency-{{ p.id }}">{{ selected_currency }}</span>
-                                                        <span class="old-price">{{ p.converted_old_price|intcomma }} &nbsp;{{ selected_currency }}</span>
+                                                        <span class="old-price">{{ p.converted_old_price|intcomma }}  {{ selected_currency }}</span>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="list-slide_item">
-                                    <div class="single-product">
-                                        <div class="product-img">
-                                            <a href="{% url 'product_detail_view' p.pid p.slug %}">
-                                                <img class="primary-img" src="{{ p.image.url }}" alt="{{ p.title }} - Buy On E-MariStore">
-                                                <img class="secondary-img" src="{{ p.image.url }}" alt="{{ p.title }} - Buy On E-MariStore">
-                                            </a>
-                                        </div>
-                                        <div class="product-content">
-                                            <div class="product-desc_info">
-                                                <div class="price-box">
-                                                    <span>{{ p.category.title }}</span>
-                                                </div>
-                                                
-                                                <div class="price-box mb-2">
-                                                    <span>By: </span><a href="">{{ p.vendor.title }}</a>
-                                                </div>
-                                                
-                                                <h6><a class="product-name" href="{% url 'product_detail_view' p.pid p.slug %}">{{ p.title }}</a></h6>
-                                                <div class="price-box">
-                                                    <span class="new-price">{{ p.converted_price|intcomma }}</span><span>&nbsp;{{ selected_currency }}</span>
-                                                    <span class="old-price">{{ p.converted_old_price|intcomma }} &nbsp;{{ selected_currency }}</span>
-                                                </div>
-                                                <div class="product-short_desc">
-                                                    <p>{{ p.description|truncatechars:250|safe }}</p>
-                                                </div>
-                                            </div>
-                                            <div class="add-actions mb-2">
-                                                <ul>
-                                                    <li><input type="hidden" value="1" id="product-quantity" class="product-quantity-{{ p.id }}"></li>
-                                                    <li><input type="hidden" class="product-pid-{{ p.id }}" value="{{ p.pid }}"></li>
-                                                    <li><input type="hidden" class="product-image-{{ p.id }}" value="{{ p.image.url }}"></li>
-                                                    <li><input type="hidden" class="product-id-{{ p.id }}" value="{{ p.id }}"></li>
-                                                    <li><input type="hidden" class="product-title-{{ p.id }}" value="{{ p.title }}"></li>
-                                                    <li><input type="hidden" class="product-slug-{{ p.id }}" value="{{ p.slug }}"></li>
-
-                                                    <li><button class="uren-add_cart add-to-cart-btn btn" data-index="{{ p.id }}"  title="Add To Cart" id="add-to-cart-btn"><i class="ion-bag"></i></button>
-                                                    </li>
-                                                    <li><button class="uren-wishlist btn add-to-wishlist" data-product-item="{{ p.id }}" title="Add To Wishlist"><i
-                                                        class="ion-android-favorite-outline" style="fill: aqua;"></i></button>
-                                                    </li>
-                                                    
-                                                </ul>
                                             </div>
                                         </div>
                                     </div>

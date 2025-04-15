@@ -64,12 +64,7 @@
             			</a>
 					</li>
 
-					<li class="sidebar-item {% if '/Vendors/vendorStore/' in request.path %} active {% endif %}">
-						<a class="sidebar-link" href="{% url 'vendorStore' %}">
-							<i class="fas fa-store"></i><span class="align-middle">Shop Page</span>
-            			</a>
-					</li>
-
+					
 					<li class="sidebar-item {% if '/Vendors/InStoreOrder/' in request.path %} active {% endif %}">
 						<a class="sidebar-link" href="{% url 'InStoreOrder' %}">
 							<i class="fas fa-store"></i><span class="align-middle">Create Order</span>

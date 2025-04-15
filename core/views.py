@@ -918,6 +918,7 @@ def send_admin_payment_notification(order, selected_currency):
             'total_price': total_price,  # Converted price
             'saved_amount': saved_amount,  # Converted saved amount
             'order_date': order.order_date,
+            'payment_method': order.payment_method,
             'selected_currency': selected_currency,
         }
 

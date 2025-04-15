@@ -6,7 +6,6 @@ urlpatterns = [
     path('vendorProducts/', views.vendorProducts, name="vendorProducts"),
     path('product/<pid>/', views.product_details, name='product_details'),
     path('vendorOrders/', views.vendorOrders, name="vendorOrders"),
-    path('vendorStore/', views.vendorStore, name="vendorStore"),
     path('vendorAddCategory/', views.vendorAddCategory, name='vendorAddCategory'),
     path('vendorDashboard/', views.vendorDashboard, name="vendorDashboard"), 
     path('vendorChangepswd/', views.vendorChangepswd, name="vendorChangepswd"),
@@ -16,4 +15,5 @@ urlpatterns = [
     path('search_vendor/', views.search_vendor, name='search_vendor'),
     path("vendor_product/", views.vendor_product, name='vendor_product'),
     path('InStoreOrder/', views.InStoreOrder, name='InStoreOrder'),
+    path('order/invoice/<str:oid>/', views.order_invoice, name='order_invoice'),
 ]

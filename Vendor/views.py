@@ -25,7 +25,11 @@ import logging
 from userauths.models import Account
 from django.contrib.auth.models import Group
 import re
+from core.views import send_admin_payment_notification
 from django.db import transaction, IntegrityError
+from django.core.mail import send_mail
+from django.urls import reverse
+from decimal import Decimal
 import uuid
 logger = logging.getLogger(__name__)
 
@@ -512,56 +516,15 @@ def vendor_order_Details(request, vendor_order_id):
 
 
 
+
+
+
+
 @login_required
-def vendorStore(request):
-    # Use the helper function to check vendor status and handle redirects
+def InStoreOrder(request):
     vendor, redirect_response = get_vendor_status(request)
     if redirect_response:  # If the helper returned a redirect or render response, use it
-        return redirect_response
-
-    # Fetch products related to the vendor
-    products = Product.objects.all()
-
-    # Fetch VendorOrders related to this vendor where the related CartOrder's payment status is 'Paid'
-    vendor_orders = VendorOrder.objects.filter(vendor=vendor, cart_order__paid_status=True)
-
-    
-
-    selected_currency = request.session.get('currency', 'USD')  # Default to USD if not set
-
-    # Fetch the latest exchange rates (base currency: USD)
-    exchange_rates = get_exchange_rate('USD')
-
-    for product in products:
-        product.converted_price = convert_currency(product.price, 'USD', selected_currency, exchange_rates)
-
-    # Count the number of vendor orders
-    vendor_order_count = vendor_orders.aggregate(Count('id'))['id__count']
-
-    # Pagination
-    paginator = Paginator(products, 10)  # Show 10 products per page
-    page_number = request.GET.get('page')
-    paginated_products = paginator.get_page(page_number)
-
-    # Render the vendor store page with products
-    context = {
-        'vendor': vendor,
-        'products': paginated_products,
-        'vendor_order_count': vendor_order_count,
-        'selected_currency': selected_currency,
-        'paginator': paginator,  # Optional: include paginator for additional controls
-    }
-    return render(request, 'Vendor/vendorStore.html', context)
-
-
-def InStoreOrder(request):
-    if not request.user.groups.filter(name='Sellers').exists():
-        messages.error(request, 'You do not have permission to access the vendor dashboard.')
-        return redirect('Home')
-
-    vendor, redirect_response = get_vendor_status(request)
-    if redirect_response:
-        return redirect_response
+        return redirect_response 
 
     products = Product.objects.filter(product_status='published')
     categories = Category.objects.all().order_by('level', 'title')
@@ -577,7 +540,7 @@ def InStoreOrder(request):
         city = request.POST.get('city', '').strip()
         country = request.POST.get('country', '').strip()
         payment_method = request.POST.get('payment_method', '').strip()
-        selected_currency = request.POST.get('currency', 'RWF')
+        selected_currency = request.session.get('currency', 'USD')  # Get currency from session
         product_ids = request.POST.getlist('product')
         quantities = request.POST.getlist('quantity')
 
@@ -596,8 +559,6 @@ def InStoreOrder(request):
                 for pid, qty in zip(product_ids, quantities)
             ]
         }
-
-        
 
         if not product_ids or not quantities or len(product_ids) != len(quantities):
             messages.error(request, "Please add at least one valid product and quantity.")
@@ -671,7 +632,7 @@ def InStoreOrder(request):
                         traching_id=str(uuid.uuid4())[:8],
                         paid_status=payment_method == 'cash',
                         order_type='in_store',
-                        currency='RWF',
+                        currency='RWF',  # Internal order currency
                         price=0,
                         sku=str(uuid.uuid4())[:8],
                         oid=str(uuid.uuid4())[:8],
@@ -727,9 +688,49 @@ def InStoreOrder(request):
                     order.price = total_rwf
                     order.final_price = total_rwf
                     order.save()
+
+                    # Send customer email
+                    if customer_email:
+                        try:
+                            invoice_url = request.build_absolute_uri(
+                                reverse('order_invoice', kwargs={'oid': order.oid})
+                            )
+                            email_subject = f"Order Confirmation - Order #{order.oid}"
+                            email_body = (
+                                f"Dear {customer_first_name or 'Customer'},\n\n"
+                                f"Thank you for your order!\n\n"
+                                f"Order ID: {order.oid}\n"
+                                f"Order Date: {order.order_date.strftime('%d %b %Y')}\n"
+                                f"Total: {order.price} RWF\n\n"
+                                f"Items:\n"
+                            )
+                            for item in order.items.all():
+                                email_body += f"- {item.item} (Qty: {item.qty}, Price: {item.price} RWF)\n"
+                            email_body += f"\nView your invoice: {invoice_url}\n\n"
+                            email_body += "Best regards,\nYour Store Team"
+
+                            send_mail(
+                                subject=email_subject,
+                                message=email_body,
+                                from_email='noreply@yourstore.com',
+                                recipient_list=[customer_email],
+                                fail_silently=False,
+                            )
+                            logger.info(f"Order confirmation email sent to {customer_email}")
+                        except Exception as e:
+                            logger.error(f"Failed to send email to {customer_email}: {e}")
+                            messages.warning(request, "Order created, but failed to send confirmation email.")
+
+                    # Send admin notification
+                    try:
+                        send_admin_payment_notification(order, selected_currency)
+                    except Exception as e:
+                        logger.error(f"Failed to send admin notification for order {order.oid}: {e}")
+                        messages.warning(request, "Order created, but failed to notify admin.")
+
                     logger.info(f"Order {order.oid} created with total {total_rwf} RWF")
                     messages.success(request, "In-store order created successfully!")
-                    return redirect('vendorDashboard')
+                    return redirect('order_invoice', oid=order.oid)  # Redirect to invoice page
 
             except Exception as e:
                 logger.error(f"Order processing failed: {e}")
@@ -749,6 +750,21 @@ def InStoreOrder(request):
         'form_data': {'items': [{}]},
         'errors': {},
     })
+
+@login_required
+def order_invoice(request, oid):
+    order = get_object_or_404(CartOrder, oid=oid)
+    # Restrict access to vendor or customer
+    if not (request.user.groups.filter(name='Sellers').exists() or (order.customer and order.customer == request.user)):
+        messages.error(request, "You do not have permission to view this invoice.")
+        return redirect('Home')
+
+    context = {
+        'order': order,
+        'items': order.items.all(),
+    }
+    return render(request, 'Vendor/invoice.html', context)
+
 
 @login_required
 def vendorAddCategory(request):

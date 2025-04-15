@@ -447,66 +447,44 @@ def customers(request):
     }
     return render(request, 'AdminPanel/customers.html', context)
 
+
 @login_required
 def customer_detail_view(request, cid):
     customer = get_object_or_404(Account, id=cid, is_customer=True)
-    
-    # Fetch orders related to the customer
-    customer_orders = CartOrder.objects.filter(user=customer).order_by('-order_date')
+    customer_orders = CartOrder.objects.filter(customer=customer).order_by('-order_date')
     profile = Profile.objects.filter(user=customer).first()
     address = Address.objects.filter(user=customer).first()
 
     context = {
         'customer': customer,
-        'customer_orders':customer_orders,
+        'customer_orders': customer_orders,
         'profile': profile,
         'address': address,
     }
-    
-    return render(request, 'AdminPanel/customer_detail_view.html', context )
-
-
-
-
-
+    return render(request, 'AdminPanel/customer_detail_view.html', context)
 
 @login_required
 def change_paid_status(request, order_id):
     if request.method == "POST":
-        # Retrieve the order, or return a 404 error if not found
         order = get_object_or_404(CartOrder, id=order_id)
-        
-        # Get the paid status from the form
-        paid_status = request.POST.get('paid_status') == 'True'
-
-        # Update the order's paid status
-        order.paid_status = paid_status
+        paid_status = request.POST.get('paid_status')
+        if paid_status not in ['True', 'False']:
+            return HttpResponse("Invalid paid status", status=400)
+        order.paid_status = (paid_status == 'True')
         order.save()
 
-        # If the order is marked as paid, update the revenue records
-        if paid_status:
-            admin_record = AdminRevenueRecord.objects.first()
-
-            # If no AdminRevenueRecord exists, create one (for the superuser)
-            if not admin_record:
-                admin_record = AdminRevenueRecord.objects.create(
-                    total_revenue=0,
-                    monthly_revenue=0
-                )
-
-            # Update the total revenue
-            admin_record.total_revenue += order.price
-
-            # Check if the order is from the current month
-            if order.order_date.month == now().month and order.order_date.year == now().year:
-                admin_record.monthly_revenue += order.price
-
+        if order.paid_status:
+            admin_record, created = AdminRevenueRecord.objects.get_or_create(
+                adminUser=request.user,  # Associate with the logged-in user
+                defaults={'total_revenue': 0, 'monthly_revenue': 0}
+            )
+            admin_record.total_revenue += order.price or 0
+            if order.order_date.month == timezone.now().month and order.order_date.year == timezone.now().year:
+                admin_record.monthly_revenue += order.price or 0
             admin_record.save()
 
-        # Redirect after saving
-        return redirect('customer_detail_view', cid=order.user.id)
+        return redirect('customer_detail_view', cid=order.customer.id)
 
-    # If it's not a POST request, return an error message
     return HttpResponse("Invalid request", status=400)
 
 
