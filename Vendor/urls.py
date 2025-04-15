@@ -4,6 +4,7 @@ from Vendor import views
 
 urlpatterns = [
     path('vendorProducts/', views.vendorProducts, name="vendorProducts"),
+    path('product/<pid>/', views.product_details, name='product_details'),
     path('vendorOrders/', views.vendorOrders, name="vendorOrders"),
     path('vendorStore/', views.vendorStore, name="vendorStore"),
     path('vendorAddCategory/', views.vendorAddCategory, name='vendorAddCategory'),

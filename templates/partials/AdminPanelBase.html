@@ -50,6 +50,11 @@
             </a>
 					</li>
 
+					<li class="sidebar-item {% if '/AdminPanel/addCategory/' in request.path %} active {% endif %}">
+						<a class="sidebar-link" href="{% url 'addCategory' %}">
+			  <i class="fas fa-th-list"></i> <span class="align-middle">Manage Categories</span>
+			</a>
+
 					<li class="sidebar-item {% if '/AdminPanel/products/' in request.path %} active {% endif %}">
 						<a class="sidebar-link" href="{% url 'products' %}">
               <i class="fas fa-shopping-bag"></i> <span class="align-middle">Products</span>

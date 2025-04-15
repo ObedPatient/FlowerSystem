@@ -31,14 +31,14 @@
 
 <div class="container mt-4">
     <h1 class="h3 mb-0">Order Details</h1>
-    <p>Details for Order: <strong>{{ vendor_order.cart_order.oid }}</strong></p>
+    <p>Details for Order: <strong>#{{ cart_order.sku }}</strong></p>
     <div class="card p-4">
 
         <!-- Order Information Section -->
         <div class="row">
             <div class="col-md-6">
-                <p><strong>Order Date:</strong> {{ vendor_order.cart_order.order_date }}</p>
-                <p><strong>Order ID:</strong> {{ vendor_order.cart_order.oid }}</p>
+                <p><strong>Order Date:</strong> {{ cart_order.order_date }}</p>
+                <p><strong>Order ID:</strong> #{{ cart_order.sku }}</p>
             </div>
         </div>
         <hr>
@@ -47,17 +47,17 @@
         <div class="row text-center profile-section">
             <div class="col-md-4 mb-4">
                 <img src="{{ request.user.profile.profile_image.url }}" class="rounded-circle" alt="Customer">
-                <p class="info-title">{{ vendor_order.cart_order.full_name }}</p>
-                <p class="info-value">{{ vendor_order.cart_order.email }}</p>
-                <p class="info-value">{{ vendor_order.cart_order.phone_number }}</p>
+                <p class="info-title">{{ cart_order.full_name }}</p>
+                <p class="info-value">{{ cart_order.email }}</p>
+                <p class="info-value">{{ cart_order.phone_number }}</p>
             </div>
             <div class="col-md-4 mb-4">
                 <i class="fas fa-shipping-fast fa-2x mb-2"></i>
                 <p class="info-title">Order Info</p>
-                <p class="info-value">Order Status: {{ vendor_order.cart_order.product_status|title }}</p>
+                <p class="info-value">Order Status: {{ cart_order.product_status|title }}</p>
                 <p class="info-value">
                     Payment Status:
-                    {% if vendor_order.cart_order.paid_status %}
+                    {% if cart_order.paid_status %}
                         <span class="badge badge-success">Paid</span>
                     {% else %}
                         <span class="badge badge-danger">Not Paid</span>
@@ -67,8 +67,8 @@
             <div class="col-md-4 mb-4">
                 <i class="fas fa-map-marker-alt fa-2x mb-2"></i>
                 <p class="info-title">Deliver To</p>
-                <p class="info-value">{{ vendor_order.cart_order.address }}, {{ vendor_order.cart_order.city }}</p>
-                <p class="info-value">{{ vendor_order.cart_order.country }}</p>
+                <p class="info-value">{{ cart_order.address }}, {{ cart_order.city }}</p>
+                <p class="info-value">{{ cart_order.country }}</p>
             </div>
         </div>
 
@@ -80,14 +80,13 @@
                     <div class="form-group">
                         <label for="order_status">Update Order Status:</label>
                         <select class="form-control" id="order_status" name="order_status">
-                            <option value="processing" {% if vendor_order.cart_order.product_status == 'processing' %}selected{% endif %}>Processing</option>
-                            <option value="out_for_delivery" {% if vendor_order.cart_order.product_status == 'out_for_delivery' %}selected{% endif %}>Out for Delivery</option>
-                            <option value="delivered" {% if vendor_order.cart_order.product_status == 'delivered' %}selected{% endif %}>Delivered</option>
+                            <option value="processing" {% if cart_order.product_status == 'processing' %}selected{% endif %}>Processing</option>
+                            <option value="out_for_delivery" {% if cart_order.product_status == 'out_for_delivery' %}selected{% endif %}>Out for Delivery</option>
+                            <option value="delivered" {% if cart_order.product_status == 'delivered' %}selected{% endif %}>Delivered</option>
                         </select>
                     </div>
                     <button type="submit" class="btn btn-custom">Update Status</button>
                 </form>
-                
             </div>
         </div>
 
@@ -99,8 +98,8 @@
                         <th>#</th>
                         <th>Product</th>
                         <th>Quantity</th>
-                        <th>Unit Price ({{ selected_currency }})</th>
-                        <th>Total ({{ selected_currency }})</th>
+                        <th>Unit Price</th>
+                        <th>Total</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -108,11 +107,11 @@
                         <tr>
                             <td>{{ forloop.counter }}</td>
                             <td>
-                                <img src="{{ item.product.image.url }}" class="mr-2" alt="Item" width="60px">&nbsp;{{ item.product.title|truncatechars:80 }}
+                                <img src="{{ item.product.image.url }}" class="mr-2" alt="Item" width="60px"> {{ item.product.title|truncatechars:80 }}
                             </td>
                             <td>{{ item.qty }}</td>
-                            <td>{{ item.converted_price|intcomma }} {{ selected_currency }}</td>
-                            <td>{{ item.converted_total|intcomma }} {{ selected_currency }}</td>
+                            <td>{{ selected_currency }}{{ item.converted_price|intcomma }}</td>
+                            <td>{{ selected_currency }}{{ item.converted_total|intcomma }}</td>
                         </tr>
                     {% empty %}
                         <tr>
@@ -122,37 +121,30 @@
                 </tbody>
             </table>
         </div>
-        
 
         <!-- Order Summary -->
         <div class="row">
             <div class="col-md-6 offset-md-6">
                 <div class="d-flex justify-content-between">
                     <p>Discount:</p>
-                    <p>{{ saved_converted|intcomma }} {{ selected_currency }}</p>
+                    <p>{{ selected_currency }}{{ saved_converted|intcomma }}</p>
                 </div>
                 <div class="d-flex justify-content-between">
                     <p>Subtotal:</p>
-                    <p>{{ cart_order_total_converted|intcomma }} {{ selected_currency }}</p>
+                    <p>{{ selected_currency }}{{ cart_order_total_converted|intcomma }}</p>
                 </div>
                 <div class="d-flex justify-content-between">
                     <p>Delivering Cost:</p>
-                    <p>{{ shipping_fee|intcomma }} {{ selected_currency }}</p>
+                    <p>{{ selected_currency }}{{ shipping_fee|intcomma }}</p>
                 </div>
                 <hr>
                 <div class="d-flex justify-content-between">
                     <h5>Grand Total:</h5>
-                    <h5>{{ cart_order_total_converted|intcomma }} {{ selected_currency }}</h5>
+                    <h5>{{ selected_currency }}{{ final_price|intcomma }}</h5>
                 </div>
-                {% if final_price|floatformat:2 != "0.00" %}
-                    <div class="d-flex justify-content-between">
-                        <h5>Grand Total With Discount:</h5>
-                        <h5>{{ final_price|intcomma }} {{ selected_currency }}</h5>
-                    </div>
-                {% endif %}
                 <div class="d-flex justify-content-between mt-2">
                     <p>Status:</p>
-                    {% if vendor_order.cart_order.paid_status %}
+                    {% if cart_order.paid_status %}
                         <span class="badge badge-success p-2">Payment Complete</span>
                     {% else %}
                         <span class="badge badge-danger p-2">Payment Incomplete</span>

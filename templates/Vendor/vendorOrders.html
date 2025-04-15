@@ -41,7 +41,7 @@
     <div class="container-fluid p-0">
 
         <h1 class="h3 mb-3">Orders List</h1>
-        <p class="mb-4">Manage all your orders from here.</p>
+        <p class="mb-4">Manage all orders from the Sellers group.</p>
 
         <div class="row">
             <div class="col-12">
@@ -51,7 +51,7 @@
                     </div>
 
                     <div class="card-body">
-                        <h2 class="h4 mb-4">Vendor Orders for: {{ vendor.title }}</h2>
+                        <h2 class="h4 mb-4">Sellers Group Orders</h2>
 
                         <!-- Filters Section -->
                         <form method="get" action="{% url 'vendor_orders_view' %}" class="mb-4">
@@ -70,7 +70,6 @@
                                         <option value="">All</option>
                                         <option value="cod" {% if request.GET.payment_method == 'cod' %}selected{% endif %}>Cash On Delivery</option>
                                         <option value="paypal" {% if request.GET.payment_method == 'paypal' %}selected{% endif %}>PayPal</option>
-                                        
                                     </select>
                                 </div>
                                 <div class="col-md-3">
@@ -94,7 +93,7 @@
                                 </div>
                             </div>
                         </form>
-                        <!-- Replace the existing export link -->
+                        <!-- Export link -->
                         <a href="{% url 'export_vendor_orders_excel' %}?start_date={{ request.GET.start_date|urlencode }}&end_date={{ request.GET.end_date|urlencode }}&payment_method={{ request.GET.payment_method|urlencode }}&payment_status={{ request.GET.payment_status|urlencode }}&billing_name={{ request.GET.billing_name|urlencode }}"
                         class="btn btn-success mt-3 mb-4">Export to Excel</a>
 
@@ -106,40 +105,38 @@
                                         <th>Order ID</th>
                                         <th class="d-none d-xl-table-cell">Billing Name</th>
                                         <th class="d-none d-xl-table-cell">Date</th>
-                                        <th>Total</th>
-                                        <th>Commission</th>
-                                        <th>Net Amount</th>
+                                        <th>Price</th>
+                                        <th>Final Price</th>
                                         <th>Payment Method</th>
                                         <th class="d-none d-md-table-cell">Payment Status</th>
                                         <th class="d-none d-md-table-cell">View Details</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for vendor_order in vendor_orders %}
+                                    {% for cart_order in cart_orders %}
                                     <tr>
-                                        <td>#{{ vendor_order.cart_order.sku }}</td>
-                                        <td class="d-none d-xl-table-cell">{{ vendor_order.cart_order.full_name }}</td>
-                                        <td class="d-none d-xl-table-cell">{{ vendor_order.order_date }}</td>
-                                        <td>{{ vendor_order.converted_total_amount|intcomma }} {{ selected_currency }}</td>
-                                        <td>{{ vendor_order.converted_commission|intcomma }} {{ selected_currency }}</td>
-                                        <td>{{ vendor_order.converted_net_amount|intcomma }} {{ selected_currency }}</td>
+                                        <td>#{{ cart_order.sku }}</td>
+                                        <td class="d-none d-xl-table-cell">{{ cart_order.full_name }}</td>
+                                        <td class="d-none d-xl-table-cell">{{ cart_order.order_date }}</td>
+                                        <td>{{ selected_currency }}{{ cart_order.converted_price|intcomma }}</td>
+                                        <td>{{ selected_currency }}{{ cart_order.converted_final_price|intcomma }}</td>
                                         <td>
-                                            {% if vendor_order.cart_order.payment_method == 'cod' %}
+                                            {% if cart_order.payment_method == 'cod' %}
                                                 Cash On Delivery
                                             {% else %}
-                                                {{ vendor_order.cart_order.payment_method }}
+                                                {{ cart_order.payment_method }}
                                             {% endif %}
                                         </td>
-                                        {% if vendor_order.cart_order.paid_status %}
+                                        {% if cart_order.paid_status %}
                                         <td><span class="badge badge-success">Paid</span></td>
                                         {% else %}
                                         <td><span class="badge badge-danger">Not Paid</span></td>
                                         {% endif %}
-                                        <td><a href="{% url 'vendor_order_Details' vendor_order.id %}" class="btn btn-custom">View</a></td>
+                                        <td><a href="{% url 'vendor_order_Details' cart_order.id %}" class="btn btn-custom">View</a></td>
                                     </tr>
                                     {% empty %}
                                     <tr>
-                                        <td colspan="9" class="text-center no-orders">No cart orders found.</td>
+                                        <td colspan="8" class="text-center no-orders">No cart orders found.</td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>

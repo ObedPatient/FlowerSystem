@@ -21,7 +21,7 @@ from django.contrib.auth.models import Group
 from django.http import HttpResponse
 from django.utils import timezone
 from django.db.models import Q
-from Vendor.forms import AddProductForm, ProductImageFormSet
+from Vendor.forms import AddProductForm, ProductImageFormSet, CategoryForm
 from django.db import models
 from openpyxl import Workbook
 from openpyxl.styles import Font, Alignment, Border, Side
@@ -253,10 +253,6 @@ def products(request):
 
 @login_required
 def delete_image(request, image_id):
-    # Ensure the user is a vendor
-    if not request.user.is_vendor:
-        messages.info(request, "You Must Login Or Register")
-        return redirect('userauths:custom_login') # Redirect to a "Not Found" or error page
 
     # Fetch the image by its ID and ensure it belongs to the current vendor
     image = get_object_or_404(ProductImages, id=image_id)
@@ -266,6 +262,46 @@ def delete_image(request, image_id):
 
     # Redirect to vendor products page after successful deletion
     return redirect("editProduct",pid=image.product.pid)
+
+
+
+@login_required
+def addCategory(request):
+    if request.method == 'POST':
+        form = CategoryForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Category added successfully.')
+            return redirect('addCategory')
+    else:
+        form = CategoryForm()
+
+    categories = Category.objects.all()
+    return render(request, 'AdminPanel/addCategory.html', {'form': form, 'categories': categories})
+
+@login_required
+def editCategory(request, cid):
+    category = get_object_or_404(Category, cid=cid)
+    if request.method == 'POST':
+        form = CategoryForm(request.POST, request.FILES, instance=category)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Category updated successfully.')
+            return redirect('addCategory')
+    else:
+        form = CategoryForm(instance=category)
+    
+    categories = Category.objects.all()
+    return render(request, 'AdminPanel/addCategory.html', {'form': form, 'categories': categories, 'editing': category})
+
+@login_required
+def deleteCategory(request, cid):
+    category = get_object_or_404(Category, cid=cid)
+    if request.method == 'POST':
+        category.delete()
+        messages.success(request, 'Category deleted successfully.')
+        return redirect('addCategory')
+    return redirect('addCategory')
 
 
 @login_required
@@ -339,57 +375,37 @@ def createSeller(request):
 
     return render(request, 'AdminPanel/createSeller.html')
 
+
+
 @login_required
 def vendor_list(request):
     all_vendors = Vendor.objects.all()
     for vendor in all_vendors:
-        vendor.total_net_revenue = vendor.total_net_amount or 0.00
+        try:
+            revenue_record = vendor.user.admin_revenue
+            vendor.total_net_revenue = revenue_record.total_revenue
+        except (AttributeError, AdminRevenueRecord.DoesNotExist):
+            vendor.total_net_revenue = 0.00
     context = {
         "all_vendors": all_vendors
     }
     return render(request, 'AdminPanel/vendor_list.html', context)
 
-
-
 @login_required
 def vendor_detail(request, vid):
     vendor = get_object_or_404(Vendor, vid=vid)
-    
-    # Handle status form submission
-    if request.method == 'POST' and 'status_form' in request.POST:
-        status = request.POST.get('status')
-        if status in dict(Vendor.STATUS_CHOICES):
-            vendor.status = status
-            vendor.save()
-            messages.success(request, 'Vendor status updated successfully')
-            return redirect('vendor_detail', vid=vid)
-
-    # Handle payment form submission
-    if request.method == 'POST' and 'payment_form' in request.POST:
-        has_paid_fee = request.POST.get('has_paid_fee') == 'on'
-        payment_status = request.POST.get('payment_status')
-        if payment_status in dict(Vendor.STATUS_CHOICES):
-            vendor.has_paid_fee = has_paid_fee
-            vendor.payment_status = payment_status
-            vendor.save()
-            messages.success(request, 'Payment status updated successfully')
-            return redirect('vendor_detail', vid=vid)
-
-    # Calculate total revenue
-    vendor.total_revenue = vendor.total_net_amount or 0.00
-
-    # Retrieve vendor orders
-    vendor_orders = VendorOrder.objects.filter(vendor=vendor).order_by('-order_date')
-
-    
-
+    total_revenue = 0.00
+    if vendor.user:
+        try:
+            total_revenue = vendor.user.admin_revenue.total_revenue
+        except AdminRevenueRecord.DoesNotExist:
+            pass  # Keep total_revenue as 0.00
     context = {
         'vendor': vendor,
-        'vendor_orders': vendor_orders,
-        'vid': vid,  # Pass vid for the template
+        'total_revenue': total_revenue
     }
-    
     return render(request, 'AdminPanel/vendor_detail.html', context)
+
 
 @login_required
 def order_details(request, oid):

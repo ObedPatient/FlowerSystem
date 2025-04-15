@@ -1,153 +1,76 @@
 {% extends 'partials/AdminPanelBase.html' %}
+{% load static %}
 
 {% block content %}
 <style>
-    .btn-custom {
-        background-color: #999999;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        padding: 10px 20px;
-        text-align: center;
-        font-size: 14px;
-        transition: background-color 0.3s ease;
-    }
-    .btn-custom:hover {
-        background-color: #ffc400;
-        color: #000;
-        cursor: pointer;
-    }
-
-    .card-header {
-        background-color: #f8f9fa;
-    }
-
-    .badge-success {
-        background-color: #28a745;
-    }
-
-    .badge-danger {
-        background-color: #dc3545;
-    }
-
-    .badge-warning {
-        background-color: #ffc107;
-    }
-
-    .table th, .table td {
-        vertical-align: middle;
-    }
+    .table-responsive { max-height: 500px; overflow-y: auto; }
+    .vendor-image { width: 50px; height: 50px; object-fit: cover; border-radius: 50%; }
+    .table th, .table td { vertical-align: middle; }
 </style>
 
 <main class="content">
     <div class="container-fluid p-0">
-        <h1 class="h3 mb-3">Vendors List</h1>
-        <p class="mb-4">Manage all your vendors from here.</p>
-
+        <h1 class="h3 mb-3">Vendor List</h1>
         <div class="row">
             <div class="col-12">
-                <div class="card flex-fill">
-                    <div class="card-header">
-                        <h5 class="card-title mb-0">Registered Vendors</h5>
-                    </div>
-
-                    <!-- Filters Section -->
+                <div class="card">
                     <div class="card-body">
-                        <form method="get" action="{% url 'vendor_report' %}" class="mb-4">
-                            <div class="row g-2">
-                                <div class="col-md-3">
-                                    <label for="vendor_status" class="form-label">Vendor Status</label>
-                                    <select id="vendor_status" name="vendor_status" class="form-control">
-                                        <option value="">All</option>
-                                        <option value="approved" {% if request.GET.vendor_status == 'approved' %}selected{% endif %}>Approved</option>
-                                        <option value="pending" {% if request.GET.vendor_status == 'pending' %}selected{% endif %}>Pending</option>
-                                        <option value="rejected" {% if request.GET.vendor_status == 'rejected' %}selected{% endif %}>Rejected</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-3">
-                                    <label for="payment_status" class="form-label">Payment Status</label>
-                                    <select id="payment_status" name="payment_status" class="form-control">
-                                        <option value="">All</option>
-                                        <option value="approved" {% if request.GET.payment_status == 'approved' %}selected{% endif %}>Approved</option>
-                                        <option value="pending" {% if request.GET.payment_status == 'pending' %}selected{% endif %}>Pending</option>
-                                        <option value="rejected" {% if request.GET.payment_status == 'rejected' %}selected{% endif %}>Rejected</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-3">
-                                    <label for="search" class="form-label">Search</label>
-                                    <input type="text" id="search" name="search" class="form-control" value="{{ request.GET.search }}">
-                                </div>
-                                <div class="col-md-3">
-                                    <label for="payment_status" class="form-label">Revenue</label>
-                                    <select id="revenue" name="revenue" class="form-control">
-                                        <option value="">All</option>
-                                        <option value="highest_revenue">High Revenue</option>
-                                        <option value="lowest_revenue">Lowest Revenue</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="row mt-3">
-                                <div class="col">
-                                    <button type="submit" class="btn btn-primary">Apply Filters</button>
-                                    <a href="{% url 'vendor_list' %}" class="btn btn-secondary">Clear Filters</a>
-                                </div>
-                            </div>
-                        </form>
-                        <!-- Replace the existing export link -->
-                        <a href="{% url 'export_vendor_report_excel' %}?vendor_status={{ request.GET.vendor_status|urlencode }}&payment_status={{ request.GET.payment_status|urlencode }}&search={{ request.GET.search|urlencode }}&revenue={{ request.GET.revenue|urlencode }}"
-                        class="btn btn-success mt-3 mb-4">Export to Excel</a>
-                    </div>
-
-                    <!-- Vendors Table -->
-                    <div class="table-responsive">
-                        <table class="table table-hover my-0">
-                            <thead>
-                                <tr>
-                                    <th>Vendor ID</th>
-                                    <th>Profile Image</th>
-                                    <th class="d-none d-xl-table-cell">Title</th>
-                                    <th class="d-none d-xl-table-cell">Contact</th>
-                                    <th>Subscription</th>
-                                    <th>Status</th>
-                                    <th>Revenue</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for vendor in all_vendors %}
-                                <tr>
-                                    <td>#{{ vendor.vid }}</td>
-                                    <td><img src="{{ vendor.image.url }}" alt="Vendor Image" width="50px"></td>
-                                    <td class="d-none d-xl-table-cell">{{ vendor.title }}</td>
-                                    <td class="d-none d-xl-table-cell">{{ vendor.contact }}</td>
-                                    <td>
-                                        {% if vendor.has_paid_fee %}
-                                        <span class="badge badge-success">Paid</span>
-                                        {% else %}
-                                        <span class="badge badge-danger">Not Paid</span>
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        <span class="badge 
-                                            {% if vendor.status == 'approved' %}badge-success
-                                            {% elif vendor.status == 'pending' %}badge-warning
-                                            {% else %}badge-danger{% endif %}">
-                                            {{ vendor.get_status_display }}
-                                        </span>
-                                    </td>
-                                    <td>${{ vendor.total_net_revenue|floatformat:2 }}</td>
-                                    <td>
-                                        <a href="{% url 'vendor_detail' vendor.vid %}" class="btn-custom">More Details</a>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Image</th>
+                                        <th>ID Image</th>
+                                        <th>Username</th>
+                                        <th>Email</th>
+                                        <th>Contact</th>
+                                        <th>Address</th>
+                                        <th>Description</th>
+                                        <th>Joined Date</th>
+                                        <th>Total Revenue</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for vendor in all_vendors %}
+                                    <tr>
+                                        <td>
+                                            {% if vendor.image %}
+                                                <img src="{{ vendor.image.url }}" class="vendor-image" alt="Vendor Image">
+                                            {% else %}
+                                                No Image
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if vendor.id_image %}
+                                                <img src="{{ vendor.id_image.url }}" class="vendor-image" alt="ID Image">
+                                            {% else %}
+                                                No ID Image
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ vendor.user.username|default:"No User" }}</td>
+                                        <td>{{ vendor.email }}</td>
+                                        <td>{{ vendor.contact }}</td>
+                                        <td>{{ vendor.address }}</td>
+                                        <td>{{ vendor.description|default:"No Description" }}</td>
+                                        <td>{{ vendor.joined_date|date:"d M, Y" }}</td>
+                                        <td>${{ vendor.total_net_revenue|floatformat:2 }}</td>
+                                        <td>
+                                            <a href="{% url 'vendor_detail' vendor.vid %}" class="btn btn-primary btn-sm">View Details</a>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="10" class="text-center">No vendors found.</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </main>
-
-{% endblock content %}
+{% endblock %}

@@ -3,7 +3,7 @@ import six
 import requests
 from decimal import Decimal
 from django.core.cache import cache
-
+from datetime import datetime
 
 class TokenGenerator(PasswordResetTokenGenerator):
     def _make_hash_value(self,user,timestamp):

@@ -23,6 +23,7 @@ from django.utils import timezone
 from dateutil.parser import parse
 import logging
 from userauths.models import Account
+from django.contrib.auth.models import Group
 import re
 from django.db import transaction, IntegrityError
 import uuid
@@ -157,6 +158,66 @@ def vendorProducts(request):
     return render(request, 'Vendor/vendorProducts.html', context)
 
 
+@login_required
+def product_details(request, pid): 
+    vendor, redirect_response = get_vendor_status(request)
+    if redirect_response:  # If the helper returned a redirect or render response, use it
+        return redirect_response
+
+    # Get the product, ensuring it belongs to the seller
+    product = get_object_or_404(Product, pid=pid)
+
+    # Get related images
+    product_images = product.p_images.all()
+
+    # Get the user's selected currency, default to USD
+    selected_currency = request.session.get('currency', 'USD')
+
+    # Use product's currency if set, else fallback to RWF
+    base_currency = product.currency if product.currency in ['USD', 'EUR', 'GBP', 'RWF'] else 'RWF'
+
+    # Fetch latest exchange rates with USD as base
+    exchange_rates_usd = get_exchange_rate('USD')
+
+    # Derive exchange rates based on product's currency
+    if exchange_rates_usd and base_currency in exchange_rates_usd:
+        if base_currency != 'USD':
+            base_to_usd = Decimal('1') / Decimal(exchange_rates_usd[base_currency])
+            exchange_rates = {k: Decimal(v) * base_to_usd for k, v in exchange_rates_usd.items()}
+            exchange_rates[base_currency] = Decimal('1')
+        else:
+            exchange_rates = exchange_rates_usd
+    else:
+        # Fallback rates (RWF-based for consistency)
+        exchange_rates = {
+            'USD': Decimal('0.00074'),
+            'EUR': Decimal('0.00069'),
+            'GBP': Decimal('0.00057'),
+            'RWF': Decimal('1'),
+        }
+        print(f"Using fallback {base_currency}-based rates.")
+
+    # Convert prices
+    product.converted_price = convert_currency(
+        product.price, base_currency, selected_currency, exchange_rates
+    )
+    product.converted_old_price = convert_currency(
+        product.old_price, base_currency, selected_currency, exchange_rates
+    )
+
+    context = {
+        'product': product,
+        'product_images': product_images,
+        'selected_currency': selected_currency,
+        'currency_symbols': {
+            'RWF': 'RWF',
+            'USD': '$',
+            'EUR': '€',
+            'GBP': '£',
+        },
+    }
+
+    return render(request, 'Vendor/product_details.html', context)
 
 
 
@@ -164,37 +225,41 @@ def vendorProducts(request):
 
 @login_required
 def vendorOrders(request):
-    # Use the helper function to check vendor status and handle redirects
     vendor, redirect_response = get_vendor_status(request)
     if redirect_response:  # If the helper returned a redirect or render response, use it
-        return redirect_response
+        return redirect_response   # Redirect non-sellers to login
 
-    # Fetch VendorOrders related to this vendor
-    vendor_orders = VendorOrder.objects.filter(vendor=vendor)
-    selected_currency = request.session.get('currency', 'USD')  # Default to USD if not set
+    # Get the user's selected currency, default to USD
+    selected_currency = request.session.get('currency', 'USD')
 
     # Fetch the latest exchange rates (base currency: USD)
-    exchange_rates = get_exchange_rate('USD')  # Fetch exchange rates for USD base
+    exchange_rates = get_exchange_rate('USD')
 
-    # Convert each vendor order amounts
-    for order in vendor_orders:
-        order.converted_total_amount = convert_currency(order.total_amount, 'USD', selected_currency, exchange_rates)
-        order.converted_commission = convert_currency(order.commission, 'USD', selected_currency, exchange_rates)
-        order.converted_net_amount = convert_currency(order.net_amount, 'USD', selected_currency, exchange_rates)
+    # Fetch CartOrders made by users in the Sellers group
+    seller_group = Group.objects.get(name='Sellers')
+    cart_orders = CartOrder.objects.filter(user__groups=seller_group).order_by('-order_date')
 
-    # Extract CartOrders from VendorOrders
-    cart_orders = CartOrder.objects.filter(id__in=vendor_orders.values('cart_order'))
+    # Convert order amounts to selected currency
+    for order in cart_orders:
+        order.converted_price = convert_currency(
+            order.price, 'RWF', selected_currency, exchange_rates
+        )
+        order.converted_final_price = convert_currency(
+            order.final_price, 'RWF', selected_currency, exchange_rates
+        )
 
     context = {
-        'vendor': vendor,
-        'vendor_orders': vendor_orders,
         'cart_orders': cart_orders,
         'selected_currency': selected_currency,
+        'currency_symbols': {
+            'RWF': 'RWF',
+            'USD': '$',
+            'EUR': '€',
+            'GBP': '£',
+        },
     }
 
-    # Render the vendor orders page
     return render(request, 'Vendor/vendorOrders.html', context)
-
 
 
 def vendor_orders_view(request):
@@ -390,51 +455,61 @@ def export_vendor_orders_excel(request):
 
 
 
-
 @login_required
 def vendor_order_Details(request, vendor_order_id):
-    # Get the VendorOrder instance
-    vendor_order = get_object_or_404(VendorOrder, id=vendor_order_id)
-    
-    # Get the related CartOrder
-    cart_order = vendor_order.cart_order
-    
+    # Ensure user is in Sellers group
+    if not request.user.groups.filter(name='Sellers').exists():
+        return render(request, 'userauths/custom_login.html')
+
+    # Get the CartOrder instance, ensuring it belongs to Sellers group
+    seller_group = Group.objects.get(name='Sellers')
+    cart_order = get_object_or_404(CartOrder, id=vendor_order_id, user__groups=seller_group)
+
     # Get the CartOrderItem instances related to the CartOrder
     cart_order_items = CartOrderItem.objects.filter(order=cart_order)
 
-    selected_currency = request.session.get('currency', 'USD') 
-    exchange_rates = get_exchange_rate('USD') 
+    # Get selected currency and exchange rates
+    selected_currency = request.session.get('currency', 'USD')
+    exchange_rates = get_exchange_rate('USD')
 
-    cart_order_total_converted = convert_currency(cart_order.price, 'USD', selected_currency, exchange_rates)
-    saved_converted = convert_currency(cart_order.saved, 'USD', selected_currency, exchange_rates)
-    shipping_fee = convert_currency(cart_order.shipping_fee, 'USD', selected_currency, exchange_rates)
-    final_price = convert_currency(cart_order.final_price, 'USD', selected_currency,exchange_rates)
+    # Convert CartOrder amounts (base currency: RWF)
+    cart_order_total_converted = convert_currency(cart_order.price, 'RWF', selected_currency, exchange_rates)
+    saved_converted = convert_currency(cart_order.saved, 'RWF', selected_currency, exchange_rates)
+    shipping_fee = convert_currency(cart_order.shipping_fee, 'RWF', selected_currency, exchange_rates)
+    final_price = convert_currency(cart_order.final_price, 'RWF', selected_currency, exchange_rates)
 
+    # Convert CartOrderItem amounts
     for item in cart_order_items:
-        item.converted_price = convert_currency(item.product.price, 'USD', selected_currency, exchange_rates)
-        item.converted_total = convert_currency(item.total, 'USD', selected_currency, exchange_rates)
+        item.converted_price = convert_currency(item.product.price, 'RWF', selected_currency, exchange_rates)
+        item.converted_total = convert_currency(item.total, 'RWF', selected_currency, exchange_rates)
 
-    # Handle form submission
+    # Handle form submission for status update
     if request.method == "POST":
         new_status = request.POST.get('order_status')
-        if new_status in ['processing','out_for_delivery', 'delivered']:
-            vendor_order.cart_order.product_status = new_status
-            vendor_order.cart_order.save()
+        if new_status in ['processing', 'out_for_delivery', 'delivered']:
+            cart_order.product_status = new_status
+            cart_order.save()
             messages.success(request, f"Order status updated to {new_status}.")
         return redirect('vendor_order_Details', vendor_order_id=vendor_order_id)
 
     context = {
-        'vendor_order': vendor_order,
         'cart_order': cart_order,
         'cart_order_items': cart_order_items,
         'cart_order_total_converted': cart_order_total_converted,
         'saved_converted': saved_converted,
         'shipping_fee': shipping_fee,
+        'final_price': final_price,
         'selected_currency': selected_currency,
-        'final_price':final_price,
+        'currency_symbols': {
+            'RWF': 'RWF',
+            'USD': '$',
+            'EUR': '€',
+            'GBP': '£',
+        },
     }
-    
+
     return render(request, 'Vendor/vendor_order_Details.html', context)
+
 
 
 @login_required
@@ -522,30 +597,7 @@ def InStoreOrder(request):
             ]
         }
 
-        if customer_email and not re.match(r'^[^\s@]+@[^\s@]+\.[^\s@]+$', customer_email):
-            messages.error(request, "Please enter a valid email address.")
-            errors['customer_email'] = "Invalid email format."
-        if customer_first_name and not re.match(r'^[a-zA-Z\s-]+$', customer_first_name):
-            messages.error(request, "First name can only contain letters, spaces, or hyphens.")
-            errors['customer_first_name'] = "Invalid first name format."
-        if customer_last_name and not re.match(r'^[a-zA-Z\s-]+$', customer_last_name):
-            messages.error(request, "Last name can only contain letters, spaces, or hyphens.")
-            errors['customer_last_name'] = "Invalid last name format."
-        if customer_phone and not re.match(r'^\+2507\d{8}$', customer_phone):
-            messages.error(request, "Phone number must be exactly 12 digits starting with +2507.")
-            errors['customer_phone'] = "Invalid phone format."
-        if address and not re.match(r'^[a-zA-Z0-9\s,.-]+$', address):
-            messages.error(request, "Address can only contain letters, numbers, spaces, commas, periods, or hyphens.")
-            errors['address'] = "Invalid address format."
-        if city and not re.match(r'^[a-zA-Z\s-]+$', city):
-            messages.error(request, "City can only contain letters, spaces, or hyphens.")
-            errors['city'] = "Invalid city format."
-        if country and not re.match(r'^[a-zA-Z\s-]+$', country):
-            messages.error(request, "Country can only contain letters, spaces, or hyphens.")
-            errors['country'] = "Invalid country format."
-        if payment_method and payment_method not in ['cash', 'momo', 'airtel']:
-            messages.error(request, "Invalid payment method selected.")
-            errors['payment_method'] = "Please select a valid payment method."
+        
 
         if not product_ids or not quantities or len(product_ids) != len(quantities):
             messages.error(request, "Please add at least one valid product and quantity.")
@@ -595,6 +647,7 @@ def InStoreOrder(request):
                                     email=customer_email,
                                     username=customer_email.split('@')[0],
                                     is_customer=True,
+                                    is_active=True,
                                     first_name=customer_first_name,
                                     last_name=customer_last_name,
                                     phone_number=customer_phone

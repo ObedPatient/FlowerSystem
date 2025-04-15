@@ -1,0 +1,244 @@
+{% extends 'partials/VendorBase.html' %}
+{% load humanize  %}
+
+{% block content %}
+<style>
+    .buton {
+        background-color: #999999;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-weight: bold;
+        color: white;
+        transition: background-color 0.3s ease;
+    }
+    .buton:hover {
+        background-color: #bebdb6;
+        color: white;
+    }
+    .btn-primary {
+        background-color: #007bff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+    }
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+    .btn-danger {
+        background-color: #dc3545;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+    }
+    .btn-danger:hover {
+        background-color: #b02a37;
+    }
+    .card {
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+    }
+    .main-image {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+        object-fit: cover;
+    }
+    .info-label {
+        font-weight: bold;
+        color: #333;
+    }
+    .info-value {
+        color: #555;
+    }
+    .badge {
+        font-size: 0.9rem;
+        padding: 8px 12px;
+    }
+    .container {
+        max-width: 1200px;
+    }
+    .desc-spec-container {
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+    }
+    .scrollable-details {
+        max-height: 500px;
+        overflow-y: auto;
+        padding-right: 10px;
+    }
+    .scrollable-desc, .scrollable-spec {
+        max-height: 300px;
+        overflow-y: auto;
+        padding-right: 10px;
+    }
+    /* Custom scrollbar styling */
+    .scrollable-details::-webkit-scrollbar,
+    .scrollable-desc::-webkit-scrollbar,
+    .scrollable-spec::-webkit-scrollbar {
+        width: 8px;
+    }
+    .scrollable-details::-webkit-scrollbar-track,
+    .scrollable-desc::-webkit-scrollbar-track,
+    .scrollable-spec::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 4px;
+    }
+    .scrollable-details::-webkit-scrollbar-thumb,
+    .scrollable-desc::-webkit-scrollbar-thumb,
+    .scrollable-spec::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 4px;
+    }
+    .scrollable-details::-webkit-scrollbar-thumb:hover,
+    .scrollable-desc::-webkit-scrollbar-thumb:hover,
+    .scrollable-spec::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+    @media (max-width: 768px) {
+        .main-image {
+            margin-bottom: 20px;
+        }
+        .card {
+            margin-bottom: 20px;
+        }
+        .desc-spec-container {
+            padding: 15px;
+        }
+        .scrollable-details {
+            max-height: 400px;
+        }
+        .scrollable-desc, .scrollable-spec {
+            max-height: 200px;
+        }
+    }
+</style>
+
+<main class="content">
+    <div class="container py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3 mb-0">Product Details</h1>
+            <a href="{% url 'vendorProducts' %}" class="buton">Back to Products</a>
+        </div>
+
+        <div class="card p-4">
+            <div class="row g-4">
+                <!-- Image Carousel -->
+                <div class="col-md-6">
+                    <div id="productCarousel" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-inner">
+                            {% if product.image %}
+                                <div class="carousel-item active">
+                                    <img src="{{ product.image.url }}" class="d-block w-100 main-image" alt="{{ product.title }}">
+                                </div>
+                            {% endif %}
+                            {% for img in product_images %}
+                                <div class="carousel-item {% if not product.image and forloop.first %}active{% endif %}">
+                                    <img src="{{ img.images.url }}" class="d-block w-100 main-image" alt="{{ product.title }}">
+                                </div>
+                            {% endfor %}
+                            {% if not product.image and not product_images %}
+                                <div class="carousel-item active">
+                                    <div class="text-center bg-light p-5 rounded">
+                                        <p class="text-muted">No Images Available</p>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                        {% if product.image or product_images %}
+                            <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Next</span>
+                            </button>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Product Details -->
+                <div class="col-md-6 scrollable-details">
+                    <h2 class="h4 mb-3">{{ product.title }}</h2>
+                    <div class="mb-3">
+                        <span class="info-label">Price:</span>
+                        <span class="info-value">
+                            {{ selected_currency }}{{ product.converted_price|floatformat:2|intcomma }}
+                        </span>
+                        {% if product.converted_old_price %}
+                            <span class="text-muted text-decoration-line-through ms-2">
+                                {{ selected_currency }}{{ product.converted_old_price|floatformat:2|intcomma }}
+                            </span>
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <span class="info-label">Category:</span>
+                        <span class="info-value">{{ product.category.title|default:"No Category" }}</span>
+                    </div>
+                    <div class="mb-3">
+                        <span class="info-label">Stock:</span>
+                        <span class="info-value">{{ product.in_stock }}</span>
+                    </div>
+                    <div class="mb-3">
+                        <span class="info-label">Status:</span>
+                        <span class="badge {% if product.product_status == 'published' %}bg-success{% elif product.product_status == 'in_review' %}bg-warning{% else %}bg-secondary{% endif %}">
+                            {{ product.product_status|title }}
+                        </span>
+                    </div>
+                    <div class="mb-3">
+                        <span class="info-label">SKU:</span>
+                        <span class="info-value">{{ product.sku }}</span>
+                    </div>
+                    <div class="mb-3">
+                        <span class="info-label">Tags:</span>
+                        <span class="info-value">
+                            {% for tag in product.tags.all %}
+                                <span class="badge bg-primary me-1">{{ tag }}</span>
+                            {% endfor %}
+                            {% if not product.tags.all %}
+                                No tags.
+                            {% endif %}
+                        </span>
+                    </div>
+                    
+                </div>
+            </div>
+
+            <!-- Description and Specifications -->
+            <div class="desc-spec-container mt-4">
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <h5 class="info-label mb-3">Description</h5>
+                        <div class="info-value scrollable-desc">
+                            {% if product.description %}
+                                {{ product.description|safe }}
+                            {% else %}
+                                No description provided.
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h5 class="info-label mb-3">Specifications</h5>
+                        <div class="info-value scrollable-spec">
+                            {% if product.specifications %}
+                                {{ product.specifications|safe }}
+                            {% else %}
+                                No specifications provided.
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock content %}
