@@ -1,0 +1,103 @@
+{% extends 'partials/base.html' %} {% load l10n humanize %}
+{% load static %}
+{% block content %}
+
+    
+        <!-- Begin E-MariStore Breadcrumb Area -->
+        <div class="breadcrumb-area">
+            <div class="container">
+                <div class="breadcrumb-content">
+                    <h2>Categories</h2>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li class="active">Categories</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- E-MariStore Breadcrumb Area End Here -->  
+        
+        <!-- Begin E-MariStore Blog Right Sidebar Area -->
+        <div class="shop-content_wrapper">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-3 col-md-5 order-2">
+                        <div class="uren-sidebar-catagories_area">
+                            <div class="category-module uren-sidebar_categories">
+                                <div class="category-module_heading">
+                                    <h5>Categories</h5>
+                                </div>
+                                <div class="module-body">
+                                    <ul class="module-list_item">
+                                        {% for cat in categories %}
+                                        <li>
+                                            <a href="">{{ cat.title }} <span>({{ cat.category.count }})</span></a>
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>                            
+                        </div>
+                        <div class="sidebar-banner_area">
+                            <div class="banner-item img-hover_effect">
+                                <a href="javascript:void(0)">
+                                    <img src="{% static 'assets/images/shop/1.jpg' %}" alt="E-MariStore Shop Banner Image">
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-9 col-md-7 order-1">
+                        <div class="shop-toolbar mb-6" style="margin-bottom: 24px;">
+                            <div class="product-view-mode">
+                                <h4 style="font-size: 24px; font-weight: 600; color: #1f2937;">{{ categories.count }} Categories</h4>
+                            </div>
+                        </div>
+                        <div class="shop-product-wrap grid gridview-3 listfullwidth img-hover-effect_area row">
+                            {% for c in categories %}
+                            {% if not c.parent %}
+                            <div class="col-lg-4">
+                                <div class="category-slide_item" style="display: flex; flex-direction: column; height: 100%; border: 1px solid #ddd; border-radius: 5px;">
+                                    <div class="inner-slide" style="flex: 1; display: flex; flex-direction: column;">
+                                        <div class="single-category">
+                                            <div class="category-img" style="margin-bottom: 15px; position: relative;">
+                                                <a href="{% url 'product_by_category' c.id c.slug %}">
+                                                    <img src="{{ c.image.url }}" alt="{{ c.title }} - E-MariStore Featured Categories" style="width: 100%; height: 250px; object-fit: cover;">
+                                                </a>
+                                            </div>
+                                            <div class="category-content" style="flex: 1; display: flex; flex-direction: column; padding: 10px;">
+                                                <div class="category-desc_info">
+                                                    <h6><a href="{% url 'product_by_category' c.id c.slug %}" style="font-size: 16px; font-weight: 500; color: #1f2937; text-decoration: none;">{{ c.title }}</a></h6>
+                                                    <span style="font-size: 14px; color: #6b7280;">({{ c.category.count }} Product{{ c.category.count|pluralize }})</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+                        <div class="row mt-8" style="margin-top: 32px;">
+                            <div class="col-lg-12">
+                                <div class="uren-paginatoin-area">
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <ul style="display: flex; justify-content: center; gap: 8px; list-style: none; padding: 0;">
+                                                <li class="active"><a href="javascript:void(0)" style="padding: 8px 16px; background-color: #2563eb; color: #fff; border-radius: 5px; text-decoration: none;">1</a></li>
+                                                <li><a href="javascript:void(0)" style="padding: 8px 16px; color: #4b5563; border-radius: 5px; text-decoration: none;">2</a></li>
+                                                <li><a href="javascript:void(0)" style="padding: 8px 16px; color: #4b5563; border-radius: 5px; text-decoration: none;">3</a></li>
+                                                <li><a href="javascript:void(0)" style="padding: 8px 16px; color: #4b5563; border-radius: 5px; text-decoration: none;">4</a></li>
+                                                <li><a href="javascript:void(0)" style="padding: 8px 16px; color: #4b5563; border-radius: 5px; text-decoration: none;">5</a></li>
+                                                <li><a class="Next" href="javascript:void(0)" style="padding: 8px 16px; color: #2563eb; border-radius: 5px; text-decoration: none;">Next</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- E-MariStore Blog Right Sidebar Area End Here -->
+        {% endblock content %}

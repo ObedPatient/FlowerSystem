@@ -1,0 +1,150 @@
+<!-- track_order.html -->
+{% extends 'partials/base.html' %} {% load l10n humanize %}
+{% load static %}
+{% load i18n %}
+{% block title %}Order Tracking - E-MariStore{% endblock %}
+{% block meta_description %}Track your orders on E-MariStore{% endblock %}
+{% block content %}
+
+    <!-- Page Styling -->
+    <style>
+        .track-order-section {
+            padding: 40px;
+            background-color: #fafafa;
+            margin-top: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .track-order-title {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .tracking-input {
+            margin-bottom: 30px;
+        }
+
+        .timeline {
+            list-style: none;
+            padding: 0;
+            position: relative;
+        }
+
+        .timeline:before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background-color: #ffc400;
+            transform: translateX(-50%);
+        }
+
+        .timeline-item {
+            margin-bottom: 30px;
+            position: relative;
+            width: 50%;
+            padding-left: 30px;
+        }
+
+        .timeline-item:nth-child(even) {
+            left: 50%;
+            padding-left: 0;
+            padding-right: 30px;
+        }
+
+        .timeline-item:nth-child(even):before {
+            right: -8px;
+        }
+
+        .timeline-item:before {
+            content: '';
+            position: absolute;
+            left: -8px;
+            top: 0;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background-color: #E52E06;
+        }
+
+        .timeline-content {
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .timeline-content h5 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .timeline-content p {
+            margin: 0;
+            color: #555;
+        }
+
+        .status-badge {
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .search-button {
+            width: 100%;
+            background-color: #ffc400;
+            color: #fff;
+            border: none;
+        }
+
+        .search-button:hover {
+            background-color: #E52E06;
+        }
+
+        .form-control:focus {
+            box-shadow: none;
+        }
+    </style>
+
+    <!-- Order Tracking Section -->
+    <section class="container track-order-section  mb-4">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="track-order-title">
+                    <h2>Track Your Order</h2>
+                    <p>Enter your order ID to track the status of your order</p>
+                </div>
+
+                <!-- Order Tracking Form -->
+                <form method="post" action="{% url 'track_order' %}">
+                    {% csrf_token %}
+                    <div class="input-group tracking-input">
+                        <input type="text" class="form-control" placeholder="Enter Order ID" name="order_id" required>
+                        <div class="input-group-append">
+                            <button type="submit" class="btn search-button">Track Order</button>
+                        </div>
+                    </div>
+                </form>
+
+                {% if order_id %}
+                    <h5>Order ID: {{ order_id }}</h5>
+                    <h6 class="mb-4">Status: {{ order_status }}</h6>
+                    <ul class="timeline">
+                        {% for step in tracking_info %}
+                            <li class="timeline-item">
+                                <div class="timeline-content">
+                                    <h5>{{ step.0 }}</h5>
+                                    <p>{{ step.1 }}</p>
+                                    <span class="badge badge-success status-badge">{{ step.2 }}</span>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+{% endblock content %}

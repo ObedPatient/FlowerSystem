@@ -1,0 +1,60 @@
+{% load l10n humanize %}
+<html>
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #ddd;
+        }
+        .header {
+            background: #333;
+            color: #ffffff;
+            text-align: center;
+            padding: 20px;
+            font-size: 24px;
+        }
+        .content {
+            padding: 30px;
+            font-size: 16px;
+            line-height: 1.6;
+            border-bottom: 1px solid #ddd;
+        }
+        .footer {
+            background: #333;
+            color: #ffffff;
+            text-align: center;
+            padding: 10px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            Order Update Notification
+        </div>
+        <div class="content">
+            <p><strong>Order #{{ order_id }} - Payments</strong></p>
+            <p><strong>Customer:</strong> {{ customer_name }}</p>
+            <p><strong>Email:</strong> {{ customer_email }}</p>
+            <p><strong>Total Price:</strong> {{ total_price|intcomma }} {{ selected_currency }}</p>
+            <p><strong>Total Saved:</strong> {{ saved_amount|intcomma }} {{ selected_currency }}</p>
+            <p><strong>Order Date:</strong> {{ order_date }}</p>
+            <p>Please log in to the admin panel for more details.</p>
+        </div>
+        <div class="footer">
+            &copy; {{ current_year }} E-MariStore
+        </div>
+    </div>
+</body>
+</html>

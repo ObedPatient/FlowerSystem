@@ -1,0 +1,99 @@
+{% extends 'partials/base.html' %} {% load l10n humanize %}
+{% load static %}
+{% block content %}
+
+    <!-- Begin E-MariStore Breadcrumb Area -->
+    <div class="breadcrumb-area">
+        <div class="container">
+            <div class="breadcrumb-content">
+                <h2>Other</h2>
+                <ul>
+                    <li><a href="{% url 'Home' %}">Home</a></li>
+                    <li class="active">Register</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- E-MariStore Breadcrumb Area End Here -->
+
+    <!-- Begin E-MariStore Login Register Area -->
+    <div class="uren-login-register_area">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-12 col-md-12 col-xs-12 col-lg-6">
+                    <div class="banner-item img-hover_effect">
+                        <br><br><br>
+                        <center>
+                            <div class="banner-content">
+                                <h6>Already have an Account?</h6>
+                                <div class="uren-btn-ps_left">
+                                    <a class="uren-btn" href="{% url 'userauths:custom_login' %}" style="width:300px;">Sign In</a>
+                                </div>
+                            </div>
+                        </center>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-6 col-xs-12">
+                    
+                    <form action="{% url 'userauths:sign-up' %}" method="POST">
+                        {% csrf_token %}
+                    
+                        <div class="login-form">
+                            {% if form.errors %}
+                                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                    <strong>{{ form.errors }}</strong> 
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                            {% endif %}
+                            <h4 class="login-title">Register As A Customer</h4>
+                            <div class="row">
+                                <div class="col-md-6 col-12 mb--20">
+                                    <label>First Name</label>
+                                    {{ form.first_name }}
+                                </div>
+                                <div class="col-md-6 col-12 mb--20">
+                                    <label>Last Name</label>
+                                    {{ form.last_name }}
+                                </div>
+                                <div class="col-12 mb--20">
+                                    <label>Email Address*</label>
+                                    {{ form.email }}
+                                </div>
+                                <div class="col-12 mb--20">
+                                    <label>Phone Number</label>
+                                    <div class="intl-tel-input">
+                                        {{ form.phone_number }}  <!-- Render the phone_number field directly -->
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb--20">
+                                    <label>Password</label>
+                                    {{ form.password }}
+                                </div>
+                                <div class="col-md-6 mb--20">
+                                    <label>Confirm Password</label>
+                                    {{ form.confirm_password }}
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="uren-register_btn">Register</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    
+                    <script>
+                        $(document).ready(function() {
+                            $("#phone").intlTelInput({
+                                utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/lib/libphonenumber.js" // Optional, for formatting
+                            });
+                        });
+                    </script>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- E-MariStore Login Register Area  End Here -->
+
+{% endblock content %}

@@ -1,0 +1,117 @@
+{% extends 'partials/base.html' %} {% load l10n humanize %}
+{% load static %}
+{% load i18n %}
+{% block title %}E-MariStore - Frequently Asked Questions (FAQ) {% endblock %}
+{% block meta_description %}E-MariStore{% endblock %}
+{% block content %}
+
+<style>
+    .container{
+        padding: 40px;
+        margin-top: 30px;
+        margin-bottom: 40px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<div class="frequently-area container">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="frequently-content">
+                    <div class="frequently-desc">
+                        <h3>frequently asked questions, you may find the answer for yourself</h3>
+                        <p>Explore answers to some of the most commonly asked questions about E-MariStore, our products, services, and policies. If you can't find the answer you're looking for, feel free to contact our support team.</p>
+                    </div>
+                </div>
+                <!-- Begin Frequently Accordion -->
+                <div class="frequently-accordion">
+                    <div id="accordion">
+                        <div class="card actives">
+                            <div class="card-header" id="headingOne">
+                                <h5 class="mb-0">
+                                    <a href="javascript:void(0)" class="" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                        What is E-MariStore?
+                                    </a>
+                                </h5>
+                            </div>
+                            <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+                                <div class="card-body">
+                                    E-MariStore is a leading e-commerce platform based in Rwanda, designed to connect local Rwandan businesses with online buyers both locally and internationally.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header" id="headingTwo">
+                                <h5 class="mb-0">
+                                    <a href="javascript:void(0)" class="collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                        What types of products can be bought and sold on E-MariStore?
+                                    </a>
+                                </h5>
+                            </div>
+                            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+                                <div class="card-body">
+                                    E-MariStore specializes in essential goods such as groceries, office supplies, electronics, cosmetics, and gift items.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header" id="headingThree">
+                                <h5 class="mb-0">
+                                    <a href="javascript:void(0)" class="collapsed" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                        How do I buy products on E-MariStore?
+                                    </a>
+                                </h5>
+                            </div>
+                            <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
+                                <div class="card-body">
+                                    Shopping is easy! Simply browse our website or download the E-MariStore App, select your desired products, add them to your cart, and proceed to checkout. Follow the on-screen instructions to finalize your purchase.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header" id="headingFour">
+                                <h5 class="mb-0">
+                                    <a href="javascript:void(0)" class="collapsed" data-toggle="collapse" data-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                                        How do I sell products on E-MariStore?
+                                    </a>
+                                </h5>
+                            </div>
+                            <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#accordion">
+                                <div class="card-body">
+                                    To start selling on E-MariStore, sign up and apply for seller access. Once your request is approved, you’ll need to pay an annual membership fee of 50,000 Frw (via MOMO Code 007795). After that, you can start listing your products, making them visible to a wide audience of potential buyers. For more information, feel free to contact us.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header" id="headingFive">
+                                <h5 class="mb-0">
+                                    <a href="javascript:void(0)" class="collapsed" data-toggle="collapse" data-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+                                        Is it safe to buy and sell products on E-MariStore?
+                                    </a>
+                                </h5>
+                            </div>
+                            <div id="collapseFive" class="collapse" aria-labelledby="headingFive" data-parent="#accordion">
+                                <div class="card-body">
+                                    Yes, E-MariStore is a safe platform for both buyers and sellers. We utilize secure payment systems and have a dedicated team that verifies the authenticity of all products listed on our site. for More Detail Click o this link <a href="{% url 'why' %}">Why you should Join as As Seller.</a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Additional FAQ Cards Can Go Here -->
+                        
+                    </div>
+                </div>
+                <!--Frequently Accordion End Here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock content %}

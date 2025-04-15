@@ -1,0 +1,136 @@
+{% extends 'partials/VendorBase.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="container mt-4">
+    <!-- Back Button -->
+    <button class="btn btn-link mb-4" onclick="window.history.back();">
+        <i class="fas fa-arrow-left"></i> Go back
+    </button>
+    
+    <!-- Vendor Info Card -->
+    <div class="card mb-4">
+        <div class="card-header p-0">
+            <img src="{{ vendor.image.url }}" class="img-fluid w-100" alt="Brand Cover" style="height: 300px; object-fit: cover;">
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <img src="{{ vendor.logo.url }}" class="img-fluid img-thumbnail" alt="Logo Brand">
+                </div>
+                <div class="col-md-9">
+                    <h3 class="card-title">{{ vendor.title }}</h3>
+                    <p class="text-muted">{{ vendor.address }}</p>
+                    <div class="row mt-4">
+                        <div class="col-md-4">
+                            <h6 class="font-weight-bold">Total Sales:</h6>
+                            <p class="text-success">{{ vendor_order_count|default:"No sales yet" }}</p>
+                            <h6 class="font-weight-bold">Revenue:</h6>
+                            {% load l10n humanize %}
+                            <p class="text-success">{{ converted_total_net_amount|floatformat:2|intcomma }} {{ selected_currency }}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <h6 class="font-weight-bold">Contacts:</h6>
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fas fa-envelope mr-2"></i>
+                                <p class="mb-0">{{ vendor.email }}</p>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-phone mr-2"></i>
+                                <p class="mb-0">{{ vendor.contact }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Products by Seller -->
+    <h5 class="mt-5 mb-4">Products by Seller</h5>
+    <div class="row">
+        {% for product in products %}
+        <div class="col-sm-6 col-md-4 col-lg-3 mb-4">
+            <div class="card">
+                <img src="{{ product.image.url }}" class="card-img-top img-fluid" alt="Product">
+                <div class="card-body">
+                    <h6 class="card-title">{{ product.title }}</h6>
+                    <p class="card-text">{{ product.converted_price|floatformat:2|intcomma }} {{ selected_currency }}</p>
+                    <p class="text-muted">{{ product.category.title }}</p>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <p class="text-center">No products available</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination Controls -->
+    {% if products.has_other_pages %}
+    <nav aria-label="Product pagination">
+        <ul class="pagination justify-content-center">
+            {% if products.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page=1" aria-label="First">
+                    <span aria-hidden="true">&laquo;&laquo;</span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ products.previous_page_number }}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <a class="page-link" aria-label="First">
+                    <span aria-hidden="true">&laquo;&laquo;</span>
+                </a>
+            </li>
+            <li class="page-item disabled">
+                <a class="page-link" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            {% endif %}
+
+            <!-- Loop through page numbers -->
+            {% for num in products.paginator.page_range %}
+                {% if products.number == num %}
+                    <li class="page-item active"><a class="page-link">{{ num }}</a></li>
+                {% elif num > products.number|add:'-3' and num < products.number|add:'3' %}
+                    <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                {% endif %}
+            {% endfor %}
+
+            {% if products.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ products.next_page_number }}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ products.paginator.num_pages }}" aria-label="Last">
+                    <span aria-hidden="true">&raquo;&raquo;</span>
+                </a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <a class="page-link" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+            <li class="page-item disabled">
+                <a class="page-link" aria-label="Last">
+                    <span aria-hidden="true">&raquo;&raquo;</span>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+    
+</div>
+{% endblock content %}

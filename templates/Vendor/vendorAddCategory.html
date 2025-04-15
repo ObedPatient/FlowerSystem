@@ -1,0 +1,168 @@
+{% extends 'partials/VendorBase.html' %}
+{% load static %}
+{% block content %}
+
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Manage Categories</h1>
+    <div class="row justify-content-center">
+        <!-- Form Column -->
+        <div class="col-lg-5 col-md-6 mb-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white text-center">
+                    <h4 class="mb-0">Add a New Category</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-block">Add Category</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Categories List Column -->
+        <div class="col-lg-5 col-md-6 mb-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-secondary text-white text-center">
+                    <h4 class="mb-0">Existing Categories</h4>
+                </div>
+                <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                    <ul class="list-group">
+                        {% for category in categories %}
+                        <!-- Check if it's a top-level category (level 0) -->
+                        {% if category.level == 0 %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center" style="padding-left: {{ category.level|add:1 }}rem;">
+                            <!-- Add collapse functionality only for top-level categories -->
+                            <a class="collapsed" data-bs-toggle="collapse" href="#collapse-category-{{ category.id }}" aria-expanded="false" aria-controls="collapse-category-{{ category.id }}">
+                                {% if category.image %}
+                                <img src="{{ category.image.url }}" alt="{{ category.title }}" class="rounded-circle me-3" style="width: 50px; height: 50px; object-fit: cover;">
+                                {% endif %}
+                                <span class="fw-bold text-primary">{{ category.title }}</span>
+                            </a>
+                
+                            <!-- Icon for collapsing/expanding -->
+                            <i class="fas fa-plus-circle icon-gray toggle-icon" data-bs-target="#collapse-category-{{ category.id }}" aria-expanded="false" style="cursor: pointer;"></i>
+                        </li>
+                
+                        <!-- Collapsible subcategories container -->
+                        <div id="collapse-category-{{ category.id }}" class="collapse">
+                            <ul class="list-group">
+                                {% for subcategory in categories %}
+                                <!-- Display only subcategories (level > 0) and check parent-child relationship -->
+                                {% if subcategory.level > 0 and subcategory.parent_id == category.id %}
+                                <li class="list-group-item d-flex align-items-center" style="padding-left: {{ subcategory.level|add:1 }}rem;">
+                                    {% if subcategory.image %}
+                                    <img src="{{ subcategory.image.url }}" alt="{{ subcategory.title }}" class="rounded-circle me-3" style="width: 50px; height: 50px; object-fit: cover;">
+                                    {% endif %}
+                                    <span class="text-muted">{{ subcategory.title }}</span>
+                                    <span class="badge bg-info ms-2">Subcategory</span>
+                                </li>
+                                {% endif %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% endif %}
+                        {% empty %}
+                        <li class="list-group-item text-center">No categories found.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                
+                
+                
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Additional CSS for styling -->
+<style>
+    .card-header {
+        border-bottom: 2px solid #f0f0f0;
+        border-radius: 8px 8px 0 0;
+    }
+
+    .btn-primary {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+        border-radius: 50px;
+    }
+
+    .btn-primary:hover {
+        background-color: #0b5ed7;
+        border-color: #0a58ca;
+    }
+
+    .card {
+        border-radius: 12px;
+        transition: all 0.3s ease-in-out;
+    }
+
+    .card:hover {
+        box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .list-group-item {
+        border: none;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .list-group-item:last-child {
+        border-bottom: none;
+    }
+
+    .container {
+        max-width: 1100px;
+    }
+</style>
+<script>
+    // Add click event listener to the icons to toggle the collapse
+    document.querySelectorAll('.toggle-icon').forEach(function(icon) {
+        icon.addEventListener('click', function() {
+            // Get the target collapse element
+            const targetId = icon.getAttribute('data-bs-target');
+            const target = document.querySelector(targetId);
+
+            // Toggle collapse manually
+            const collapseInstance = new bootstrap.Collapse(target, {
+                toggle: true
+            });
+
+            // Manually toggle the icon after the collapse action
+            if (target.classList.contains('show')) {
+                icon.classList.remove('fa-minus-circle');
+                icon.classList.add('fa-plus-circle');
+            } else {
+                icon.classList.remove('fa-plus-circle');
+                icon.classList.add('fa-minus-circle');
+            }
+        });
+    });
+
+    // Listen for Bootstrap collapse events to automatically toggle the icon when clicked via link
+    document.querySelectorAll('.collapse').forEach(function(collapse) {
+        collapse.addEventListener('show.bs.collapse', function () {
+            const icon = document.querySelector(`i[data-bs-target="#${collapse.id}"]`);
+            if (icon) {
+                icon.classList.remove('fa-plus-circle');
+                icon.classList.add('fa-minus-circle');
+            }
+        });
+
+        collapse.addEventListener('hide.bs.collapse', function () {
+            const icon = document.querySelector(`i[data-bs-target="#${collapse.id}"]`);
+            if (icon) {
+                icon.classList.remove('fa-minus-circle');
+                icon.classList.add('fa-plus-circle');
+            }
+        });
+    });
+</script>
+
+
+
+{% endblock %}

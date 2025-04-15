@@ -1,0 +1,215 @@
+{% extends 'partials/VendorBase.html' %}
+{% load static %}
+{% load l10n humanize %}
+
+{% block content %}
+
+<style>
+    .buton {
+        background-color: #999999;
+        border: none;
+        padding: 10px;
+        border-radius: 5px;
+        font-weight: bold;
+    }
+    .link_product a {
+        text-decoration: none;
+        color: white;
+    }
+    .buton:hover {
+        background-color: #bebdb6;
+        cursor: pointer;
+    }
+    .error-message {
+        color: #dc3545;
+        font-size: 0.875em;
+        margin-top: 0.25rem;
+        display: none;
+    }
+    .is-invalid {
+        border-color: #dc3545;
+    }
+</style>
+
+<div class="container mt-5 mb-4">
+    <h3 class="mb-4">Profile Setting</h3>
+    <div class="card">
+        <div class="card-body">
+            <form method="POST" enctype="multipart/form-data" id="profileForm" onsubmit="return validateForm()">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <label for="title">Title</label>
+                            {{ form.title }}
+                            <div class="error-message" id="title-error">Title is required and must be 3-100 characters</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="description">Description</label>
+                            {{ form.description }}
+                            <div class="error-message" id="description-error">Description must be 10-500 characters if provided</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="address">Address</label>
+                            {{ form.address }}
+                            <div class="error-message" id="address-error">Address is required and must be 5-200 characters</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="contact">Contact Number</label>
+                            {{ form.contact }}
+                            <div class="error-message" id="contact-error">Valid phone number required (e.g., +1234567890)</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            {{ form.email }}
+                            <div class="error-message" id="email-error">Valid email address required</div>
+                        </div>
+                        <button type="submit" class="buton btn-success">Save changes</button>
+                    </div>
+                    <div class="col-md-4 d-flex flex-column align-items-center">
+                        <div class="mb-4">
+                            {% if form.logo.value %}
+                                <img src="{{ form.logo.value.url }}" class="rounded-circle img-thumbnail" alt="Profile Picture" width="200px">
+                            {% else %}
+                                <img src="{% static 'images/default_logo.png' %}" class="rounded-circle img-thumbnail" alt="Default Logo" width="200px">
+                            {% endif %}
+                        </div>
+                        <div class="form-group">
+                            <label for="logo">Logo</label>
+                            <input type="file" name="logo" id="logo" class="form-control" accept="image/*">
+                            <div class="error-message" id="logo-error">Valid image file required (max 5MB)</div>
+                        </div>
+                        <div class="mb-4">
+                            {% if form.image.value %}
+                                <img src="{{ form.image.value.url }}" class="rounded-rectangle img-thumbnail" alt="Profile Picture" width="200px">
+                            {% else %}
+                                <img src="{% static 'images/default_cover.png' %}" class="rounded-rectangle img-thumbnail" alt="Default Cover" width="200px">
+                            {% endif %}
+                        </div>
+                        <div class="form-group">
+                            <label for="image">Cover Picture</label>
+                            <input type="file" name="image" id="image" class="form-control" accept="image/*">
+                            <div class="error-message" id="image-error">Valid image file required (max 5MB)</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="documents">Upload Licenses Documents</label>
+                            <input type="file" name="documents" id="documents" class="form-control" accept=".pdf,.doc,.docx">
+                            <div class="error-message" id="documents-error">Valid document file required (.pdf, .doc, .docx, max 10MB)</div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function validateField(fieldId) {
+    const field = document.getElementById(fieldId);
+    const errorElement = document.getElementById(`${fieldId}-error`);
+    let isValid = true;
+
+    field.classList.remove('is-invalid');
+    errorElement.style.display = 'none';
+
+    switch(fieldId) {
+        case 'title':
+            const title = field.value.trim();
+            if (!title || title.length < 3 || title.length > 100) {
+                field.classList.add('is-invalid');
+                errorElement.style.display = 'block';
+                isValid = false;
+            }
+            break;
+        case 'description':
+            const desc = field.value.trim();
+            if (desc && (desc.length < 10 || desc.length > 500)) {
+                field.classList.add('is-invalid');
+                errorElement.style.display = 'block';
+                isValid = false;
+            }
+            break;
+        case 'address':
+            const addr = field.value.trim();
+            if (!addr || addr.length < 5 || addr.length > 200) {
+                field.classList.add('is-invalid');
+                errorElement.style.display = 'block';
+                isValid = false;
+            }
+            break;
+        case 'contact':
+            const phoneRegex = /^\+\d{9,14}$/;
+            if (!field.value || !phoneRegex.test(field.value)) {
+                field.classList.add('is-invalid');
+                errorElement.style.display = 'block';
+                isValid = false;
+            }
+            break;
+        case 'email':
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!field.value || !emailRegex.test(field.value)) {
+                field.classList.add('is-invalid');
+                errorElement.style.display = 'block';
+                isValid = false;
+            }
+            break;
+        case 'logo':
+            if (field.files.length > 0) {
+                const file = field.files[0];
+                if (!file.type.startsWith('image/') || file.size > 5 * 1024 * 1024) {
+                    field.classList.add('is-invalid');
+                    errorElement.style.display = 'block';
+                    isValid = false;
+                }
+            }
+            break;
+        case 'image':
+            if (field.files.length > 0) {
+                const file = field.files[0];
+                if (!file.type.startsWith('image/') || file.size > 5 * 1024 * 1024) {
+                    field.classList.add('is-invalid');
+                    errorElement.style.display = 'block';
+                    isValid = false;
+                }
+            }
+            break;
+        case 'documents':
+            if (field.files.length > 0) {
+                const file = field.files[0];
+                const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+                if (!allowedTypes.includes(file.type) || file.size > 10 * 1024 * 1024) {
+                    field.classList.add('is-invalid');
+                    errorElement.style.display = 'block';
+                    isValid = false;
+                }
+            }
+            break;
+    }
+    return isValid;
+}
+
+function validateForm() {
+    const fields = ['title', 'description', 'address', 'contact', 'email', 'logo', 'image', 'documents'];
+    let isValid = true;
+
+    fields.forEach(fieldId => {
+        if (!validateField(fieldId)) {
+            isValid = false;
+        }
+    });
+
+    return isValid;
+}
+
+// Real-time validation for each field
+document.querySelectorAll('.form-control').forEach(input => {
+    input.addEventListener('input', function() {
+        validateField(this.id);
+    });
+    input.addEventListener('change', function() {
+        validateField(this.id);
+    });
+});
+</script>
+
+{% endblock content %}

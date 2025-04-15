@@ -1,0 +1,103 @@
+{% extends 'partials/base.html' %} {% load l10n humanize %}
+{% load static %}
+{% block content %}
+
+
+    <div class="main-wrapper">
+
+        <!-- Begin E-MariStore Breadcrumb Area -->
+        <div class="breadcrumb-area">
+            <div class="container">
+                <div class="breadcrumb-content">
+                    <h2>Other</h2>
+                    <ul>
+                        <li><a href="{% url 'Home' %}">Home</a></li>
+                        <li class="active">Wishlist</li>
+                    </ul>
+
+
+
+                </div>
+            </div>
+        </div>
+        <!-- E-MariStore Breadcrumb Area End Here -->
+        <!--Begin E-MariStore Wishlist Area -->
+        <div class="uren-wishlist_area" id="wishlist-list">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h1>Checkout</h1>
+                        <p>There {{ totalcartitems }} products in Cart</p>
+                        <form action="javascript:void(0)">
+                            <div class="table-content table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th class="uren-product_remove">Remove</th>
+                                            <th class="uren-product-thumbnail">Images</th>
+                                            <th class="cart-product-name">Product</th>
+                                            <th class="uren-product-price">Unit Price</th>
+                                            <th class="uren-product-stock-status">Stock Status</th>
+                                            <th class="uren-cart_btn">Add to cart</th>
+                                            
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for w in wishlist %}
+                                        <tr>
+                                            <td class="uren-product_remove">
+                                                <button data-wishlist-product="{{ w.id }}" class="delete-wishlist-product">
+                                                    <i class="fa fa-trash" title="Remove"></i>
+                                                </button>
+                                            </td>
+                                            <td class="uren-product-thumbnail">
+                                                <a href="javascript:void(0)">
+                                                    <img src="{{ w.product.image.url }}" alt="E-MariStore Wishlist Thumbnail" width="80px">
+                                                </a>
+                                            </td>
+                                            <td class="uren-product-name">
+                                                <a href="{% url 'product_detail_view' w.product.pid w.product.slug %}">{{ w.product.title|truncatechars:30 }}</a>
+                                            </td>
+                                            <td class="uren-product-price">
+                                                <span class="current-product-currency-{{ w.product.id }}">{{ selected_currency }}</span>
+                                                <p class="current-product-price-{{ w.product.id }}">
+                                                    <span class="amount">{{ w.converted_price|intcomma }}</span> <!-- Use `w.converted_price` here -->
+                                                </p>
+                                            </td>
+                                            <td class="uren-product-stock-status">
+                                                <span class="in-stock">
+                                                    {% if w.product.in_stock %} In stock {% else %} Out of stock {% endif %}
+                                                </span>
+                                            </td>
+                                    
+                                            <input type="hidden" value="1" class="product-quantity-{{ w.product.id }}">
+                                            <input type="hidden" class="product-pid-{{ w.product.id }}" value="{{ w.product.pid }}">
+                                            <input type="hidden" class="product-image-{{ w.product.id }}" value="{{ w.product.image.url }}">
+                                            <input type="hidden" class="product-id-{{ w.product.id }}" value="{{ w.product.id }}">
+                                            <input type="hidden" class="product-title-{{ w.product.id }}" value="{{ w.product.title }}">
+                                            
+                                            
+                                    
+                                            <td class="uren-cart_btn add-to-cart-btn" data-index="{{ w.product.id }}">
+                                                <a href="#">Add to Cart</a>
+                                            </td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr>
+                                            <td colspan="6"><p>Nothing in Wishlist yet..</p></td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                    
+                                </table>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- E-MariStore Wishlist Area End Here -->
+    </div>
+    {% endblock content %}
+   

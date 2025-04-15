@@ -1,0 +1,307 @@
+{% extends 'partials/base.html' %}
+{% load l10n humanize %}
+{% load static %}
+{% block content %}
+
+<body class="template-color-1">
+    <div class="breadcrumb-area">
+        <div class="container">
+            <div class="breadcrumb-content">
+                <h2>Other</h2>
+                <ul>
+                    <li><a href="{% url 'Home' %}">Home</a></li>
+                    <li class="active">My Account</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- E-MariStore Breadcrumb Area End Here -->
+    <!-- Begin E-MariStore Page Content Area -->
+    <main class="page-content">
+        <!-- Begin E-MariStore Account Page Area -->
+        <div class="account-page-area">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-3">
+                        <ul class="nav myaccount-tab-trigger" id="account-page-tab" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="account-profile-tab" data-toggle="tab" href="#account-profile" role="tab" aria-controls="account-profile" aria-selected="true"><img src="{% static 'assets/images/banner/user.png' %}" alt="dashboard" width="20px">&nbsp;Profile</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="account-dashboard-tab" data-toggle="tab" href="#account-dashboard" role="tab" aria-controls="account-dashboard" aria-selected="true"><img src="{% static 'assets/images/banner/dashboard.png' %}" alt="dashboard" width="20px">&nbsp;Dashboard</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="account-orders-tab" data-toggle="tab" href="#account-orders" role="tab" aria-controls="account-orders" aria-selected="false"><img src="{% static 'assets/images/banner/minimum-order.png' %}" alt="dashboard" width="20px">&nbsp;Orders</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="account-logout-tab" href="{% url 'userauths:custom_logout' %}" role="tab" aria-selected="false"><img src="{% static 'assets/images/banner/logout.png' %}" alt="dashboard" width="20px">&nbsp;Logout</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-9">
+                        <div class="tab-content myaccount-tab-content" id="account-page-tab-content">
+                            <div class="tab-pane fade show active" id="account-profile" role="tabpanel" aria-labelledby="account-profile-tab">
+                                <div class="myaccount-profile border-bottom">
+                                    <h3>My Profile</h3>   
+                                </div>
+                                <div class="myaccount-details">
+                                    <form action="#" class="uren-form">
+                                        <div class="uren-form-inner">
+                                            <div class="single-input">
+                                                {% if profile.profile_image %}
+                                                <img src="{{ profile.profile_image.url }}" alt="" width="100px" style="border-radius: 50%;">
+                                                {% else %}
+                                                <img src="{% static 'assets/images/banner/default.png' %}" alt="" width="100px" style="border-radius: 50%;">
+                                                {% endif %}
+                                            </div>
+                                            <div class="single-input">
+                                                <label for="account-details-email">FULL NAME</label>
+                                                <input type="email" id="account-details-email" value="FULL NAME - {{ profile.full_name }}">
+                                            </div>
+                                            <div class="single-input">
+                                                <label for="account-details-oldpass">BIOGRAPHY</label>
+                                                <input type="text" id="account-details-oldpass" value="BIO - {{ profile.bio }}">
+                                            </div>
+                                            <div class="single-input">
+                                                <label for="account-details-newpass">Phone</label>
+                                                <input type="text" id="account-details-newpass" value="PHONE - {{ profile.phone }}">
+                                            </div>
+                                            <div class="single-input border rounded p-4">
+                                                <label for="account-details-confpass">verified</label>
+                                                {% if profile.verified == True %}
+                                                <i class="fas fa-check-circle text-success"></i>
+                                                {% else %}
+                                                <img src="{% static 'assets/images/banner/fail.png' %}" alt="" width="30px">
+                                                {% endif %}
+                                            </div>
+                                            <div class="single-input">
+                                                <a class="uren-btn uren-btn_dark" href="{% url 'userauths:profile_update' %}"><span>Edit Profile</span></a>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="account-dashboard" role="tabpanel" aria-labelledby="account-dashboard-tab">
+                                <div class="myaccount-dashboard">
+                                    <p>Hello <b>{{ request.user.full_name }}</b></p>
+                                    <p>From your account dashboard you can view your recent orders, manage your shipping and
+                                        billing addresses and <a href="javascript:void(0)">edit your password and account details</a>.</p>
+                                </div>
+                                <div>
+                                    <canvas style="height: 50px;" id="myChart"></canvas>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="account-orders" role="tabpanel" aria-labelledby="account-orders-tab">
+                                <div class="myaccount-orders">
+                                    <h4 class="small-title">MY ORDERS</h4>
+                            
+                                    <!-- Filter Form -->
+                                    <form id="order-filter-form" class="mb-4">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <label for="start_date">Start Date</label>
+                                                <input type="date" id="start_date" name="start_date" class="form-control" value="{{ request.GET.start_date|default:'' }}">
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label for="end_date">End Date</label>
+                                                <input type="date" id="end_date" name="end_date" class="form-control" value="{{ request.GET.end_date|default:'' }}">
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label for="invoice_no">Invoice Number</label>
+                                                <input type="text" id="invoice_no" name="invoice_no" class="form-control" placeholder="#INVOICE_NO-2..." value="{{ request.GET.invoice_no|default:'' }}">
+                                            </div>
+                                        </div>
+                                        <div class="row mt-3">
+                                            <div class="col-md-12 d-flex justify-content-end">
+                                                <button type="submit" class="uren-btn uren-btn_dark mr-2">Filter</button>
+                                                <button type="button" id="clear-filter-btn" class="uren-btn uren-btn_dark">Clear</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                            
+                                    <!-- Orders Table -->
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-hover" id="orders-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>ORDER</th>
+                                                    <th>DATE</th>
+                                                    <th>PRODUCT STATUS</th>
+                                                    <th>TOTAL</th>
+                                                    <th>PAID STATUS</th>
+                                                    <th>ACTION</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="orders-table-body">
+                                                {% for order in orders %}
+                                                <tr>
+                                                    <td><a class="account-order-id" href="javascript:void(0)">#INVOICE_NO-2{{ order.id }}</a></td>
+                                                    <td>{{ order.order_date }}</td>
+                                                    <td>{{ order.product_status }}</td>
+                                                    <td>{{ order.converted_price|intcomma }} {{ selected_currency }}</td>
+                                                    {% if order.paid_status %}
+                                                    <td><i class="fas fa-check-circle text-success"></i></td>
+                                                    {% else %}
+                                                    <td><center><img src="{% static 'assets/images/banner/fail.png' %}" alt="" width="25px"></center></td>
+                                                    {% endif %}
+                                                    <td>
+                                                        {% if order.id %}
+                                                            <a href="{% url 'order_detail' order.id %}" class="uren-btn uren-btn_dark uren-btn_sm"><span>View</span></a>
+                                                        {% else %}
+                                                            <span class="text-danger">Invalid Order</span>
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- JavaScript for AJAX -->
+                            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                            <script>
+                            $(document).ready(function() {
+                                // Function to load orders via AJAX
+                                function loadOrders(startDate, endDate, invoiceNo) {
+                                    var formData = {
+                                        start_date: startDate || '',
+                                        end_date: endDate || '',
+                                        invoice_no: invoiceNo || ''
+                                    };
+                            
+                                    $.ajax({
+                                        url: "{% url 'account_orders_view' %}",
+                                        type: 'GET',
+                                        data: formData,
+                                        success: function(response) {
+                                            var tbody = $('#orders-table-body');
+                                            tbody.empty(); // Clear existing rows
+                            
+                                            response.orders.forEach(function(order) {
+                                                var row = `
+                                                    <tr>
+                                                        <td><a class="account-order-id" href="javascript:void(0)">#INVOICE_NO-2${order.id}</a></td>
+                                                        <td>${order.order_date}</td>
+                                                        <td>${order.product_status}</td>
+                                                        <td>${order.converted_price} ${response.selected_currency}</td>
+                                                        <td>${order.paid_status ? '<i class="fas fa-check-circle text-success"></i>' : '<center><img src="{% static 'assets/images/banner/fail.png' %}" alt="" width="25px"></center>'}</td>
+                                                        <td>
+                                                            ${order.id ? '<a href="/dashboard/order/' + order.id + '/" class="uren-btn uren-btn_dark uren-btn_sm"><span>View</span></a>' : '<span class="text-danger">Invalid Order</span>'}
+                                                        </td>
+                                                    </tr>
+                                                `;
+                                                tbody.append(row);
+                                            });
+                                        },
+                                        error: function(xhr, status, error) {
+                                            console.error('Error loading orders:', error);
+                                        }
+                                    });
+                                }
+                            
+                                // Handle form submission (Filter button)
+                                $('#order-filter-form').on('submit', function(e) {
+                                    e.preventDefault(); // Prevent page refresh
+                                    var startDate = $('#start_date').val();
+                                    var endDate = $('#end_date').val();
+                                    var invoiceNo = $('#invoice_no').val();
+                                    loadOrders(startDate, endDate, invoiceNo);
+                                });
+                            
+                                // Handle Clear Filter button
+                                $('#clear-filter-btn').on('click', function() {
+                                    $('#start_date').val(''); // Clear start date
+                                    $('#end_date').val('');   // Clear end date
+                                    $('#invoice_no').val(''); // Clear invoice number
+                                    loadOrders('', '', '');   // Load all orders without filters
+                                });
+                            });
+                            </script>
+                            
+                            <div class="tab-pane fade" id="account-address" role="tabpanel" aria-labelledby="account-address-tab">
+                                <div class="myaccount-address">
+                                <p class="mb-4 mt-4">The following addresses will be used on the checkout page by default.</p>
+                                <div class="myaccount-details">
+                                    <form class="uren-form" method="POST">
+                                        {% csrf_token %}
+                                        <div class="uren-form-inner">
+                                            <div class="single-input single-input-half">
+                                                <label for="account-details-firstname">Address*</label>
+                                                <input type="text" id="account-details-firstname" name="address">
+                                            </div>
+                                            <div class="single-input single-input-half">
+                                                <label for="account-details-lastname">Mobile*</label>
+                                                <input type="number" id="account-details-lastname" name="mobile">
+                                            </div>
+                                            <div class="single-input">
+                                                <button class="uren-btn uren-btn_dark" type="submit"><span>Save Address</span></button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                               <hr>
+                                <div class="row mt-4">
+                                    {% for a in address %}
+                                    <div class="col">
+                                        <h4 class="small-title">ADDRESS {{ forloop.counter }}</h4>
+                                        <div class="card-body border rounded">
+                                            <address>
+                                                <p>{{ a.address }}</p>
+                                                <p>{{ a.mobile }}</p>
+                                            </address>
+                                            <div class="single-input" style="display: flex;align-items: center;">
+                                                {% if a.status %}
+                                                <button data-address-id="{{ a.id }}" class="uren-btn uren-btn_dark make-address-default button{{ a.id }} action_btn" type="submit" style="display: none;"><span>Make defaults</span></button>&nbsp;&nbsp;
+                                                <center><i data-address-id="{{ a.id }}" class="fas fa-check-circle text-success check check{{ a.id }}"></i></center>
+                                                {% else %}
+                                                <button data-address-id="{{ a.id }}" class="uren-btn uren-btn_dark make-address-default button{{ a.id }} action_btn" type="submit"><span>Make defaults</span></button>&nbsp;&nbsp;
+                                                <center><i data-address-id="{{ a.id }}" class="fas fa-check-circle text-success check{{ a.id }} check" style="display: none;"></i></center>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- E-MariStore Account Page Area End Here -->
+    </main>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    // Assuming 'months' and 'total_orders' are being passed as lists from the Django view
+    const labels = {{ months|safe }};
+    const data = {
+      labels: labels,
+      datasets: [{
+          label: "Orders",
+          backgroundColor: '#ffc400',
+          borderColor: '#ffc400',  // Add the missing hash symbol
+          data: {{ total_orders|safe }}
+      }]
+    };
+  
+    const config = {
+      type: 'bar',
+      data: data,
+      options: {}
+    };
+  
+    const myChart = new Chart(
+      document.getElementById('myChart'),
+      config
+    );
+  </script>
+  
+  
+
+{% endblock content %}

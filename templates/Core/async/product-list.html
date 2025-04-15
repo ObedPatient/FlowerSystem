@@ -1,0 +1,108 @@
+                            {% for p in products %}
+                            <div class="col-lg-4">
+                                <div class="product-slide_item">
+                                    <div class="inner-slide">
+                                        <div class="single-product">
+                                            <div class="product-img">
+                                                <a href="{% url 'product_detail_view' p.pid p.slug %}">
+                                                    <img class="primary-img" src="{{ p.image.url }}" alt="E-MariStore Product Image">
+                                                    <img class="secondary-img" src="{{ p.image.url }}" alt="E-MariStore Product Image">
+                                                </a>
+                                                <div class="sticker">
+                                                    <span class="sticker">-{{ p.get_percentage|floatformat:0 }}%</span>
+                                                </div>
+                                                <div class="add-actions">
+                                                    <ul>
+                                                        <li><a class="uren-add_cart" href="cart.html" data-toggle="tooltip" data-placement="top" title="Add To Cart"><i
+                                                            class="ion-bag"></i></a>
+                                                        </li>
+                                                        <li><a class="uren-wishlist" href="wishlist.html" data-toggle="tooltip" data-placement="top" title="Add To Wishlist"><i
+                                                            class="ion-android-favorite-outline"></i></a>
+                                                        </li>
+                                                        <li><a class="uren-add_compare" href="compare.html" data-toggle="tooltip" data-placement="top" title="Compare This Product"><i
+                                                            class="ion-android-options"></i></a>
+                                                        </li>
+                                                        <li class="quick-view-btn" data-toggle="modal" data-target="#exampleModalCenter"><a href="javascript:void(0)" data-toggle="tooltip" data-placement="top" title="Quick View"><i
+                                                            class="ion-android-open"></i></a></li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                            <div class="product-content">
+                                                <div class="product-desc_info">
+                                                    <div class="rating-box">
+                                                        <ul>
+                                                            <li><i class="ion-android-star"></i></li>
+                                                            <li><i class="ion-android-star"></i></li>
+                                                            <li><i class="ion-android-star"></i></li>
+                                                            <li class="silver-color"><i class="ion-android-star"></i>
+                                                            </li>
+                                                            <li class="silver-color"><i class="ion-android-star"></i>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                    <h6><a class="product-name" href="{% url 'product_detail_view' p.pid p.slug %}">{{ p.title }}</a></h6>
+                                                    <div class="price-box">
+                                                        <span class="new-price">${{ p.price }}</span>
+                                                        <span class="old-price">${{ p.old_price }}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="list-slide_item">
+                                    <div class="single-product">
+                                        <div class="product-img">
+                                            <a href="{% url 'product_detail_view' p.pid p.slug %}">
+                                                <img class="primary-img" src="{{ p.image.url }}" alt="E-MariStore Product Image">
+                                                <img class="secondary-img" src="{{ p.image.url }}" alt="E-MariStore Product Image">
+                                            </a>
+                                        </div>
+                                        <div class="product-content">
+                                            <div class="product-desc_info">
+                                                <div class="price-box">
+                                                    <span>{{ p.category.title }}</span>
+                                                </div>
+                                                <div class="rating-box">
+                                                    <ul>
+                                                        <li><i class="ion-android-star"></i></li>
+                                                        <li><i class="ion-android-star"></i></li>
+                                                        <li><i class="ion-android-star"></i></li>
+                                                        <li class="silver-color"><i class="ion-android-star"></i>
+                                                        </li>
+                                                        <li class="silver-color"><i class="ion-android-star"></i>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <div class="price-box mb-2">
+                                                    <span>By: </span><a href="">{{ p.vendor.title }}</a>
+                                                </div>
+                                                <h6><a class="product-name" href="{% url 'product_detail_view' p.pid p.slug %}">{{ p.title }}</a></h6>
+                                                <div class="price-box">
+                                                    <span class="new-price">${{ p.price }}</span>
+                                                    <span class="old-price">${{ p.old_price }}</span>
+                                                </div>
+                                                <div class="product-short_desc">
+                                                    {{ p.description|truncatechars:500|safe }}
+                                                </div>
+                                            </div>
+                                            <div class="add-actions">
+                                                <ul>
+                                                    <li><a class="uren-add_cart" href="cart.html" data-toggle="tooltip" data-placement="top" title="Add To Cart"><i class="ion-bag"></i></a>
+                                                    </li>
+                                                    <li><a class="uren-wishlist" href="wishlist.html" data-toggle="tooltip" data-placement="top" title="Add To Wishlist"><i
+                                                        class="ion-android-favorite-outline"></i></a>
+                                                    </li>
+                                                    <li><a class="uren-add_compare" href="compare.html" data-toggle="tooltip" data-placement="top" title="Compare This Product"><i
+                                                        class="ion-android-options"></i></a>
+                                                    </li>
+                                                    <li class="quick-view-btn" data-toggle="modal" data-target="#exampleModalCenter"><a href="javascript:void(0)" data-toggle="tooltip" data-placement="top" title="Quick View"><i
+                                                        class="ion-android-open"></i></a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}

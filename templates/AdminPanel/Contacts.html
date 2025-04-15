@@ -1,0 +1,58 @@
+{% extends 'partials/AdminPanelBase.html' %}
+
+{% block content %}
+
+<style>
+    .btn{
+        background-color: #999999;
+    }
+    .btn:hover{
+        background-color: #ffc400;
+        cursor: pointer;
+    }
+</style>
+
+<main class="content">
+    <div class="container-fluid p-0">
+
+        <h1 class="h3 mb-3">Support Emails</h1>
+        <p>Manage all your Support Emails</p>
+        <div class="row">
+            <div class="col-12">
+                <div class="card flex-fill">
+                    <div class="card-header">
+
+                        <h5 class="card-title mb-0">Recent Support Emails</h5>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover my-0">
+                            <thead>
+                                <tr>
+                                    <th>S/N</th>
+                                    <th class="d-none d-xl-table-cell">Full Name</th>
+                                    <th>Email</th>
+                                    <th class="d-none d-md-table-cell">Subject</th>
+                                    <th class="d-none d-md-table-cell">Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for c in contacts %}
+                                <tr>
+                                    <td>{{forloop.counter }}</td>
+                                    <td class="d-none d-xl-table-cell">{{ c.user.full_name }}</td>
+                                    <td class="d-none d-xl-table-cell">{{ c.user.email}}</td>
+                                    <td class="d-none d-md-table-cell">{{ c.subject }}</td>
+                                    <td class="d-none d-md-table-cell">{{ c.date|date:"d M, Y"}}</td>
+                                </tr>
+                                {% endfor %}
+                            
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</main>
+{% endblock content %}

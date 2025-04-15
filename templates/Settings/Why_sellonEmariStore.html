@@ -1,0 +1,98 @@
+{% extends 'partials/base.html' %} {% load l10n humanize %}
+{% load static %}
+{% load i18n %}
+{% block title %}E-MariStore - Why Sell On E-MariStore{% endblock %}
+{% block meta_description %}E-MariStore{% endblock %}
+{% block content %}
+    
+    <style>
+        .faq-section {
+            padding: 40px;
+            margin-top: 30px;
+            border-radius: 10px;
+            background-color: #ffffff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .faq-title {
+            margin-bottom: 20px;
+            font-weight: 700;
+            text-align: center;
+            color: #333;
+        }
+
+        .accordion-button {
+            text-align: left;
+            font-weight: 600;
+            color: #007bff;
+        }
+
+        .accordion .card {
+            border: none;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            background-color: #f8f9fa;
+        }
+
+        .accordion .card-header {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .accordion .card-body {
+            font-size: 1rem;
+            color: #555;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+        }
+
+        .faq-section ul, .faq-section ol {
+            margin-left: 20px;
+            padding: 10px;
+        }
+
+        .faq-section ul li, .faq-section ol li {
+            margin-bottom: 10px;
+        }
+    </style>
+
+    <!-- FAQ Section -->
+    <section class="container faq-section mb-4">
+        <div class="faq-title">
+            <h2>Frequently Asked Questions (FAQ)</h2>
+        </div>
+
+        <!-- FAQ Accordion -->
+        <div class="accordion" id="faqAccordion">
+            <div class="card">
+                <div class="card-header" id="faq1">
+                    <h5 class="mb-0">
+                        <button class="btn btn-link accordion-button" data-toggle="collapse" data-target="#faqOne" aria-expanded="true" aria-controls="faqOne">
+                            Why Should Sellers Choose to Sell on E-MariStore Over Social Media Platforms?
+                        </button>
+                    </h5>
+                </div>
+
+                <div id="faqOne" class="collapse show" aria-labelledby="faq1" data-parent="#faqAccordion">
+                    <div class="card-body">
+                        <p><strong>Efficiency and Convenience:</strong> E-MariStore is purpose-built for e-commerce, offering a streamlined process for both sellers and buyers. Unlike social media where communication can be slow and often leads to misunderstandings, E-MariStore simplifies everything. Customers can easily browse products, view detailed descriptions, and make purchases without requiring prolonged conversations between the seller and buyer.</p>
+
+                        <p><strong>Professional Image:</strong> Selling on E-MariStore allows sellers to establish a professional presence. Our platform provides a dedicated space for showcasing your products with high-quality images and detailed descriptions. This polished presentation boosts customer trust and enhances your brand image, leading to higher sales and improved customer satisfaction.</p>
+
+                        <p><strong>Enhanced Visibility:</strong> Social media platforms are often limited by reach and visibility algorithms, but E-MariStore offers access to a large and diverse customer base. With daily traffic between 1,000 to 2,000 visits, sellers benefit from a broader audience actively searching for products in various categories, thereby increasing their chances of making sales.</p>
+
+                        <p><strong>Security and Trust:</strong> At E-MariStore, we prioritize the security and privacy of both buyers and sellers. Our platform implements robust security features to protect sensitive information and ensure secure transactions. Additionally, E-MariStore’s reputation as a trusted e-commerce platform increases buyer confidence, which translates into more sales and repeat customers for sellers.</p>
+
+                        <p><strong>Scalability and Growth Opportunities:</strong> E-MariStore is more than just a marketplace—it’s a platform for growth. Sellers can scale their operations, tap into new markets, and expand their reach. We also offer resources and support to help sellers optimize their storefronts, market their products more effectively, and achieve long-term success.</p>
+                        
+                        <p>While social media platforms like Instagram or WhatsApp can be effective for marketing and engagement, E-MariStore provides a complete e-commerce solution specifically tailored for selling. From seamless transactions and enhanced credibility to greater visibility, choosing E-MariStore as your selling platform can elevate your business and drive it to new levels of success.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+{% endblock content %}

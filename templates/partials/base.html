@@ -1,0 +1,907 @@
+<!doctype html>
+{% load static %}
+{% load i18n %}
+{% load l10n humanize %}
+<html class="no-js" lang="zxx">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="canonical" href="{{ request.build_absolute_uri }}">
+    <meta name="robots" content="noindex, follow" />
+    <meta name="description" content="{% block meta_description %}{% endblock %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'assets/images/E-MariStore.ico' %}">
+
+    <!-- CSS
+	============================================ -->
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="{% static 'assets/css/vendor/bootstrap.min.css' %}">
+    <!-- Fontawesome -->
+    <link rel="stylesheet" href="{% static 'assets/css/vendor/font-awesome.css' %}">
+    <!-- Fontawesome Star -->
+    <link rel="stylesheet" href="{% static 'assets/css/vendor/fontawesome-stars.css' %}">
+    <!-- Ion Icon -->
+    <link rel="stylesheet" href="{% static 'assets/css/vendor/ion-fonts.css' %}">
+    <!-- Slick CSS -->
+    <link rel="stylesheet" href="{% static 'assets/css/plugins/slick.css' %}">
+    <!-- Animation -->
+    <link rel="stylesheet" href="{% static 'assets/css/plugins/animate.css' %}">
+    <!-- jQuery Ui -->
+    <link rel="stylesheet" href="{% static 'assets/css/plugins/jquery-ui.min.css' %}">
+    <!-- Lightgallery -->
+    <link rel="stylesheet" href="{% static 'assets/css/plugins/lightgallery.min.css' %}">
+    <!-- Nice Select -->
+    <link rel="stylesheet" href="{% static 'assets/css/plugins/nice-select.css' %}">
+
+    <!-- Vendor & Plugins CSS (Please remove the comment from below vendor.min.css & plugins.min.css for better website load performance and remove css files from the above) -->
+    <!--
+    <script src="{% static 'assets/js/vendor/vendor.min.js' %}"></script>
+    <script src="{% static 'assets/js/plugins/plugins.min.js' %}"></script>
+    -->
+
+    <!-- Main Style CSS (Please use minify version for better website load performance) -->
+    <!--<link rel="stylesheet" href="{% static 'assets/css/style.min.css' %}">-->
+
+    <!-- Main Style CSS (Please use minify version for better website load performance) -->
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/customs.css' %}">
+    <!--<link rel="stylesheet" href="{% static 'assets/css/style.min.css' %}">-->
+    <script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.0/jspdf.umd.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://checkout.flutterwave.com/v3.js"></script>
+    <script src="https://cdn.ckeditor.com/ckeditor5/ckeditor.js"></script>
+    
+
+</head>
+
+<body class="template-color-1">
+
+    <div class="main-wrapper">
+
+        <!-- Begin E-MariStore Header Main Area -->
+        <header class="header-main_area header-main_area-2 header-main_area-3">
+            <div class="header-middle_area">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-xl-3 col-lg-2 col-md-3 col-sm-5">
+                            <div class="header-logo_area">
+                                <a href="{% url 'Home' %}">
+                                    <img src="{% static 'assets/images/menu/logo/8.png' %}" alt="E-MariStore Logo" class="mb-0">
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-xl-5 col-lg-6 d-none d-lg-block">
+                            <div class="hm-form_area">
+                                <form action="{% url 'search' %}" class="hm-searchbox" method="get">
+                                    <select class="nice-select select-search-category" name="catid">
+                                        <option value="0">All Categories</option>
+                                        {% load mptt_tags %}
+                                        {% recursetree categories %}
+                                            {% if node.is_leaf_node %}
+                                                <option value="{{ node.id }}">{{ node.title }}</option>
+                                            {% endif %}
+                                            {% if not node.is_leaf_node %}
+                                                <optgroup label="{{ node.title }}">
+                                                    {{ children }}
+                                                </optgroup>
+                                            {% endif %}
+                                        {% endrecursetree %}
+
+                                    </select>
+                                    <input type="text" placeholder="Enter your search key ..." name="q">
+                                    <button class="header-search_btn" type="submit"><i
+                                        class="ion-ios-search-strong"><span>Search</span></i></button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-9 col-sm-7">
+                            <div class="header-right_area">
+                                <ul>
+                                    <li class="mobile-menu_wrap d-flex d-lg-none">
+                                        <a href="#mobileMenu" class="mobile-menu_btn toolbar-btn color--white">
+                                            <i class="ion-navicon"></i>
+                                        </a>
+                                    </li>
+                                    <li class="wishlist-wrap" style="padding: 15px;margin-right: 10px;">
+                                        <a href="{% url 'wishlist_view' %}" class="wishlist-btn">
+                                            <div class="wishlist-count_area" style="position: relative;display: inline-block;">
+                                                <span class="wishlist-items-count item-count" style="background-color: #e52e06;
+                                                border-radius: 50%;
+                                                color: white;
+                                                position: absolute;
+                                                top: -12px;
+                                                right: -13px;
+                                                font-size: 12px;
+                                                width: 20px;
+                                                height: 20px;
+                                                line-height: 20px; 
+                                                text-align: center;">{{ wishlist_count|default:"0" }}</span>
+                                                <i class="ion-android-favorite-outline"></i>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li class="wishlist-wrap" style="padding: 15px;margin-right: 10px;">
+                                        <a href="{% url 'cart' %}" class="wishlist-btn">
+                                            <div class="wishlist-count_area" style="position: relative;display: inline-block;">
+                                                <span class="cart-items-count item-count" style="background-color: #e52e06;
+                                                border-radius: 50%;
+                                                color: white;
+                                                position: absolute;
+                                                top: -12px;
+                                                right: -13px;
+                                                font-size: 12px;
+                                                width: 20px;
+                                                height: 20px;
+                                                line-height: 20px; 
+                                                text-align: center;">{{ request.session.cart_data_obj|length }}</span>
+                                                <i class="ion-bag"></i>
+                                            </div>
+                                        </a>
+                                    </li> 
+                                    <li class="contact-us_wrap d-flex flex-column align-items-center justify-content-center" style="border: none;">
+                                        <p class="support-text text-muted mt-1">24/7 Support Center</p>
+                                    </li>
+                                    
+                                    
+                                    
+                                    
+                                    
+                                </ul>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+                {% if messages %}
+                        {% for rs in messages %}
+                        <div class="alert alert-warning" role="alert" style="margin-left:10px;margin-right:10px">
+                            <strong>{{ rs.tags }}</strong>&nbsp;{{ rs }}
+                        </div>
+                        {% endfor %}
+                {% endif %}
+                <script>
+                    $(document).ready(function() {
+                        setTimeout(() => {
+                            $(".alert").alert("close")
+                        }, 3000);
+                    });
+                </script>
+            </div>
+            <div class="header-top_area bg--primary">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="custom-category_col col-12">
+                            <div class="category-menu category-menu-hidden">
+                                <div class="category-heading">
+                                    <h2 class="categories-toggle">
+                                        <span>Shop By</span>
+                                        <span>Category</span>
+                                    </h2>
+                                </div>
+                                {% load mptt_tags %}
+                                <div id="cate-toggle" class="category-menu-list">
+                                    <ul>
+                                        {% recursetree categories %}
+                                        <li class="right-menu">
+                                            <a href="{% url 'product_by_category' node.id node.slug %}">{{ node.title }}</a>
+                                            {% if not node.is_leaf_node %}
+                                            <ul class="cat-mega-menu">
+                                                <li class="right-menu cat-mega-title">
+                                                    <a href="#">Sub Categories</a>
+                                                    <hr>
+                                                    <ul>
+                                                        {% for child in node.get_children %}
+                                                        <li><a href="{% url 'subcategory_view' child.id child.slug %}">{{ child.title }}</a></li>
+                                                        {% endfor %}
+                                                    </ul>
+                                                </li>
+                                            </ul>
+                                            {% endif %}
+                                        </li>
+                                        {% endrecursetree %}
+                                    </ul>
+                                </div>
+                                
+                            </div>
+                        </div>
+                        <div class="custom-menu_col col-12 d-none d-lg-block">
+                            <div class="main-menu_area position-relative">
+                                <nav class="main-nav">
+                                    <ul>
+                                        <li class="dropdown-holder{% if request.path == '/' %} active {% endif %}"><a href="{% url 'Home' %}">Home</a></li>
+                                        <li class="{% if '/Store/' in request.path %} active {% endif %}"><a href="{% url 'product_list_view' %}">Store</a></li>
+                                        
+                                        <li class="{% if '/All_vendors/' in request.path %} active {% endif %}"><a href="{% url 'All_vendors' %}">Shop By Sellers</a></li>
+                                        
+                                        
+                                        <li class="{% if '/dashboard/' in request.path %} active {% endif %}"><a href="javascript:void(0)">Pages <i
+                                                class="ion-ios-arrow-down"></i></a>
+                                            <ul class="hm-dropdown">
+                                                <li class=""><a href="{% url 'dashboard' %}">My Account</a></li>
+                                                <li><a href="{% url 'userauths:custom_login' %}">Login | Register</a></li>
+                                                {% if request.user.is_authenticated %}
+                                                    {% for group in request.user.groups.all %}
+                                                        {% if group.name == 'Sellers' %}
+                                                            <li class="{% if '/Vendor/vendorDashboard/' in request.path %}active{% endif %}">
+                                                                <a href="{% url 'vendorDashboard' %}">Seller Dashboard</a>
+                                                            </li>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% endif %}
+                                                <li><a href="{% url 'wishlist_view' %}">Wishlist</a></li>
+                                                <li><a href="{% url 'cart' %}">Cart</a></li>
+                                                <li><a href="{% url 'checkout' %}">Checkout</a></li>
+                                                
+                                            </ul>
+                                        </li>
+                                        
+                                        <li class="{% if '/contact/' in request.path %} active {% endif %}"><a href="{% url 'contact' %}">Contact</a></li>
+                                        {% if request.user.is_authenticated %}
+                                            {% for group in request.user.groups.all %}
+                                                {% if group.name == 'Sellers' %}
+                                                    <li class="{% if '/Vendor/vendorDashboard/' in request.path %}active{% endif %}">
+                                                        <a href="{% url 'vendorDashboard' %}">Seller Dashboard</a>
+                                                    </li>
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% endif %}
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+
+                        <div class="custom-setting_col col-12 d-none d-lg-block">
+                            <div class="ht-right_area">
+                                <div class="ht-menu">
+                                    <ul>
+                                        <li>
+                                            <a href="javascript:void(0)">
+                                                <span>{{ selected_currency }}</span> <span>Currency</span>
+                                                <i class="fa fa-chevron-down"></i>
+                                            </a>
+                                            <ul class="ht-dropdown ht-currency">
+                                                <li><a href="{% url 'set_currency' 'RWF' %}">RF RWF</a></li>
+                                                <li><a href="{% url 'set_currency' 'EUR' %}">€ EUR</a></li>
+                                                <li><a href="{% url 'set_currency' 'GBP' %}">£ Pound Sterling</a></li>
+                                                <li><a href="{% url 'set_currency' 'USD' %}">$ Us Dollar</a></li>
+                                            </ul>
+                                        </li>
+                                        <li class="{% if '/user/sign-up/' in request.path %} active {% endif %}"><a><span class="fa fa-user"></span> <span>My
+                                                Account</span><i class="fa fa-chevron-down"></i></a>
+                                            <ul class="ht-dropdown ht-my_account">
+                                                {% if request.user.is_authenticated %}
+                                                    <li class="active"><a href="{% url 'userauths:custom_logout' %}">Logout</a></li>
+                                                {% else %}
+                                                    <li><a href="{% url 'userauths:sign-up' %}">Register</a></li>
+                                                    <li class="active"><a href="{% url 'userauths:custom_login' %}">Login</a></li>
+                                                {% endif %}
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="custom-search_col col-12 d-none d-md-block d-lg-none">
+                            <div class="hm-form_area">
+                                <form action="{% url 'search' %}" class="hm-searchbox" method="get">
+                                    <select class="nice-select select-search-category" name="catid">
+                                        <option value="0">All Categories</option>
+                                        {% load mptt_tags %}
+                                        {% recursetree categories %}
+                                            {% if node.is_leaf_node %}
+                                                <option value="{{ node.id }}">{{ node.title }}</option>
+                                            {% endif %}
+                                            {% if not node.is_leaf_node %}
+                                                <optgroup label="{{ node.title }}">
+                                                    {{ children }}
+                                                </optgroup>
+                                            {% endif %}
+                                        {% endrecursetree %}
+                                    </select>
+                                    <input type="text" placeholder="Enter your search key ..." name="q">
+                                    <button class="header-search_btn" type="submit"><i
+                                        class="ion-ios-search-strong"><span>Search</span></i></button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="header-top_area header-sticky bg--primary">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-xl-8 col-lg-7 d-lg-block d-none">
+                            <div class="main-menu_area position-relative">
+                                <nav class="main-nav">
+                                    <ul>
+                                        <li class="dropdown-holder {% if request.path == '/' %} active {% endif %}">
+                                            <a href="{% url 'Home' %}">Home</a>
+                                           
+                                        </li>
+                                        <li class="megamenu-holder {% if '/Store/' in request.path %} active {% endif %}">
+                                            <a href="{% url 'product_list_view' %}">Store</a> 
+                                        </li>
+                                        <li class="megamenu-holder {% if '/All_vendors/' in request.path %} active {% endif %}">
+                                            <a href="{% url 'All_vendors' %}">Shop By Sellers</a> 
+                                        </li>
+                                        
+                                        <li class="{% if '/dashboard/' in request.path %} active {% endif %}"><a href="javascript:void(0)">Pages <i
+                                                class="ion-ios-arrow-down"></i></a>
+                                            <ul class="hm-dropdown">
+                                                <li ><a href="{% url 'dashboard' %}">My Account</a></li>
+                                                <li><a href="{% url 'userauths:custom_login' %}">Login | Register</a></li>
+                                                <li><a href="{% url 'wishlist_view' %}">Wishlist</a></li>
+                                                <li><a href="{% url 'cart' %}">Cart</a></li>
+                                                <li><a href="{% url 'checkout' %}">Checkout</a></li>
+                                                
+                                            </ul>
+                                        </li>
+                                        <li class="{% if '/contact/' in request.path %} active {% endif %}"><a href="{% url 'contact' %}">Contact</a></li>
+                                        {% if request.user.is_authenticated %}
+                                            {% for group in request.user.groups.all %}
+                                                {% if group.name == 'Sellers' %}
+                                                    <li class="{% if '/Vendor/vendorDashboard/' in request.path %}active{% endif %}">
+                                                        <a href="{% url 'vendorDashboard' %}">Seller Dashboard</a>
+                                                    </li>
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% endif %}
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                        <div class="col-sm-3 d-block d-lg-none">
+                            <div class="header-logo_area header-sticky_logo">
+                                <a href="{% url 'Home' %}">
+                                    <img src="{% static 'assets/images/menu/logo/3.png' %}" alt="E-MariStore Logo">
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-xl-4 col-lg-5 col-sm-9">
+                            <div class="header-right_area">
+                                <ul>
+                                    <li class="mobile-menu_wrap d-flex d-lg-none">
+                                        <a href="#mobileMenu" class="mobile-menu_btn toolbar-btn color--white">
+                                            <i class="ion-navicon"></i>
+                                        </a>
+                                    </li>
+                                    <li class="wishlist-wrap" style="padding: 15px;margin-right: 10px;">
+                                        <a href="{% url 'wishlist_view' %}" class="wishlist-btn">
+                                            <div class="wishlist-count_area" style="position: relative;display: inline-block;">
+                                                <span class="wishlist-items-count item-count" style="background-color: #e52e06;
+                                                border-radius: 50%;
+                                                color: white;
+                                                position: absolute;
+                                                top: -12px;
+                                                right: -13px;
+                                                font-size: 12px;
+                                                width: 20px;
+                                                height: 20px;
+                                                line-height: 20px; 
+                                                text-align: center;">{{ wishlist_count|default:"0" }}</span>
+                                                <i class="ion-android-favorite-outline"></i>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li class="wishlist-wrap" style="padding: 15px;margin-right: 10px;">
+                                        <a href="{% url 'cart' %}" class="wishlist-btn">
+                                            <div class="wishlist-count_area" style="position: relative;display: inline-block;">
+                                                <span class="cart-items-count item-count" style="background-color: #e52e06;
+                                                border-radius: 50%;
+                                                color: white;
+                                                position: absolute;
+                                                top: -12px;
+                                                right: -13px;
+                                                font-size: 12px;
+                                                width: 20px;
+                                                height: 20px;
+                                                line-height: 20px; 
+                                                text-align: center;">{{ request.session.cart_data_obj|length }}</span>
+                                                <i class="ion-bag"></i>
+                                            </div>
+                                        </a>
+                                    </li> 
+                                    <li class="contact-us_wrap">
+                                        <a href="tel://+250789278495"><i class="ion-android-call"></i>+2507 8927 8495</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mobile-menu_wrapper" id="mobileMenu">
+                <div class="offcanvas-menu-inner">
+                    <div class="container">
+                        <a href="#" class="btn-close"><i class="ion-android-close"></i></a>
+                        
+                        <nav class="offcanvas-navigation">
+                            <ul class="mobile-menu">
+                                <li class="menu-item-has-children active"><a href="{% url 'Home' %}"><span
+                                        class="mm-text">Home</span></a>
+                                </li>
+                                <li class="menu-item-has-children">
+                                    <a href="{% url 'product_list_view' %}">
+                                        <span class="mm-text">Store</span>
+                                    </a>
+                                    </li>
+                                    <li class="menu-item-has-children">
+                                        <a href="{% url 'All_vendors' %}">
+                                            <span class="mm-text">Shop By Sellers</span>
+                                        </a>
+                                        </li>
+                                        {% if request.user.is_authenticated %}
+                                        {% for group in request.user.groups.all %}
+                                            {% if group.name == 'Sellers' %}
+                                                <li class="{% if '/Vendor/vendorDashboard/' in request.path %}active{% endif %}">
+                                                    <a href="{% url 'vendorDashboard' %}">Seller Dashboard</a>
+                                                </li>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endif %}
+                                
+                                <li class="menu-item-has-children">
+                                    <a href="#">
+                                        <span class="mm-text">Pages</span>
+                                    </a>
+                                    <ul class="sub-menu">
+                                        <li>
+                                            <a href="{% url 'dashboard' %}">
+                                                <span class="mm-text">My Account</span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="{% url 'userauths:custom_login' %}">
+                                                <span class="mm-text">Login | Register</span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="{% url 'wishlist_view' %}">
+                                                <span class="mm-text">Wishlists</span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="{% url 'cart' %}">
+                                                <span class="mm-text">Cart</span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="{% url 'checkout' %}">
+                                                <span class="mm-text">Checkout</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </nav>
+                        
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- E-MariStore Header Main Area End Here -->
+
+        {% block content %}
+        {% endblock content %}
+
+
+         <!-- Begin E-MariStore Footer Area -->
+         <div class="uren-footer_area">
+            <div class="footer-top_area">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="newsletter-area">
+                                <h3 class="title">Join Our Newsletter Now</h3>
+                                <p class="short-desc">Get E-mail updates about our latest shop and special offers.</p>
+                                <div class="newsletter-form_wrap">
+                                    <form  method="post" action="{% url 'subscribe' %}" id="mc-embedded-subscribe-form"  class="newsletters-form validate" novalidate>
+                                        {% csrf_token %}
+                                        <div id="mc_embed_signup_scroll">
+                                            <div id="mc-form" class="mc-form subscribe-form">
+                                                <input id="mc-email" class="newsletter-input" type="email" autocomplete="off" name="email" placeholder="Enter your email" />
+                                                <button class="newsletter-btn" id="mc-submit">Subscribe</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-middle_area">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <div class="footer-widgets_info">
+                                <div class="footer-widgets_logo">
+                                    <a href="#">
+                                        <img src="{% static 'assets/images/menu/logo/8.png' %}" alt="E-MariStore Footer Logo">
+                                    </a>
+                                </div>
+                                <div class="widget-short_desc">
+                                    <p> E-MariStore is a leading e-commerce platform based in Rwanda, designed 
+                                        to connect local Rwandan businesses with online buyers both 
+                                        locally and internationally.
+                                    </p>
+                                </div>
+                                <div class="widgets-essential_stuff">
+                                    <ul>
+                                        <li class="uren-address"><span>Address:</span> KK 28 Ave Gatenga Kicukiro Kigali City</li>
+                                        <li class="uren-phone"><span>Call
+                                        Us:</span> <a href="tel://+123123321345">+250789278495</a>
+                                        </li>
+                                        <li class="uren-email"><span>Email:</span> <a href="/">info@E-MariStore.com</a></li>
+                                    </ul>
+                                </div>
+                                <div class="col-lg-6 col-md-6">
+                                    <div class="payment">
+                                        <a href="#">
+                                            <img src="{% static 'assets/images/footer/payment/1.png' %}" alt="E-MariStore Payment Method">
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="uren-social_link">
+                                    <ul>
+                                        <li class="facebook">
+                                            <a href="https://www.facebook.com/" data-toggle="tooltip" target="_blank" title="Facebook">
+                                                <i class="fab fa-facebook"></i>
+                                            </a>
+                                        </li>
+                                        <li class="twitter">
+                                            <a href="https://twitter.com/" data-toggle="tooltip" target="_blank" title="Twitter">
+                                                <i class="fab fa-twitter-square"></i>
+                                            </a>
+                                        </li>
+                                        <li class="google-plus">
+                                            <a href="https://www.plus.google.com/discover" data-toggle="tooltip" target="_blank" title="Google Plus">
+                                                <i class="fab fa-google-plus"></i>
+                                            </a>
+                                        </li>
+                                        <li class="instagram">
+                                            <a href="https://rss.com/" data-toggle="tooltip" target="_blank" title="Instagram">
+                                                <i class="fab fa-instagram"></i>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-8">
+                            <div class="footer-widgets_area">
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-6">
+                                        <div class="footer-widgets_title">
+                                            <h3>Information</h3>
+                                        </div>
+                                        <div class="footer-widgets">
+                                            <ul>
+                                                <li><a href="{% url 'about_us' %}">About Us</a></li>
+                                                <li><a href="{% url 'contact' %}">Contact Us</a></li>
+                                                <li><a href="{% url 'policy_privacy' %}">Privacy Policy</a></li>
+                                                <li><a href="{% url 'terms_services' %}">Terms & Conditions</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 col-md-6">
+                                        <div class="footer-widgets_title">
+                                            <h3>Get To Know Us</h3>
+                                        </div>
+                                        <div class="footer-widgets">
+                                            <ul>
+                                                <li><a href="{% url 'ourCompany' %}">Our Company</a></li>
+                                                <li><a href="{% url 'approach' %}">Our Eco-Friendly Approach</a></li>
+                                                <li><a href="{% url 'faq' %}">Frequently Asked Questions</a></li>
+                                                <li><a href="{% url 'return_policy' %}">Returns</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 col-md-6">
+                                        <div class="footer-widgets_title">
+                                            <h3>Categories</h3>
+                                        </div>
+                                        <div class="footer-widgets">
+                                            <ul>
+                                                {% for c in categories %}
+                                                    {% if not c.parent %}  <!-- Show only subcategories -->
+                                                        <li>
+                                                            <a href="{% url 'product_by_category' c.id c.slug %}">{{ c.title }}</a>
+                                                        </li>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 col-md-6">
+                                        <div class="footer-widgets_title">
+                                            <h3>My Account</h3>
+                                        </div>
+                                        <div class="footer-widgets">
+                                            <ul>
+                                                <li><a href="{% url 'dashboard' %}">My Account</a></li>
+                                                <li><a href="{% url 'track_order' %}">Track Order</a></li>
+                                                <li><a href="{% url 'cart' %}">Cart</a></li>
+                                                <li><a href="{% url 'wishlist_view' %}">Wish List</a></li>
+                                                {% if user.is_superadmin %}
+                                                    <li><a href="{% url 'AdminPanel' %}" style="color:#222222">Admin Panel</a></li>
+                                                {% endif %}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+           
+        </div>
+        <!-- E-MariStore Footer Area End Here -->
+        <!-- Begin E-MariStore Modal Area -->
+        <div class="modal fade modal-wrapper" id="exampleModalCenter">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <div class="modal-inner-area sp-area row">
+                            <div class="col-lg-5">
+                                <div class="sp-img_area">
+                                    <div class="sp-img_slider slick-img-slider uren-slick-slider" data-slick-options='{
+                                    "slidesToShow": 1,
+                                    "arrows": false,
+                                    "fade": true,
+                                    "draggable": false,
+                                    "swipe": false,
+                                    "asNavFor": ".sp-img_slider-nav"
+                                    }'>
+                                        <div class="single-slide red">
+                                            <img src="{% static 'assets/images/product/large-size/1.jpg' %}" alt="E-MariStore Product Image">
+                                        </div>
+                                        <div class="single-slide orange">
+                                            <img src="{% static 'assets/images/product/large-size/2.jpg' %}" alt="E-MariStore Product Image">
+                                        </div>
+                                        <div class="single-slide brown">
+                                            <img src="{% static 'assets/images/product/large-size/3.jpg' %}" alt="E-MariStore Product Image">
+                                        </div>
+                                        <div class="single-slide umber">
+                                            <img src="{% static 'assets/images/product/large-size/4.jpg' %}" alt="E-MariStore Product Image">
+                                        </div>
+                                        <div class="single-slide black">
+                                            <img src="{% static 'assets/images/product/large-size/5.jpg' %}" alt="E-MariStore Product Image">
+                                        </div>
+                                        <div class="single-slide golden">
+                                            <img src="{% static 'assets/images/product/large-size/6.jpg' %}" alt="E-MariStore Product Image">
+                                        </div>
+                                    </div>
+                                    <div class="sp-img_slider-nav slick-slider-nav uren-slick-slider slider-navigation_style-3" data-slick-options='{
+                                   "slidesToShow": 4,
+                                    "asNavFor": ".sp-img_slider",
+                                   "focusOnSelect": true,
+                                   "arrows" : true,
+                                   "spaceBetween": 30
+                                  }' data-slick-responsive='[
+                                    {"breakpoint":1501, "settings": {"slidesToShow": 3}},
+                                    {"breakpoint":992, "settings": {"slidesToShow": 4}},
+                                    {"breakpoint":768, "settings": {"slidesToShow": 3}},
+                                    {"breakpoint":575, "settings": {"slidesToShow": 2}}
+                                ]'>
+                                        <div class="single-slide red">
+                                            <img src="{% static 'assets/images/product/small-size/1.jpg' %}" alt="E-MariStore Product Thumnail">
+                                        </div>
+                                        <div class="single-slide orange">
+                                            <img src="{% static 'assets/images/product/small-size/2.jpg' %}" alt="E-MariStore Product Thumnail">
+                                        </div>
+                                        <div class="single-slide brown">
+                                            <img src="{% static 'assets/images/product/small-size/3.jpg' %}" alt="E-MariStore Product Thumnail">
+                                        </div>
+                                        <div class="single-slide umber">
+                                            <img src="{% static 'assets/images/product/small-size/4.jpg' %}" alt="E-MariStore Product Thumnail">
+                                        </div>
+                                        <div class="single-slide black">
+                                            <img src="{% static 'assets/images/product/small-size/5.jpg' %}" alt="E-MariStore Product Thumnail">
+                                        </div>
+                                        <div class="single-slide golden">
+                                            <img src="{% static 'assets/images/product/small-size/6.jpg' %}" alt="E-MariStore Product Thumnail">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-7 col-lg-6">
+                                <div class="sp-content">
+                                    <div class="sp-heading">
+                                        <h5><a href="#">Dolorem odio provident ut nihil</a></h5>
+                                    </div>
+                                    <div class="rating-box">
+                                        <ul>
+                                            <li><i class="ion-android-star"></i></li>
+                                            <li><i class="ion-android-star"></i></li>
+                                            <li><i class="ion-android-star"></i></li>
+                                            <li class="silver-color"><i class="ion-android-star"></i></li>
+                                            <li class="silver-color"><i class="ion-android-star"></i></li>
+                                        </ul>
+                                    </div>
+                                    <div class="price-box">
+                                        <span class="new-price new-price-2">$194.00</span>
+                                        <span class="old-price">$241.00</span>
+                                    </div>
+                                    <div class="sp-essential_stuff">
+                                        <ul>
+                                            <li>Brands <a href="javascript:void(0)">Buxton</a></li>
+                                            <li>Product Code: <a href="javascript:void(0)">Product 16</a></li>
+                                            <li>Reward Points: <a href="javascript:void(0)">100</a></li>
+                                            <li>Availability: <a href="javascript:void(0)">In Stock</a></li>
+                                            <li>EX Tax: <a href="javascript:void(0)"><span>$453.35</span></a></li>
+                                            <li>Price in reward points: <a href="javascript:void(0)">400</a></li>
+                                        </ul>
+                                    </div>
+                                    <div class="color-list_area">
+                                        <div class="color-list_heading">
+                                            <h4>Available Options</h4>
+                                        </div>
+                                        <span class="sub-title">Color</span>
+                                        <div class="color-list">
+                                            <a href="javascript:void(0)" class="single-color active" data-swatch-color="red">
+                                                <span class="bg-red_color"></span>
+                                                <span class="color-text">Red (+$150)</span>
+                                            </a>
+                                            <a href="javascript:void(0)" class="single-color" data-swatch-color="orange">
+                                                <span class="burnt-orange_color"></span>
+                                                <span class="color-text">Orange (+$170)</span>
+                                            </a>
+                                            <a href="javascript:void(0)" class="single-color" data-swatch-color="brown">
+                                                <span class="brown_color"></span>
+                                                <span class="color-text">Brown (+$120)</span>
+                                            </a>
+                                            <a href="javascript:void(0)" class="single-color" data-swatch-color="umber">
+                                                <span class="raw-umber_color"></span>
+                                                <span class="color-text">Umber (+$125)</span>
+                                            </a>
+                                            <a href="javascript:void(0)" class="single-color" data-swatch-color="black">
+                                                <span class="black_color"></span>
+                                                <span class="color-text">Black (+$125)</span>
+                                            </a>
+                                            <a href="javascript:void(0)" class="single-color" data-swatch-color="golden">
+                                                <span class="golden_color"></span>
+                                                <span class="color-text">Golden (+$125)</span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="quantity">
+                                        <label>Quantity</label>
+                                        <div class="cart-plus-minus">
+                                            <input class="cart-plus-minus-box" value="1" type="text">
+                                            <div class="dec qtybutton"><i class="fa fa-angle-down"></i></div>
+                                            <div class="inc qtybutton"><i class="fa fa-angle-up"></i></div>
+                                        </div>
+                                    </div>
+                                    <div class="uren-group_btn">
+                                        <ul>
+                                            <li><a href="cart.html" class="add-to_cart">Cart To Cart</a></li>
+                                            <li><a href="cart.html"><i class="ion-android-favorite-outline"></i></a></li>
+                                            <li><a href="cart.html"><i class="ion-ios-shuffle-strong"></i></a></li>
+                                        </ul>
+                                    </div>
+                                    <div class="uren-tag-line">
+                                        <h6>Tags:</h6>
+                                        <a href="javascript:void(0)">Ring</a>,
+                                        <a href="javascript:void(0)">Necklaces</a>,
+                                        <a href="javascript:void(0)">Braid</a>
+                                    </div>
+                                    <div class="uren-social_link">
+                                        <ul>
+                                            <li class="facebook">
+                                                <a href="https://www.facebook.com/" data-toggle="tooltip" target="_blank" title="Facebook">
+                                                    <i class="fab fa-facebook"></i>
+                                                </a>
+                                            </li>
+                                            <li class="twitter">
+                                                <a href="https://twitter.com/" data-toggle="tooltip" target="_blank" title="Twitter">
+                                                    <i class="fab fa-twitter-square"></i>
+                                                </a>
+                                            </li>
+                                            <li class="youtube">
+                                                <a href="https://www.youtube.com/" data-toggle="tooltip" target="_blank" title="Youtube">
+                                                    <i class="fab fa-youtube"></i>
+                                                </a>
+                                            </li>
+                                            <li class="google-plus">
+                                                <a href="https://www.plus.google.com/discover" data-toggle="tooltip" target="_blank" title="Google Plus">
+                                                    <i class="fab fa-google-plus"></i>
+                                                </a>
+                                            </li>
+                                            <li class="instagram">
+                                                <a href="https://rss.com/" data-toggle="tooltip" target="_blank" title="Instagram">
+                                                    <i class="fab fa-instagram"></i>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- E-MariStore Modal Area End Here -->
+        <a href="https://wa.me/0789278495" target="_blank" class="whatsapp-button">
+            <i class="fab fa-whatsapp"></i> Chat with us on WhatsApp
+        </a>
+
+    </div>
+
+    <!-- JS
+============================================ -->
+
+    <!-- jQuery JS -->
+    <script src="{% static 'assets/js/vendor/jquery-1.12.4.min.js' %}"></script>
+    <!-- Modernizer JS -->
+    <script src="{% static 'assets/js/vendor/modernizr-2.8.3.min.js' %}"></script>
+    <!-- Popper JS -->
+    <script src="{% static 'assets/js/vendor/popper.min.js' %}"></script>
+    <!-- Bootstrap JS -->
+    <script src="{% static 'assets/js/vendor/bootstrap.min.js' %}"></script>
+
+    <!-- Slick Slider JS -->
+    <script src="{% static 'assets/js/plugins/slick.min.js' %}"></script>
+    <!-- Barrating JS -->
+    <script src="{% static 'assets/js/plugins/jquery.barrating.min.js' %}"></script>
+    <!-- Counterup JS -->
+    <script src="{% static 'assets/js/plugins/jquery.counterup.js' %}"></script>
+    <!-- Nice Select JS -->
+    <script src="{% static 'assets/js/plugins/jquery.nice-select.js' %}"></script>
+    <!-- Sticky Sidebar JS -->
+    <script src="{% static 'assets/js/plugins/jquery.sticky-sidebar.js' %}"></script>
+    <!-- Jquery-ui JS -->
+    <script src="{% static 'assets/js/plugins/jquery-ui.min.js' %}"></script>
+    <script src="{% static 'assets/js/plugins/jquery.ui.touch-punch.min.js' %}"></script>
+    <!-- Lightgallery JS -->
+    <script src="{% static 'assets/js/plugins/lightgallery.min.js' %}"></script>
+    <!-- Scroll Top JS -->
+    <script src="{% static 'assets/js/plugins/scroll-top.js' %}"></script>
+    <!-- Theia Sticky Sidebar JS -->
+    <script src="{% static 'assets/js/plugins/theia-sticky-sidebar.min.js' %}"></script>
+    <!-- Waypoints JS -->
+    <script src="{% static 'assets/js/plugins/waypoints.min.js' %}"></script>
+    <!-- jQuery Zoom JS -->
+    <script src="{% static 'assets/js/plugins/jquery.zoom.min.js' %}"></script>
+
+    <!-- Vendor & Plugins JS (Please remove the comment from below vendor.min.js & plugins.min.js for better website load performance and remove js files from avobe) -->
+    <!--
+    <script src="{% static 'assets/js/vendor/vendor.min.js' %}"></script>
+    <script src="{% static 'assets/js/plugins/plugins.min.js' %}"></script>
+    -->
+
+
+
+
+    <!-- Main JS -->
+    <script src="{% static 'assets/js/main.js' %}"></script>
+    <script src="{% static 'assets/js/function.js' %}"></script>
+    <script>
+        var username = "{{ request.user.username|escapejs }}";
+        var csrfToken = "{{ csrf_token }}";
+    </script>
+    <script src="{% static 'assets/js/information.js' %}"></script>
+
+</body>
+
+
+</html>

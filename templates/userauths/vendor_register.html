@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Registration Page</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f5f7fb;/* Slight transparency */ /* Windows 10 Blue */
+            color: rgb(0, 0, 0);
+        }
+        .navbar, .footer {
+            background: #495057; /* Nav and Footer color */
+        }
+        .navbar a {
+            color: white;
+        }
+        .navbar a:hover {
+            color: #e52e06; /* Hover color */
+        }
+        .banner-item {
+            background: #f1f3f5; /* Slight transparency */
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .uren-btn, .uren-register_btn {
+            background-color: #ffc400;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-transform: uppercase;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .uren-btn:hover, .uren-register_btn:hover {
+            background-color: #e52e06; /* Hover color */
+        }
+        .footer {
+            color: rgb(255, 255, 255);
+            padding: 15px;
+            text-align: center;
+            margin-top: 40px;
+        }
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .navbar-brand, .navbar-nav .nav-link {
+                font-size: 16px;
+            }
+            .banner-item {
+                margin: 10px 0;
+                padding: 15px;
+            }
+            .container-fluid {
+                padding: 15px;
+            }
+            .uren-btn, .uren-register_btn {
+                padding: 8px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'Home' %}" style="font-size: 30px;">E-MariStore</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" style="color: #ffc400;font-size: 19px;">Join As<span style="color: rgb(255, 255, 255);font-size: 25px;"> Seller</span></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    {% if messages %}
+                        {% for rs in messages %}
+                        <div class="alert alert-warning" role="alert" style="margin-left:10px;margin-right:10px">
+                            <strong>{{ rs.tags }}</strong>&nbsp;{{ rs }}
+                        </div>
+                        {% endfor %}
+                {% endif %}
+                <script>
+                    $(document).ready(function() {
+                        setTimeout(() => {
+                            $(".alert").alert("close")
+                        }, 3000);
+                    });
+                </script>
+
+    <!-- Main Section -->
+    <div class="container-fluid uren-login-register_area">
+        <div class="row justify-content-center align-items-center" style="min-height: 80vh;">
+            <div class="col-lg-5 col-md-6 mb-4 mb-lg-0">
+                <div class="banner-item text-center">
+                    <div class="banner-content">
+                        <h6>Already have an Account?</h6>
+                        <div class="uren-btn-ps_left mt-4">
+                            <a class="uren-btn" href="{% url 'userauths:custom_login' %}" style="width: 100%;">Sign In</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-5 col-md-6">
+                <div class="banner-item">
+                    <form action="{% url 'userauths:vendor_register' %}" method="POST">
+                        {% csrf_token %}
+                        <div class="login-form">
+                            {% if form.errors %}
+                                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                    <strong>{{ form.errors }}</strong> 
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                            {% endif %}
+                            <h4 class="login-title mb-4">Register As A Seller</h4>
+                            
+                            <div class="row">
+                                <div class="col-md-6 col-12 mb-4">
+                                    {{ form.first_name }}
+                                </div>
+                                <div class="col-md-6 col-12 mb-4">
+                                    {{ form.last_name }}
+                                </div>
+                                <div class="col-12 mb-4">
+                                    {{ form.email }}
+                                </div>
+                                <div class="col-12 mb-4">
+                                    {{ form.phone_number }}
+                                </div>
+                                <div class="col-md-6 mb-4">
+                                    {{ form.password }}
+                                </div>
+                                <div class="col-md-6 mb-4">
+                                    {{ form.confirm_password }}
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="uren-register_btn" style="width: 100%;">Register</button>
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2024 E-MariStore. All Rights Reserved.</p>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,303 @@
+{% extends 'partials/VendorBase.html' %}
+{% load static %}
+{% load l10n humanize %}
+{% block content %}
+<style>
+    /* Container for payment information */
+    .payment-info {
+        background-color: #f5fff1;
+        border: 1px solid #dcdcdc;
+        border-radius: 8px;
+        padding: 20px;
+        font-family: 'Arial', sans-serif;
+        color: #333;
+        max-width: 600px;
+        margin: 20px auto;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .payment-info p,
+    .payment-info strong {
+        margin: 10px 0;
+        font-size: 16px;
+    }
+
+    .payment-info ol {
+        margin: 15px 0;
+        padding-left: 20px;
+        font-size: 14px;
+        color: #555;
+    }
+
+    .payment-info ol li {
+        margin-bottom: 10px;
+    }
+
+    /* Custom Radio Buttons */
+    .custom-radio-group {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .custom-radio {
+        display: flex;
+        align-items: center;
+        background-color: #fff;
+        padding: 15px 20px;
+        border-radius: 8px;
+        border: 2px solid #e9ecef;
+        width: 100%;
+        max-width: 400px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .custom-radio:hover {
+        border-color: #ffc400;
+        background-color: #f1f1f1;
+    }
+
+    .custom-radio input[type="radio"] {
+        display: none;
+    }
+
+    .custom-radio .form-check-label {
+        position: relative;
+        padding-left: 35px;
+        font-size: 18px;
+        color: #333;
+    }
+
+    .custom-radio .form-check-label:before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        height: 20px;
+        width: 20px;
+        border-radius: 50%;
+        border: 2px solid #ffc400;
+        background-color: transparent;
+        transition: all 0.3s ease;
+    }
+
+    .custom-radio input[type="radio"]:checked + .form-check-label:before {
+        background-color: #ffc400;
+        border-color: #ffc400;
+    }
+
+    .custom-radio input[type="radio"]:checked + .form-check-label:after {
+        content: '';
+        position: absolute;
+        left: 6px;
+        top: 50%;
+        transform: translateY(-50%);
+        height: 10px;
+        width: 10px;
+        background-color: #fff;
+        border-radius: 50%;
+        z-index: 1;
+    }
+
+    /* Proceed Button */
+    #proceed-btn {
+        background-color: #999999;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 20px;
+        font-size: 18px;
+        transition: background-color 0.3s ease;
+        width: 100%;
+    }
+
+    #proceed-btn:hover {
+        background-color: #ffc400;
+        cursor: pointer;
+    }
+
+    /* MOMO Instructions */
+    .momo-instructions {
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        border: 1px solid #e9ecef;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        max-width: 600px;
+        margin: 20px auto;
+    }
+
+    a {
+        color: black;
+    }
+
+    a:hover {
+        color: #28a745;
+        text-decoration: none;
+    }
+
+    .momo-code-box {
+        background-color: #e0ffe0;
+        border: 1px dashed #28a745;
+        padding: 15px;
+        border-radius: 5px;
+        margin: 15px 0;
+    }
+
+    .momo-code {
+        color: #28a745;
+        font-size: 24px;
+        font-weight: bold;
+        letter-spacing: 1.5px;
+    }
+
+    /* Media Queries for responsiveness */
+    @media (max-width: 600px) {
+        .payment-info,
+        .momo-instructions {
+            padding: 15px;
+        }
+
+        #proceed-btn {
+            font-size: 16px;
+        }
+    }
+
+    /* PayPal Container */
+    .paypal-container {
+        display: flex;
+        justify-content: center; /* Centers horizontally */
+        align-items: center; /* Centers vertically if the container has a height */
+        width: 100%;
+        margin: 20px 0; /* Add margin if needed */
+    }
+</style>
+
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-header">
+            <h1 class="text-center">Payment Fees and Instructions</h1>
+        </div>
+        <div class="card-body">
+            <div class="payment-info mb-4">
+                <p><strong>Important Information:</strong></p>
+                <ol id="info">
+                    <li>Select a payment method from the options below.</li>
+                    <li>Review the applicable fees for your selected payment method.</li>
+                    <li>Proceed to complete your payment by clicking the respective button.</li>
+                </ol>
+                <p><strong>Subscription Cost:</strong> <strong>{{ converted_fees }} {{ selected_currency }}</strong> for a 1-year subscription.</p>
+                <p><strong>Commission Fee:</strong> <strong>10%</strong> will be charged on each order.</p>
+                <p><strong>Amount In Rwf:</strong> <strong>{{ converted_fees_rwf }} RWF</strong></p>
+
+            </div>
+
+            <h2 class="text-center mb-4" id="option-title">Select a Payment Option</h2>
+            <form id="payment-form" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="amount" value="{{ converted_fees }}" id="amount">
+
+                <!-- Payment options -->
+                <div class="custom-radio-group">
+                    <div class="custom-radio">
+                        <input class="form-check-input" type="radio" id="paypal" name="payment" value="paypal">
+                        <label class="form-check-label" for="paypal">
+                            <strong>PayPal</strong>
+                        </label>
+                    </div>
+
+                    <div class="custom-radio mt-2">
+                        <input class="form-check-input" type="radio" id="momo" name="payment" value="momo">
+                        <label class="form-check-label" for="momo">
+                            <strong>MOMO</strong>
+                        </label>
+                    </div>
+                </div>
+
+                <button type="button" id="proceed-btn" class="btn btn-primary mt-4">Proceed to Payment</button>
+            </form>
+
+            <div id="momo-instruction" class="momo-instructions mt-4" style="display: none;">
+                <p><strong>MOMO Payment Instructions:</strong></p>
+                <div class="momo-code-box">
+                    <p>Use the code below to complete your payment:</p>
+                    <h3 class="momo-code">182*8*1*00987*{{ converted_fees_rwf }}#</h3>
+                    <p><strong>Amount: {{ converted_fees_rwf }} RWF</strong></p> <!-- Displaying amount in RWF -->
+                </div>
+                <p>After completing the payment, you will gain full access.</p>
+                <p>For more info <a href="{% url 'contact' %}">Contact us</a></p>
+                <!-- Add Complete Order Button for MOMO -->
+                <button type="button" id="complete-order-btn" class="btn btn-success mt-4">Complete your Order</button>
+            </div>
+            
+            <div class="paypal-container">
+                <div id="paypal-button-container" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        $('#proceed-btn').click(function(event) {
+            event.preventDefault(); // Prevent form submission
+            
+            var selectedMethod = $('input[name="payment"]:checked').val();
+            var amount = $('#amount').val();  // Get the amount value
+
+            if (selectedMethod === 'paypal') {
+                $('#payment-form').hide();
+                $('#info').hide();
+                $('#option-title').hide();
+                $('#paypal-button-container').show();
+
+                if (typeof paypal !== 'undefined' && paypal.Buttons) {
+                    paypal.Buttons({
+                        createOrder: function(data, actions) {
+                            return actions.order.create({
+                                purchase_units: [{
+                                    amount: {
+                                        currency_code: '{{ selected_currency }}',  // Pass the selected currency code
+                                        value: amount  // Use the variable for the amount
+                                    }
+                                }]
+                            });
+                        },
+                        onApprove: function(data, actions) {
+                            return actions.order.capture().then(function(details) {
+                                if (details.status === "COMPLETED") {
+                                    // Redirect with order ID and amount
+                                    window.location.href = '/Vendors/payment_complete/?status=' + details.status + 
+                                                           '&payment_method=' + selectedMethod +
+                                                           '&transaction_id=' + data.orderID + 
+                                                           '&amount=' + amount; // Include the amount in the redirect
+                                }
+                            });
+                        },
+                        onError: function(err) {
+                            console.error(err);
+                        }
+                    }).render('#paypal-button-container'); // Renders the PayPal button
+                }
+            } else if (selectedMethod === 'momo') {
+                $('#momo-instruction').show();
+                $('#payment-form').hide();
+            } else {
+                alert("Please select a payment method.");
+            }
+        });
+
+        // Handle the Complete Order button for MOMO
+        $('#complete-order-btn').click(function() {
+            var amount = $('#amount').val(); // Get the amount value again if needed
+            var paymentMethod = 'momo'; // Set payment method as momo
+            // Redirect with the necessary parameters
+            window.location.href = '/Vendors/payment_complete_view/?payment_method=' + paymentMethod + '&amount=' + amount;
+        });
+    });
+</script>
+
+{% endblock %}

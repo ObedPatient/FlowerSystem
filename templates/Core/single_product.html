@@ -1,0 +1,612 @@
+{% extends 'partials/base.html' %} 
+{% load l10n humanize %}
+{% load static %}
+{% block title %}{{ product.title }} - Discover Rwanda Finest{% endblock %}
+{% block meta_description %}Buy {{ product.title }} at best price.{% endblock %}
+{% block content %}
+
+
+
+<style>
+    .btn{
+        border: 1px solid rgb(139, 134, 134);
+        padding: 10px; 
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+    .btn:hover{
+        background-color: #ffc400;
+        border: 1px solid #ffc400;
+    }
+    .custom-description-width {
+    max-width: 500px;
+    margin: 0 auto;
+    }
+
+    /* Scroll styling */
+    /* Scroll styling with increased width */
+    .custom-description-width {
+        max-height: 300px; /* Limit the height so scrolling is triggered if content exceeds */
+        overflow-x: auto;  /* Enable horizontal scroll if necessary */
+        overflow-y: auto;  /* Enable vertical scroll if necessary */
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+        margin-bottom: 15px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    /* Toggle description styling */
+    .toggle-description {
+        font-size: 16px;
+        color: #007bff;
+        text-decoration: none;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        margin-bottom: 10px;
+        transition: color 0.3s ease;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .toggle-description i {
+        margin-right: 5px;
+        transition: transform 0.3s ease;
+    }
+
+    .toggle-description:hover {
+        color: #0056b3;
+    }
+
+    /* Rotating icon for hide functionality */
+    .toggle-description i.fa-chevron-up {
+        transform: rotate(180deg);
+    }
+
+
+
+
+</style>
+
+<!-- Begin E-MariStore Breadcrumb Area -->
+<div class="breadcrumb-area">
+    <div class="container">
+        <div class="breadcrumb-content">
+            <h2>Single Product Detail</h2>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li class="active">{{ product.title }}</li>
+            </ul>
+        </div>
+    </div>
+</div>
+<!-- E-MariStore Breadcrumb Area End Here -->
+
+<div class="shop-content_wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-3 col-md-5 order-2">
+                <div class="uren-sidebar-categories_area">
+                    <div class="container my-4">
+                        <div class="card border-light shadow-sm rounded-3">
+                            <div class="card-header">
+                                <h5 class="mb-0">Delivery</h5>
+                            </div>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex align-items-center">
+                                    <i class="fas fa-map-marker-alt me-2"></i>
+                                    <span>{{ address.address }}</span>
+                                </li>
+                                {% if address.status %}
+                                <li class="list-group-item text-success d-flex align-items-center">
+                                    <i class="fas fa-check-circle me-2"></i>
+                                    <span>Verified Address</span>
+                                </li>
+                                {% else %}
+                                <li class="list-group-item text-danger d-flex align-items-center">
+                                    <span>Unverified Address&nbsp;<i class="fas fa-exclamation-circle"></i></span>
+                                </li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                        
+                        <div class="card border-light shadow-sm mt-4 rounded-3">
+                            <div class="card-header">
+                                <h5 class="mb-0">Return & Warranty</h5>
+                            </div>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex align-items-center">
+                                    <i class="fas fa-shield-alt me-2"></i>
+                                    <span>{{ product.vendor.authentic_rating }}% Authentic</span>
+                                </li>
+                                <li class="list-group-item d-flex align-items-center">
+                                    <i class="fas fa-calendar-alt me-2"></i>
+                                    <span>{{ product.vendor.warranty_period }} Months Warranty</span>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div class="card border-light shadow-sm mt-4 rounded-3">
+                            <div class="card-header">
+                                <h5 class="mb-0">Vendor</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col-lg-5">
+                                        <img src="{{ product.vendor.image.url }}" alt="Vendor Image" class="img-fluid rounded-circle">
+                                    </div>
+                                    <div class="col-lg-7">
+                                        <span class="mt-4 d-block">Since: {{ product.vendor.joined_date|date:"Y" }}</span>
+                                        <h3 class="title">{{ product.vendor.title }}</h3>
+                                    </div>
+                                </div>
+                                <ul class="list-group list-group-flush mt-3">
+                                    <li class="list-group-item d-flex align-items-center">
+                                        <i class="fas fa-map-marker-alt me-2"></i>
+                                        <span>{{ product.vendor.address }}</span>
+                                    </li>
+                                    <li class="list-group-item d-flex align-items-center">
+                                        <i class="fas fa-phone-square me-2"></i>
+                                        <span>{{ product.vendor.contact }}</span>
+                                    </li>
+                                </ul>
+                                <hr>
+                                <div class="row text-center mt-3">
+                                    <div class="col-lg-4">
+                                        <p class="text-brand font-xs">3 Days Return</p>
+                                    </div>
+                                    
+                                    <div class="col-lg-4">
+                                        <p class="text-brand font-xs">100% Money Back</p>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <p class="text-brand font-xs">Support</p>
+                                        <h6 class="mb-0">24/7</h6>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                    <p class="text-brand font-xs mb-0">JOIN AS A SLLER ?</p>
+                                    <a href="{% url 'userauths:vendor_register' %}">Register Now</a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card border-light shadow-sm mt-4 rounded-3">
+                            <div class="card-header">
+                                <h5 class="mb-0">Customer Reviews</h5>
+                            </div>
+                            <div class="card-body">
+                                {% for r in reviews %}
+                                <div class="rating-box mt-4 mb-2">
+                                    {% for star in r.rating|ljust:r.rating %}
+                                        <i class="fas fa-star text-warning"></i>
+                                    {% endfor %}
+                                </div>
+                                {% endfor %}
+                                
+                                <h6 class="mt-2 text-center">{{ average_rating.rating|floatformat }} out of 5.0</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                
+                <div class="sidebar-banner_area">
+                    <div class="banner-item img-hover_effect">
+                        <a href="javascript:void(0)">
+                            <img src="{% static 'assets/images/shop/1.jpg' %}" alt="E-MariStore Shop Banner Image">
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <!-- Begin E-MariStore Single Product Area -->
+            <div class="col-lg-9 col-md-7 order-1 mb-2">
+                <div class="sp-area">
+                    <div class="container-fluid">
+                        <div class="sp-nav">
+                            <div class="row">
+                                <div class="col-lg-7">
+                                    <div class="sp-img_area">
+                                        <div class="sp-img_slider slick-img-slider uren-slick-slider"
+                                            data-slick-options='{
+                                "slidesToShow": 1,
+                                "arrows": false,
+                                "fade": true,
+                                "draggable": false,
+                                "swipe": false,
+                                "asNavFor": ".sp-img_slider-nav"
+                                }'>
+                                            <div class="single-slide red zoom">
+                                                <img src="{{ product.image.url }}"
+                                                    alt="E-MariStore {{ product.title }}-Buy on E-MariStore">
+                                            </div>
+                                            {% for p in p_image %}
+                                            <div class="single-slide orange zoom">
+                                                <img src="{{ p.images.url }}"
+                                                    alt="E-MariStore {{ product.title }}- Buy on E-MariStore">
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                        <div class="sp-img_slider-nav slick-slider-nav uren-slick-slider slider-navigation_style-3"
+                                            data-slick-options='{
+                                "slidesToShow": 3,
+                                "asNavFor": ".sp-img_slider",
+                                "focusOnSelect": true,
+                                "arrows" : true,
+                                "spaceBetween": 30
+                                }' data-slick-responsive='[
+                                        {"breakpoint":1501, "settings": {"slidesToShow": 3}},
+                                        {"breakpoint":992, "settings": {"slidesToShow": 4}},
+                                        {"breakpoint":768, "settings": {"slidesToShow": 3}},
+                                        {"breakpoint":575, "settings": {"slidesToShow": 2}}
+                                    ]'>
+                                            <div class="single-slide red">
+                                                <img src="{{ product.image.url }}"
+                                                    alt="E-MariStore {{ product.title }} Thumnail">
+                                            </div>
+                                            {% for p in p_image %}
+                                            <div class="single-slide orange">
+                                                <img src="{{ p.images.url }}"
+                                                    alt="E-MariStore {{ product.title }} Thumnail">
+                                            </div>
+                                           {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-5">
+                                    <div class="sp-content">
+                                        <div style="border-radius: 5px;width: 80px;background-color: rgb(255, 192, 192);text-align: center; font-size: 12px;font-weight: bold;">
+                                            <p style="color: red;">-{{ product.get_percentage|floatformat:0 }}%</p>
+                                        </div>
+                                        <div class="sp-heading">
+                                            <h5><a href="#">{{ product.title }}</a></h5>
+                                        </div>
+                                            {% for r in reviews %}
+                                            <div class="rating-box">
+                                                {% for star in r.rating|ljust:r.rating %}
+                                                <i class="fas fa-star text-warning"></i>
+                                                {% endfor %}
+                                            </div>
+                                            {% endfor %}
+                                        <div class="sp-heading">
+                                            <h5><a href="#" class="current-product-price-{{ product.id }}">{{ price|intcomma }} </a><span class="current-product-currency-{{ product.id }}">{{ currency }}</span></h5>
+                                            
+                                        </div>
+                                        <a href="javascript:void(0);" class="toggle-description" onclick="toggleDescription()">
+                                            <i class="fas fa-chevron-down"></i> Show Description
+                                        </a>
+                                        
+                                        <div id="description" class="tab-pane active show custom-description-width" role="tabpanel" style="display: none;">
+                                            <div class="product-description">
+                                                <ul>
+                                                    <li>
+                                                        {{ product.description|safe }}
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        
+
+                                        <script>
+                                            function toggleDescription() {
+    var description = document.getElementById("description");
+    var toggleLink = document.querySelector('.toggle-description');
+    var icon = toggleLink.querySelector('i');
+
+    if (description.style.display === "none" || description.style.display === "") {
+        description.style.display = "block";  // Show description
+        toggleLink.innerHTML = '<i class="fas fa-chevron-up"></i> Hide Description'; // Update to "Hide" with icon
+    } else {
+        description.style.display = "none";   // Hide description
+        toggleLink.innerHTML = '<i class="fas fa-chevron-down"></i> Show Description'; // Update to "Show" with icon
+    }
+}
+
+                                        </script>
+
+                                        
+                                        <div class="quantity">
+                                            <label>Quantity</label>
+                                            <div class="cart-plus-minus">
+                                                <input class="cart-plus-minus-box product-quantity-{{ product.id }}" value="1" type="number" id="product-quantity">
+                                                <div class="dec qtybutton"><i class="fa fa-angle-down"></i></div>
+                                                <div class="inc qtybutton"><i class="fa fa-angle-up"></i></div>
+                                            </div>
+                                        </div>
+                                    
+                                        <div class="qty-btn_area">
+                                            
+                                            <ul>
+                                                <!--<li><input type="hidden" value="1" id="product-quantity" class="product-quantity-{{ product.id }}"></li>-->
+                                                    <li><input type="hidden" class="product-pid-{{ product.id }}" value="{{ product.pid }}"></li>
+                                                    <li><input type="hidden" class="product-image-{{ product.id }}" value="{{ product.image.url }}"></li>
+                                                    <li><input type="hidden" class="product-id-{{ product.id }}" value="{{ product.id }}"></li>
+                                                    <li><input type="hidden" class="product-title-{{ product.id }}" value="{{ product.title }}"></li>
+                                                    <li><input type="hidden" class="product-slug-{{ product.id }}" value="{{ product.slug }}"></li>
+
+                                                    <li><button class="btn add-to-cart-btn" title="Add To Cart" data-index="{{ product.id }}">
+                                                            <i class="ion-bag"></i>
+                                                        </button></li>
+                                                        
+                                                    <li><button class="uren-wishlist btn add-to-wishlist" data-product-item="{{ p.id }}" title="Add To Wishlist"><i
+                                                        class="ion-android-favorite-outline"></i></button>
+                                                    </li>
+                                            </ul>
+                                        </div>
+                                        <div class="uren-tag-line">
+                                            <strong><span>TAGS:</span></strong>
+                                            {% for tag in product.tags.all %}<a href="{% url 'tags' tag.slug %}">#{{ tag.name }}</a>,{% endfor %}
+                                        </div>
+                                        <div class="sp-essential_stuff">
+                                            <ul>
+                                                <li>SKU<a href="javascript:void(0)">{{ product.sku }}</a></li>
+                                                <li>MFD<a href="javascript:void(0)">{{ product.mfd|date:"d M, Y"}}</a></li>
+                                                {% if product.in_stock == 0 %}
+                                                <li>Availability: <a href="javascript:void(0)">Out of Stock</a></li>
+                                                {% else %}
+                                                <li>Availability: <a href="javascript:void(0)">{{ product.in_stock }} Item In Stock</a></li>
+                                                {% endif %}
+                                            </ul>
+                                        </div>
+                                        <div class="uren-social_link">
+                                            <ul>
+                                                <li class="facebook">
+                                                    <a href="https://www.facebook.com/" data-toggle="tooltip"
+                                                        target="_blank" title="Facebook">
+                                                        <i class="fab fa-facebook"></i>
+                                                    </a>
+                                                </li>
+                                                <li class="twitter">
+                                                    <a href="https://twitter.com/" data-toggle="tooltip" target="_blank"
+                                                        title="Twitter">
+                                                        <i class="fab fa-twitter-square"></i>
+                                                    </a>
+                                                </li>
+                                                <li class="youtube">
+                                                    <a href="https://www.youtube.com/" data-toggle="tooltip"
+                                                        target="_blank" title="Youtube">
+                                                        <i class="fab fa-youtube"></i>
+                                                    </a>
+                                                </li>
+                                                <li class="google-plus">
+                                                    <a href="https://www.plus.google.com/discover" data-toggle="tooltip"
+                                                        target="_blank" title="Google Plus">
+                                                        <i class="fab fa-google-plus"></i>
+                                                    </a>
+                                                </li>
+                                                <li class="instagram">
+                                                    <a href="https://rss.com/" data-toggle="tooltip" target="_blank"
+                                                        title="Instagram">
+                                                        <i class="fab fa-instagram"></i>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- E-MariStore Single Product Area End Here -->
+
+                <!-- Begin E-MariStore Single Product Tab Area -->
+                
+                <!-- E-MariStore Single Product Tab Area End Here -->
+
+                <div class="sp-product-tab_area">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="sp-product-tab_nav">
+                                    <div class="product-tab">
+                                        <ul class="nav product-menu">
+                                            <li><a class="active" data-toggle="tab" href="#description"><span>Description</span></a>
+                                            </li>
+                                            <li><a data-toggle="tab" href="#specification"><span>Specification</span></a></li>
+                                            <li><a data-toggle="tab" href="#reviews"><span>Reviews ({{ reviews.count }})</span></a></li>
+                                        </ul>
+                                    </div>
+                                    <div class="tab-content uren-tab_content">
+                                        <div id="description" class="tab-pane active show" role="tabpanel">
+                                            <div class="product-description">
+                                                <ul>
+                                                    <li>
+                                                        {{ product.description|safe }}
+                                                    </li> 
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div id="specification" class="tab-pane" role="tabpanel">
+                                            {{ product.specifications|safe }}
+                                        </div>
+                                        <div id="reviews" class="tab-pane" role="tabpanel">
+                                            <div class="tab-pane active" id="tab-review">
+                                                <form class="form-horizontal" id="form-review" method="POST" action="{% url 'ajax-add-review' product.id %}">
+                                                    {% csrf_token %}
+                                                    <div id="review" class="review-forms">
+                                                        {% for r in reviews %}
+                                                        <table class="table table-striped table-bordered" style="border: none;">
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td style="width: 50%;"><img src="{% static 'assets/images/th.jpg' %}" alt="{{ r.user.username|title }}" width="50px" height="50px">&nbsp;&nbsp;<strong>{{ r.user.username|title }}</strong>
+                                                                    </td>
+                                                                    <td class="text-right">{{ r.date|date:"d M, Y" }}</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td colspan="2">
+                                                                        <p>{{ r.review }}</p>
+                                                                        <div class="rating-box">
+                                                                            {% for star in r.rating|ljust:r.rating %}
+                                                                            <i class="fas fa-star text-warning"></i>
+                                                                            {% endfor %}
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                        {% endfor %}
+                                                    </div>
+                                            
+                                                    <strong class="text-success" id="review-res"></strong>
+                                            
+                                                    {% if request.user.is_authenticated %}
+                                                        {% if has_purchased %}  <!-- Check if user has purchased the product -->
+                                                            <div class="hide-form-review">
+                                                                <h2>Write a review</h2>
+                                                                <div class="form-group required">
+                                                                    <div class="col-sm-12 p-0">
+                                                                        {{ review_form.review }}
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group required">
+                                                                    <div class="col-sm-12 p-0">
+                                                                        {{ review_form.rating }}
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group last-child required">
+                                                                    <div class="uren-btn-ps_right">
+                                                                        <button class="uren-btn-2">Continue</button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        {% else %}
+                                                            <p class="text-danger">You must purchase this product before leaving a review.</p>  <!-- Optional message -->
+                                                        {% endif %}
+                                                    {% endif %}
+                                                </form>
+                                            </div>
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Begin E-MariStore Product Area -->
+                <div class="uren-product_area">
+                    <div class="container-fluid">
+                        {% if products %}
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="section-title_area">
+                                    <span></span>
+                                    <h3>Related Products</h3>
+                                </div>
+                                <div class="product-slider uren-slick-slider slider-navigation_style-1 img-hover-effect_area"
+                                    data-slick-options='{
+                        "slidesToShow": 6,
+                        "arrows" : true
+                        }' data-slick-responsive='[
+                                                {"breakpoint":1501, "settings": {"slidesToShow": 4}},
+                                                {"breakpoint":1200, "settings": {"slidesToShow": 3}},
+                                                {"breakpoint":992, "settings": {"slidesToShow": 2}},
+                                                {"breakpoint":767, "settings": {"slidesToShow": 1}},
+                                                {"breakpoint":480, "settings": {"slidesToShow": 1}}
+                                            ]'>
+                                            {% for product in products %}
+                                    <div class="product-slide_item">
+                                       
+                                        <div class="inner-slide">
+                                            
+                                            <div class="single-product">
+                                                <div class="product-img">
+                                                    <a href="{% url 'product_detail_view' product.pid product.slug %}">
+                                                        <img class="primary-img"
+                                                            src="{{ product.image.url }}"
+                                                            alt="E-MariStore Product Image">
+                                                        <img class="secondary-img"
+                                                            src="{{ product.image.url }}"
+                                                            alt="E-MariStore Product Image">
+                                                    </a>
+                                                    <div class="sticker">
+                                                        <span class="sticker">-{{ product.get_percentage|floatformat:0 }}%</span>
+                                                    </div>
+                                                </div>
+                                                <div class="product-content">
+                                                    <div class="product-desc_info">
+                                                        <h6><a class="product-name" href="{% url 'product_detail_view' product.pid product.slug %}">{{ product.title }}</a></h6>
+                                                        <div class="price-box">
+                                                            <span class="new-price">{{ product.converted_price|intcomma }} {{ currency }}</span>
+                                                            <span class="old-price">{{ product.converted_old_price|intcomma }} {{ currency }}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                        </div>
+                                        
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <!-- E-MariStore Product Area End Here -->
+
+                <!-- Begin E-MariStore Brand Area -->
+
+                <div class="uren-brand_area">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="section-title_area">
+                                    <span>Top Quality Partner</span>
+                                    <h3>Shop By Brands</h3>
+                                </div>
+                                <div class="brand-slider uren-slick-slider img-hover-effect_area" data-slick-options='{
+                        "slidesToShow": 6
+                        }' data-slick-responsive='[
+                                                {"breakpoint":1200, "settings": {"slidesToShow": 5}},
+                                                {"breakpoint":992, "settings": {"slidesToShow": 3}},
+                                                {"breakpoint":767, "settings": {"slidesToShow": 3}},
+                                                {"breakpoint":577, "settings": {"slidesToShow": 2}},
+                                                {"breakpoint":321, "settings": {"slidesToShow": 1}}
+                                            ]'>
+                                            {% for v in vendors %}
+                                            <div class="slide-item">
+                                                <div class="inner-slide">
+                                                    <div class="single-product">
+                                                        <a href="{% url 'vendor_detail_view' v.vid %}">
+                                                            <img src="{{ v.logo.url }}" alt="{{ v.title }}">
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- E-MariStore Brand Area End Here -->
+        </div>
+    </div>
+</div>
+
+<script type="application/ld+json">
+    {
+      "@context": "https://schema.org/",
+      "@type": "Product",
+      "name": "{{ product.title }}",
+      "image": "{{ product.image.url }}",
+      "description": "{{ product.description }}",
+      "sku": "{{ product.sku }}",
+      "offers": {
+        "@type": "Offer",
+        "priceCurrency": "USD",
+        "price": "{{ product.price }}"
+      }
+    }
+    </script>
+    
+{% endblock content %}

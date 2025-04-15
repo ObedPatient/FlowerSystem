@@ -1,0 +1,110 @@
+{% extends 'partials/base.html' %} {% load l10n humanize %}
+{% load static %}
+{% load i18n %}
+{% block title %}E-MariStore - Car Accessories Shop {% endblock %}
+{% block meta_description %}E-MariStore{% endblock %}
+{% block content %}
+
+    <!-- Page Styling -->
+    <style>
+        .policy-section {
+            padding: 40px;
+            margin-top: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .policy-title {
+            margin-bottom: 20px;
+            font-weight: 700;
+            color: #333;
+            text-align: center;
+        }
+
+        .policy-content h4, .policy-content h5 {
+            margin-top: 30px;
+            color: #444;
+            font-weight: 600;
+            border-bottom: 2px solid #e2e2e2;
+            padding-bottom: 10px;
+        }
+
+        .policy-content p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .policy-content ul, .policy-content ol {
+            margin-left: 20px;
+            padding: 10px;
+        }
+
+        .policy-content ul li, .policy-content ol li {
+            margin-bottom: 10px;
+        }
+
+        .contact-email {
+            color: #007bff;
+            text-decoration: underline;
+        }
+
+        .contact-email:hover {
+            text-decoration: none;
+        }
+        
+    </style>
+
+    <!-- Returns Policy Section -->
+    <section class="container policy-section mb-4">
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="policy-title">
+                    <h2>Our Return Policy</h2>
+                </div>
+                <div class="policy-content">
+                    <p>Our return policy is valid for 3 days. If 3 days have passed since your purchase, we are unable to offer a refund or exchange.</p>
+                    <p>To qualify for a return, your item must be unused, in the same condition as when received, and in its original packaging. Certain items are exempt from returns, including perishable goods such as food or flowers, as well as intimate or sanitary products, hazardous materials, and flammable liquids or gases.</p>
+
+                    <h5>Non-returnable items include:</h5>
+                    <ul class="list-unstyled pl-3">
+                        <li>• Certain health and personal care items</li>
+                    </ul>
+
+                    <h4>Partial Refunds (if applicable)</h4>
+                    <p>In specific cases, partial refunds may be granted, such as:</p>
+                    <ul class="list-unstyled pl-3">
+                        <li>• Books with clear signs of use</li>
+                        <li>• Any item not in its original condition, damaged, or missing parts for reasons not due to our error</li>
+                        <li>• Items returned more than 30 days after delivery</li>
+                    </ul>
+
+                    <h4>Refunds (if applicable)</h4>
+                    <p>Once your return is received and inspected, we will notify you via email whether your refund is approved. If approved, the refund will be processed, and a credit will be automatically applied to your original payment method within 25 days.</p>
+
+                    <h4>Late or Missing Refunds</h4>
+                    <p>If you have not received your refund, please:</p>
+                    <ol>
+                        <li>Recheck your bank account.</li>
+                        <li>Contact your credit card company, as processing times may vary.</li>
+                        <li>Reach out to your bank, as there may be delays before a refund is posted.</li>
+                    </ol>
+                    <p>If you have followed these steps and still haven’t received your refund, please contact us at <a href="mailto:info@e-maristore.com" class="contact-email">info@e-maristore.com</a>.</p>
+
+                    <h4>Sale Items</h4>
+                    <p>Only regular-priced items are eligible for refunds. Sale items cannot be refunded.</p>
+
+                    <h4>Exchanges</h4>
+                    <p>We only replace items if they are defective or damaged. If you need an exchange for the same item, please email us at <a href="mailto:info@e-maristore.com" class="contact-email">info@e-maristore.com</a> and send your item to: E-mariStore Ltd, Kiyovu, KCM Building B2-88, 4297 Kigali, Rwanda.</p>
+
+                    <h4>Delivery</h4>
+                    <p>To return your product, please deliver it to: E-mariStore Ltd, Kicukiro, Gatenga Sector, Nyanza Cell, Kigali, Rwanda.</p>
+                    <p>You are responsible for the delivery costs associated with returning your item. Delivery costs are non-refundable. If you receive a refund, the cost of return delivery will be deducted from your refund.</p>
+                    <p>Depending on your location, the time it may take for your exchanged product to reach you may vary. If you are returning an item valued over 100,000 Frw, we recommend using a reliable and trackable delivery service. We cannot guarantee that we will receive your returned item.</p>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+{% endblock content %}

@@ -1,0 +1,610 @@
+{% extends 'partials/VendorBase.html' %}
+{% load static humanize %}
+
+{% block content %}
+<style>
+    .buton {
+        background-color: #999999;
+        border: none;
+        padding: 10px;
+        border-radius: 5px;
+        font-weight: bold;
+        color: white;
+    }
+    .buton:hover {
+        background-color: #bebdb6;
+        cursor: pointer;
+    }
+    .link_product a {
+        text-decoration: none;
+        color: white;
+    }
+    .currency-selector {
+        margin-bottom: 20px;
+    }
+    .form-control.is-invalid, .form-select.is-invalid {
+        border-color: #dc3545;
+    }
+    .error-message {
+        color: #dc3545;
+        font-size: 0.875rem;
+        margin-top: 5px;
+    }
+    .order-item {
+        position: relative;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #e9ecef;
+        margin-bottom: 15px;
+    }
+    .remove-item {
+        color: #dc3545;
+        cursor: pointer;
+        font-size: 0.875rem;
+        margin-top: 10px;
+        display: inline-block;
+    }
+    .stock-info {
+        font-size: 0.875rem;
+        color: #6c757d;
+        margin-top: 5px;
+    }
+    .search-container {
+        margin-bottom: 15px;
+        display: flex;
+        gap: 10px;
+    }
+    .search-container input, .search-container select {
+        flex: 1;
+    }
+    .category-option {
+        padding-left: calc(1rem * var(--level));
+    }
+    .product-details {
+        display: flex;
+        align-items: center;
+        margin-top: 10px;
+    }
+    .product-image {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        margin-right: 10px;
+        border-radius: 5px;
+    }
+    .product-info {
+        flex: 1;
+        font-size: 0.875rem;
+    }
+    .product-info p {
+        margin: 0 0 5px 0;
+    }
+</style>
+
+<main class="content">
+    <div class="container-fluid p-0">
+        <div class="mb-3 d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="h3 d-inline align-middle">Create In-Store Order</h1>
+                <p>Record a purchase made in-store by a customer</p>
+            </div>
+            <div class="link_product">
+                <a href="{% url 'vendorDashboard' %}" class="buton">Back to Dashboard</a>
+            </div>
+        </div>
+
+        {% if messages %}
+            <div class="row">
+                <div class="col-12">
+                    {% for message in messages %}
+                        <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-danger{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+
+        <form method="POST" id="inStoreOrderForm">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-12 col-lg-7">
+                    <!-- Customer Details -->
+                    <div class="card">
+                        <div class="card-header"><h5 class="card-title mb-0">Customer Details (Optional)</h5></div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label for="customer_email">Customer Email</label>
+                                <input type="text" name="customer_email" id="customer_email" class="form-control" placeholder="customer@example.com" value="{{ form_data.customer_email|default:'' }}">
+                                <div class="error-message">{{ errors.customer_email|default:'' }}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="customer_first_name">First Name</label>
+                                    <input type="text" name="customer_first_name" id="customer_first_name" class="form-control" placeholder="John" value="{{ form_data.customer_first_name|default:'' }}">
+                                    <div class="error-message">{{ errors.customer_first_name|default:'' }}</div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="customer_last_name">Last Name</label>
+                                    <input type="text" name="customer_last_name" id="customer_last_name" class="form-control" placeholder="Doe" value="{{ form_data.customer_last_name|default:'' }}">
+                                    <div class="error-message">{{ errors.customer_last_name|default:'' }}</div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="customer_phone">Customer Phone</label>
+                                <input type="text" name="customer_phone" id="customer_phone" class="form-control" placeholder="+2507XXXXXXXX" pattern="\+2507[0-9]{8}" title="Phone number must be 12 digits starting with +2507 (e.g., +2507XXXXXXXX)" value="{{ form_data.customer_phone|default:'' }}">
+                                <div class="error-message">{{ errors.customer_phone|default:'' }}</div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="address">Address</label>
+                                <input type="text" name="address" id="address" class="form-control" placeholder="123 Main St" value="{{ form_data.address|default:'' }}">
+                                <div class="error-message">{{ errors.address|default:'' }}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="city">City</label>
+                                    <input type="text" name="city" id="city" class="form-control" placeholder="Kigali" value="{{ form_data.city|default:'' }}">
+                                    <div class="error-message">{{ errors.city|default:'' }}</div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="country">Country</label>
+                                    <input type="text" name="country" id="country" class="form-control" placeholder="Rwanda" value="{{ form_data.country|default:'' }}">
+                                    <div class="error-message">{{ errors.country|default:'' }}</div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="payment_method">Payment Method</label>
+                                <select name="payment_method" id="payment_method" class="form-select">
+                                    <option value="" {% if not form_data.payment_method %}selected{% endif %}>Select a payment method</option>
+                                    <option value="cash" {% if form_data.payment_method == 'cash' %}selected{% endif %}>Cash</option>
+                                    <option value="momo" {% if form_data.payment_method == 'momo' %}selected{% endif %}>Mobile Money</option>
+                                    <option value="airtel" {% if form_data.payment_method == 'airtel' %}selected{% endif %}>Airtel Money</option>
+                                </select>
+                                <div class="error-message">{{ errors.payment_method|default:'' }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Currency Selector -->
+                    <div class="card">
+                        <div class="card-header"><h5 class="card-title mb-0">Currency</h5></div>
+                        <div class="card-body currency-selector">
+                            <select name="currency" id="currency" class="form-select">
+                                <option value="RWF" {% if form_data.currency == 'RWF' %}selected{% endif %}>RWF</option>
+                                <option value="USD" {% if form_data.currency == 'USD' %}selected{% endif %}>USD</option>
+                                <option value="EUR" {% if form_data.currency == 'EUR' %}selected{% endif %}>EUR</option>
+                                <option value="GBP" {% if form_data.currency == 'GBP' %}selected{% endif %}>GBP</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-lg-5">
+                    <!-- Order Items -->
+                    <div class="card">
+                        <div class="card-header"><h5 class="card-title mb-0">Order Items</h5></div>
+                        <div class="card-body">
+                            <div class="search-container">
+                                <input type="text" id="product-search" class="form-control" placeholder="Search by product name">
+                                <select id="category-filter" class="form-select">
+                                    <option value="">All Categories</option>
+                                    {% for category in categories %}
+                                        <option value="{{ category.id }}" style="--level: {{ category.level }};" class="category-option">
+                                            {{ category.title }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div id="order-items">
+                                {% for item in form_data.items %}
+                                    <div class="order-item mb-3" data-item-id="{{ forloop.counter0 }}">
+                                        <label for="product_{{ forloop.counter0 }}">Product</label>
+                                        <select name="product" id="product_{{ forloop.counter0 }}" class="form-select product-select" required>
+                                            <option value="">Select a product</option>
+                                            {% for product in products %}
+                                                <option value="{{ product.pid }}"
+                                                        data-stock="{{ product.in_stock }}"
+                                                        data-category="{{ product.category.id }}"
+                                                        data-image="{{ product.image.url|default:'' }}"
+                                                        data-price="{{ product.price }}"
+                                                        data-currency="{{ product.currency }}"
+                                                        {% if item.pid == product.pid %}selected{% endif %}>
+                                                    {{ product.title }} ({{ product.in_stock }} in stock)
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                        <div class="stock-info"></div>
+                                        <div class="product-details">
+                                            {% for product in products %}
+                                                {% if item.pid == product.pid %}
+                                                    {% if product.image %}
+                                                        <img src="{{ product.image.url }}" alt="{{ product.title }}" class="product-image">
+                                                    {% endif %}
+                                                    <div class="product-info">
+                                                        <p><strong>Price:</strong> {{ product.price }} {{ product.currency }}</p>
+                                                        <p><strong>Category:</strong> {{ product.category.title }}</p>
+                                                    </div>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                        <label for="quantity_{{ forloop.counter0 }}" class="mt-2">Quantity</label>
+                                        <input type="number" name="quantity" id="quantity_{{ forloop.counter0 }}"
+                                               class="form-control quantity-input" min="1" required
+                                               value="{{ item.quantity|default:'1' }}">
+                                        <div class="error-message">
+                                            {% if errors.items %}
+                                                {{ errors.items|default:'' }}
+                                            {% endif %}
+                                        </div>
+                                        {% if forloop.counter0 > 0 %}
+                                            <span class="remove-item">Remove</span>
+                                        {% endif %}
+                                    </div>
+                                {% endfor %}
+                                <div class="items-general-error error-message">{{ errors.items_general|default:'' }}</div>
+                            </div>
+                            <button type="button" id="add-item" class="btn btn-secondary">Add Another Item</button>
+                        </div>
+                    </div>
+
+                    <!-- Submit -->
+                    <div class="link_product mt-3">
+                        <button type="submit" class="buton float-end">Create Order</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</main>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const orderItems = document.getElementById('order-items');
+    let itemCount = document.querySelectorAll('.order-item').length;
+
+    // Product data from server
+    const products = [
+        {% for product in products %}
+            {
+                pid: "{{ product.pid }}",
+                title: "{{ product.title|escapejs }}",
+                in_stock: {{ product.in_stock }},
+                category: "{{ product.category.id }}",
+                image: "{{ product.image.url|default:''|escapejs }}",
+                price: {{ product.price }},
+                currency: "{{ product.currency|escapejs }}"
+            }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+
+    // Category data for hierarchical filtering
+    const categories = [
+        {% for category in categories %}
+            {
+                id: "{{ category.id }}",
+                title: "{{ category.title|escapejs }}",
+                parent: {{ category.parent.id|default:'null' }},
+                level: {{ category.level }}
+            }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+
+    // Initialize stock info and product details
+    updateAllStockInfo();
+    updateAllProductDetails();
+
+    // Search and filter functionality
+    const productSearch = document.getElementById('product-search');
+    const categoryFilter = document.getElementById('category-filter');
+    let activeSelect = null;
+
+    function getCategoryAndSubcategories(categoryId) {
+        const selectedCategories = new Set();
+        if (categoryId) {
+            selectedCategories.add(categoryId);
+            function addSubcategories(parentId) {
+                categories.forEach(cat => {
+                    if (String(cat.parent) === String(parentId)) {
+                        selectedCategories.add(cat.id);
+                        addSubcategories(cat.id);
+                    }
+                });
+            }
+            addSubcategories(categoryId);
+        }
+        return selectedCategories;
+    }
+
+    function filterProducts(selectElement) {
+        const searchTerm = productSearch.value.toLowerCase();
+        const categoryId = categoryFilter.value;
+
+        // Get selected category and all its subcategories
+        const selectedCategories = categoryId ? getCategoryAndSubcategories(categoryId) : null;
+
+        // Store the currently selected value to preserve it
+        const currentValue = selectElement.value;
+
+        // Clear and repopulate the select options
+        selectElement.innerHTML = '<option value="">Select a product</option>';
+        products.forEach(product => {
+            const matchesSearch = product.title.toLowerCase().includes(searchTerm);
+            const matchesCategory = !selectedCategories || selectedCategories.size === 0 || selectedCategories.has(product.category);
+            if (matchesSearch && matchesCategory) {
+                const option = document.createElement('option');
+                option.value = product.pid;
+                option.dataset.stock = product.in_stock;
+                option.dataset.category = product.category;
+                option.dataset.image = product.image;
+                option.dataset.price = product.price;
+                option.dataset.currency = product.currency;
+                option.textContent = `${product.title} (${product.in_stock} in stock)`;
+                if (product.pid === currentValue) {
+                    option.selected = true;
+                }
+                selectElement.appendChild(option);
+            }
+        });
+
+        // Update stock info and product details for the affected item
+        updateStockInfo(selectElement.closest('.order-item'));
+        updateProductDetails(selectElement.closest('.order-item'));
+    }
+
+    // Attach event listeners for search and category filter
+    productSearch.addEventListener('input', function() {
+        if (activeSelect) {
+            filterProducts(activeSelect);
+        }
+    });
+
+    categoryFilter.addEventListener('change', function() {
+        if (activeSelect) {
+            filterProducts(activeSelect);
+        }
+    });
+
+    // Add new item
+    document.getElementById('add-item').addEventListener('click', function() {
+        console.log('Add item clicked, itemCount:', itemCount);
+        const newItem = document.createElement('div');
+        newItem.className = 'order-item mb-3';
+        newItem.dataset.itemId = itemCount;
+
+        // Generate options dynamically with all products
+        let options = '<option value="">Select a product</option>';
+        products.forEach(product => {
+            options += `<option value="${product.pid}" ` +
+                      `data-stock="${product.in_stock}" ` +
+                      `data-category="${product.category}" ` +
+                      `data-image="${product.image}" ` +
+                      `data-price="${product.price}" ` +
+                      `data-currency="${product.currency}">${product.title} (${product.in_stock} in stock)</option>`;
+        });
+
+        newItem.innerHTML = `
+            <label for="product_${itemCount}">Product</label>
+            <select name="product" id="product_${itemCount}" class="form-select product-select" required>
+                ${options}
+            </select>
+            <div class="stock-info"></div>
+            <div class="product-details"></div>
+            <label for="quantity_${itemCount}" class="mt-2">Quantity</label>
+            <input type="number" name="quantity" id="quantity_${itemCount}" class="form-control quantity-input" min="1" required value="1">
+            <div class="error-message"></div>
+            <span class="remove-item">Remove</span>
+        `;
+
+        const errorMessageDiv = orderItems.querySelector('.items-general-error');
+        console.log('Error message div:', errorMessageDiv);
+        if (errorMessageDiv) {
+            orderItems.insertBefore(newItem, errorMessageDiv);
+        } else {
+            console.warn('General error div not found, appending to orderItems');
+            orderItems.appendChild(newItem);
+        }
+
+        const newSelect = newItem.querySelector('.product-select');
+        attachSelectListener(newSelect);
+        updateStockInfo(newItem);
+        updateProductDetails(newItem);
+        // Set the new select as active and apply current filter
+        activeSelect = newSelect;
+        filterProducts(newSelect);
+        itemCount++;
+    });
+
+    // Remove item
+    orderItems.addEventListener('click', function(e) {
+        if (e.target.classList.contains('remove-item')) {
+            e.target.closest('.order-item').remove();
+            console.log('Item removed, new itemCount:', document.querySelectorAll('.order-item').length);
+        }
+    });
+
+    // Form submission validation
+    document.getElementById('inStoreOrderForm').addEventListener('submit', function(event) {
+        let isValid = true;
+        clearErrors();
+
+        // Validate customer email
+        const email = document.getElementById('customer_email').value;
+        if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            showError('customer_email', 'Please enter a valid email address.');
+            isValid = false;
+        }
+
+        // Validate customer first name
+        const firstName = document.getElementById('customer_first_name').value;
+        if (firstName && !/^[a-zA-Z\s-]+$/.test(firstName)) {
+            showError('customer_first_name', 'First name can only contain letters, spaces, or hyphens.');
+            isValid = false;
+        }
+
+        // Validate customer last name
+        const lastName = document.getElementById('customer_last_name').value;
+        if (lastName && !/^[a-zA-Z\s-]+$/.test(lastName)) {
+            showError('customer_last_name', 'Last name can only contain letters, spaces, or hyphens.');
+            isValid = false;
+        }
+
+        // Validate customer phone
+        const phone = document.getElementById('customer_phone').value;
+        if (phone && !/^\+2507\d{8}$/.test(phone)) {
+            showError('customer_phone', 'Phone number must be exactly 12 digits starting with +2507 (e.g., +2507XXXXXXXX).');
+            isValid = false;
+        }
+
+        // Validate address
+        const address = document.getElementById('address').value;
+        if (address && !/^[a-zA-Z0-9\s,.-]+$/.test(address)) {
+            showError('address', 'Address can only contain letters, numbers, spaces, commas, periods, or hyphens.');
+            isValid = false;
+        }
+
+        // Validate city
+        const city = document.getElementById('city').value;
+        if (city && !/^[a-zA-Z\s-]+$/.test(city)) {
+            showError('city', 'City can only contain letters, spaces, or hyphens.');
+            isValid = false;
+        }
+
+        // Validate country
+        const country = document.getElementById('country').value;
+        if (country && !/^[a-zA-Z\s-]+$/.test(country)) {
+            showError('country', 'Country can only contain letters, spaces, or hyphens.');
+            isValid = false;
+        }
+
+        // Validate payment method
+        const paymentMethod = document.getElementById('payment_method').value;
+        if (paymentMethod && !['cash', 'momo', 'airtel'].includes(paymentMethod)) {
+            showError('payment_method', 'Please select a valid payment method.');
+            isValid = false;
+        }
+
+        // Validate order items
+        const items = document.querySelectorAll('.order-item');
+        if (items.length === 0) {
+            showError('items-general-error', 'Please add at least one product.');
+            isValid = false;
+        }
+
+        items.forEach((item, index) => {
+            const productSelect = item.querySelector('.product-select');
+            const quantityInput = item.querySelector('.quantity-input');
+            const product = productSelect.value;
+            const quantity = parseInt(quantityInput.value);
+            const stock = parseInt(productSelect.selectedOptions[0]?.dataset.stock) || 0;
+
+            if (!product) {
+                showError(`product_${index}`, 'Please select a product.');
+                isValid = false;
+            }
+            if (!quantity || quantity < 1) {
+                showError(`quantity_${index}`, 'Quantity must be at least 1.');
+                isValid = false;
+            } else if (quantity > stock) {
+                showError(`quantity_${index}`, `Quantity cannot exceed stock (${stock}).`);
+                isValid = false;
+            }
+        });
+
+        // Check for duplicate products
+        const selectedProducts = Array.from(document.querySelectorAll('.product-select'))
+            .map(select => select.value)
+            .filter(val => val);
+        const uniqueProducts = new Set(selectedProducts);
+        if (selectedProducts.length !== uniqueProducts.size) {
+            showError('items-general-error', 'Duplicate products selected. Please combine quantities or remove duplicates.');
+            isValid = false;
+        }
+
+        if (!isValid) {
+            event.preventDefault();
+        }
+    });
+
+    // Update stock info when product changes
+    orderItems.addEventListener('change', function(e) {
+        if (e.target.classList.contains('product-select')) {
+            updateStockInfo(e.target.closest('.order-item'));
+            updateProductDetails(e.target.closest('.order-item'));
+        }
+    });
+
+    function updateStockInfo(item) {
+        const select = item.querySelector('.product-select');
+        const stockInfo = item.querySelector('.stock-info');
+        const stock = select.selectedOptions[0]?.dataset.stock || 0;
+        stockInfo.textContent = stock ? `Available: ${stock} units` : '';
+    }
+
+    function updateAllStockInfo() {
+        document.querySelectorAll('.order-item').forEach(updateStockInfo);
+    }
+
+    function updateProductDetails(item) {
+        const select = item.querySelector('.product-select');
+        const detailsDiv = item.querySelector('.product-details');
+        const selectedOption = select.selectedOptions[0];
+
+        if (selectedOption && selectedOption.value) {
+            const product = products.find(p => p.pid === selectedOption.value);
+            if (product) {
+                detailsDiv.innerHTML = `
+                    ${product.image ? `<img src="${product.image}" alt="${product.title}" class="product-image">` : ''}
+                    <div class="product-info">
+                        <p><strong>Price:</strong> ${product.price} ${product.currency}</p>
+                        <p><strong>Category:</strong> ${categories.find(c => c.id === product.category)?.title || 'Unknown'}</p>
+                    </div>
+                `;
+            } else {
+                detailsDiv.innerHTML = '';
+            }
+        } else {
+            detailsDiv.innerHTML = '';
+        }
+    }
+
+    function updateAllProductDetails() {
+        document.querySelectorAll('.order-item').forEach(updateProductDetails);
+    }
+
+    function showError(fieldId, message) {
+        let field;
+        if (fieldId === 'items-general-error') {
+            field = document.querySelector('.items-general-error');
+            field.textContent = message;
+        } else {
+            field = document.getElementById(fieldId);
+            const errorDiv = field.parentElement.querySelector('.error-message');
+            errorDiv.textContent = message;
+            field.classList.add('is-invalid');
+        }
+    }
+
+    function clearErrors() {
+        document.querySelectorAll('.error-message').forEach(div => {
+            div.textContent = '';
+        });
+        document.querySelectorAll('.is-invalid').forEach(field => field.classList.remove('is-invalid'));
+    }
+
+    // Attach listeners to existing selects
+    document.querySelectorAll('.product-select').forEach(attachSelectListener);
+
+    function attachSelectListener(select) {
+        select.addEventListener('change', function() {
+            updateStockInfo(select.closest('.order-item'));
+            updateProductDetails(select.closest('.order-item'));
+        });
+
+        // Set as active select when focused
+        select.addEventListener('focus', function() {
+            activeSelect = select;
+            filterProducts(select);
+        });
+    }
+});
+</script>
+{% endblock %}

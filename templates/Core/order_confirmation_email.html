@@ -1,0 +1,303 @@
+{% autoescape off %}
+{% load l10n humanize %}
+<div class="order-confirmation">
+    <h2>Order Confirmation</h2>
+    <table class="order-details">
+        <tr>
+            <th>Order Number</th>
+            <td>{{ order.oid }}</td>
+        </tr>
+        <tr>
+            <th>Payment Method</th>
+            <td>
+                {% if order.payment_method == 'cod' %}
+                    Cash On Delivery
+                {% else %}
+                    {{ order.payment_method }}
+                {% endif %}
+            </td>
+        </tr>
+        <tr>
+            <th>Date Created</th>
+            <td>{{ order.order_date }}</td>
+        </tr>
+        <tr>
+            <th>Payment Status</th>
+            {% if order.paid_status %}
+            <td class="text-success">Paid</td>
+            {% else %}
+            <td class="text-danger">Unpaid</td>
+            {% endif %}
+        </tr>
+        {% if converted_saved_amount|floatformat:2 != "0.00" %}
+        <tr>
+            <th>Saved</th>
+            <td>{{ converted_saved_amount|intcomma }} {{ selected_currency }}</td>
+        </tr>
+        {% endif %}
+
+        <tr>
+            <th>Delivery Cost</th>
+            <td>{{ converted_shipping_fee|intcomma }} {{ selected_currency }}</td>
+        </tr>
+        
+        <tr>
+            <th>Order Total</th>
+            <td>{{ converted_order_total|intcomma }} {{ selected_currency }}</td>
+        </tr>
+        {% if final_price|floatformat:2 != "0.00" %}
+        <tr>
+            <th>Final Order Total </th>
+            <td>{{ final_price|intcomma }} {{ selected_currency }}</td>
+        </tr>
+        {% endif %}
+    </table>
+</div>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+    }
+
+    .order-confirmation {
+        max-width: 600px;
+        margin: 20px auto;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .order-confirmation h2 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    .order-details {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .order-details th,
+    .order-details td {
+        padding: 12px 15px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .order-details th {
+        background-color: #f2f2f2;
+        color: #333;
+        font-weight: bold;
+    }
+
+    .order-details td {
+        background-color: #f9f9f9;
+        color: #555;
+    }
+
+    .order-details tr:last-child td {
+        border-bottom: none;
+    }
+
+    @media (max-width: 600px) {
+        .order-details th, 
+        .order-details td {
+            display: block;
+            width: 100%;
+            text-align: right;
+        }
+        
+        .order-details th {
+            background-color: transparent;
+            color: #555;
+            padding: 10px 0;
+        }
+        
+        .order-details td {
+            text-align: left;
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .order-details tr {
+            margin-bottom: 10px;
+            display: block;
+        }
+    }
+</style>
+{% endautoescape %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        .email-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border: 1px solid #dddddd;
+            border-radius: 5px;
+        }
+
+        .email-header {
+            text-align: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #dddddd;
+        }
+
+        .email-header h1 {
+            margin: 0;
+            color: #333333;
+        }
+
+        .email-body {
+            padding: 20px 0;
+        }
+
+        .email-body h2 {
+            margin: 0 0 10px 0;
+            color: #333333;
+            font-size: 18px;
+        }
+
+        .email-body p {
+            margin: 5px 0;
+            color: #555555;
+        }
+
+        .invoice-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .invoice-table th,
+        .invoice-table td {
+            padding: 10px;
+            border: 1px solid #dddddd;
+            text-align: left;
+        }
+
+        .invoice-table th {
+            background-color: #f4f4f4;
+            color: #333333;
+        }
+
+        .invoice-footer {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #dddddd;
+        }
+
+        .invoice-footer p {
+            margin: 0;
+            color: #999999;
+            font-size: 12px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            margin-top: 20px;
+            background-color: #28a745;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        @media only screen and (max-width: 600px) {
+            .email-container {
+                width: 100%;
+                padding: 10px;
+            }
+
+            .invoice-table th,
+            .invoice-table td {
+                padding: 5px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="email-container">
+        <div class="email-header">
+            <h1>Your Invoice</h1>
+        </div>
+        <div class="email-body">
+            <h2>Thank you for your purchase!</h2>
+            <p>Hi {{ order.user.full_name }},</p>
+            <p>We have received your payment. Below is the summary of your order:</p>
+            <table class="invoice-table">
+                <thead>
+                    <tr>
+                        <th>Order</th>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Loop through the products -->
+                     {% for o in order_items %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ o.product.title }}</td>
+                        <td>{{ o.qty }}</td>
+                        <td>{{ o.converted_price|intcomma }} {{ selected_currency }}</td>
+                        <td>{{ o.converted_total_price|intcomma }} {{ selected_currency }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="4" style="text-align:right;"><strong>Grand Total:</strong></td>
+                        <td><strong>{{ converted_order_total|intcomma }} {{ selected_currency }}</strong></td>
+                    </tr>
+                    
+                    {% if converted_saved_amount|floatformat:2 != "0.00" %}
+                    <tr>
+                        <td colspan="4" style="text-align:right;"><strong>Saved Amount:</strong></td>
+                        <td><strong>{{ converted_saved_amount|intcomma }} {{ selected_currency }}</strong></td>
+                    </tr>
+                    {% endif %}
+                    
+                    <tr>
+                        <td colspan="4" style="text-align:right;"><strong>Delivery Cost:</strong></td>
+                        <td><strong>{{ converted_shipping_fee|intcomma }} {{ selected_currency }}</strong></td>
+                    </tr>
+                    
+                    {% if final_price|floatformat:2 != "0.00" %}
+                    <tr>
+                        <td colspan="4" style="text-align:right;"><strong>Final Order Total:</strong></td>
+                        <td><strong>{{ final_price|intcomma }} {{ selected_currency }}</strong></td>
+                    </tr>
+                    {% endif %}
+                </tfoot>
+                
+            </table>
+        </div>
+        <div class="invoice-footer">
+            <p>If you have any questions, feel free to <a href="mailto:support@example.com">contact us</a>.</p>
+            <p>&copy; 2024 Your Company. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+
+</html>

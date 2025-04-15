@@ -1,0 +1,138 @@
+{% extends 'partials/AdminPanelBase.html' %}
+
+{% block content %}
+<style>
+    .btn-custom {
+        background-color: #999999;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        padding: 10px 20px;
+        text-align: center;
+        font-size: 14px;
+        transition: background-color 0.3s ease;
+    }
+    .btn-custom:hover {
+        background-color: #ffc400;
+        color: #000;
+        cursor: pointer;
+    }
+
+    .card-header {
+        background-color: #f8f9fa;
+    }
+
+    .badge-success {
+        background-color: #28a745;
+    }
+
+    .badge-danger {
+        background-color: #dc3545;
+    }
+
+    .no-orders {
+        font-size: 1.125rem;
+        color: #6c757d;
+    }
+</style>
+
+<main class="content">
+    <div class="container-fluid p-0">
+        <h1 class="h3 mb-3">Orders List</h1>
+        <p class="mb-4">Manage all your orders from here.</p>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="card flex-fill">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Recent Orders</h5>
+                    </div>
+
+                    <div class="card-body">
+                        <!-- Filters Section -->
+                        <form method="get" action="{% url 'order_report' %}" class="mb-4">
+                            <div class="row g-2">
+                                <div class="col-md-3">
+                                    <label for="start_date" class="form-label">Start Date</label>
+                                    <input type="date" id="start_date" name="start_date" class="form-control" value="{{ request.GET.start_date }}">
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="end_date" class="form-label">End Date</label>
+                                    <input type="date" id="end_date" name="end_date" class="form-control" value="{{ request.GET.end_date }}">
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="billing_name" class="form-label">Billing Name</label>
+                                    <input type="text" id="billing_name" name="billing_name" class="form-control" value="{{ request.GET.billing_name }}">
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="payment_method" class="form-label">Payment Method</label>
+                                    <select id="payment_method" name="payment_method" class="form-control">
+                                        <option value="">All</option>
+                                        <option value="cod" {% if request.GET.payment_method == 'cod' %}selected{% endif %}>Cash On Delivery</option>
+                                        <option value="paypal" {% if request.GET.payment_method == 'paypal' %}selected{% endif %}>PayPal</option>
+                                        
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="payment_status" class="form-label">Payment Status</label>
+                                    <select id="payment_status" name="payment_status" class="form-control">
+                                        <option value="">All</option>
+                                        <option value="paid" {% if request.GET.payment_status == 'paid' %}selected{% endif %}>Paid</option>
+                                        <option value="not_paid" {% if request.GET.payment_status == 'not_paid' %}selected{% endif %}>Not Paid</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="row mt-3">
+                                <div class="col">
+                                    <button type="submit" class="btn btn-primary">Apply Filters</button>
+                                    <a href="{% url 'order_report' %}" class="btn btn-secondary">Clear Filters</a>
+                                </div>
+                            </div>
+                        </form>
+                        <!-- Replace the existing export link -->
+                        <a href="{% url 'export_order_report_excel' %}?start_date={{ request.GET.start_date|urlencode }}&end_date={{ request.GET.end_date|urlencode }}&billing_name={{ request.GET.billing_name|urlencode }}&payment_method={{ request.GET.payment_method|urlencode }}&payment_status={{ request.GET.payment_status|urlencode }}"
+                        class="btn btn-success mt-3 mb-4">Export to Excel</a>
+
+                        <!-- Orders Table -->
+                        <div class="table-responsive">
+                            <table class="table table-hover my-0">
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th class="d-none d-xl-table-cell">Billing Name</th>
+                                        <th class="d-none d-xl-table-cell">Date</th>
+                                        <th>Total</th>
+                                        <th class="d-none d-md-table-cell">Payment Method</th>
+                                        <th class="d-none d-md-table-cell">Payment Status</th>
+                                        <th class="d-none d-md-table-cell">View Details</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for l in orders %}
+                                    <tr>
+                                        <td>#{{ l.sku }}</td>
+                                        <td class="d-none d-xl-table-cell">{{ l.full_name }}</td>
+                                        <td class="d-none d-xl-table-cell">{{ l.order_date }}</td>
+                                        <td class="d-none d-md-table-cell">${{ l.price }}</td>
+                                        <td class="d-none d-md-table-cell">{{ l.payment_method }}</td>
+                                        {% if l.paid_status == True %}
+                                        <td><span class="badge bg-success">Paid</span></td>
+                                        {% else %}
+                                        <td><span class="badge bg-danger">Not Paid</span></td>
+                                        {% endif %}
+                                        <td><a href="{% url 'single_order_detail' l.id %}" class="btn btn-outline-secondary"><span>View</span></a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</main>
+{% endblock content %}

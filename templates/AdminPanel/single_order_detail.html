@@ -1,0 +1,145 @@
+{% extends 'partials/AdminPanelBase.html' %}
+
+{% block content %}
+<style>
+    .btn-custom {
+        background-color: #999999;
+        border: none;
+        padding: 10px;
+        border-radius: 5px;
+        font-weight: bold;
+        color: white;
+    }
+    .btn-custom:hover {
+        background-color: #bebdb6;
+        cursor: pointer;
+    }
+    .profile-section img {
+        width: 60px;
+        height: 60px;
+    }
+    .info-title {
+        font-size: 1.1rem;
+        font-weight: bold;
+    }
+    .info-value {
+        font-size: 0.9rem;
+        color: #666;
+    }
+</style>
+
+<div class="container mt-4">
+    <h1 class="h3 mb-0">Order Details</h1>
+    <p>Details for Order: <strong>{{ order.oid }}</strong></p>
+    
+    <!-- Back Button -->
+    <a href="javascript:history.back()" class="btn btn-custom mb-4">
+        <i class="fas fa-arrow-left"></i> Back
+    </a>
+
+    <div class="card p-4">
+
+        <!-- Order Information Section -->
+        <div class="row">
+            <div class="col-md-6">
+                <p><strong>Order Date:</strong> {{ order.order_date }}</p>
+                <p><strong>Order ID:</strong> {{ order.sku }}</p>
+            </div>
+        </div>
+        <hr>
+
+        <!-- Customer, Order Info, Delivery Address -->
+        <div class="row text-center profile-section">
+            <div class="col-md-4 mb-4">
+                <img src="{{ request.user.profile.profile_image.url }}" class="rounded-circle" alt="Customer">
+                <p class="info-title">{{ order.full_name }}</p>
+                <p class="info-value">{{ order.email }}</p>
+                <p class="info-value">{{ order.phone_number }}</p>
+            </div>
+            <div class="col-md-4 mb-4">
+                <i class="fas fa-shipping-fast fa-2x mb-2"></i>
+                <p class="info-title">Order Info</p>
+                <p class="info-value">Order Status: {{ order.product_status|title }}</p>
+                <p class="info-value">
+                    Payment Status:
+                    {% if order.paid_status %}
+                        <span class="badge badge-success">Paid</span>
+                    {% else %}
+                        <span class="badge badge-danger">Not Paid</span>
+                    {% endif %}
+                </p>
+            </div>
+            <div class="col-md-4 mb-4">
+                <i class="fas fa-map-marker-alt fa-2x mb-2"></i>
+                <p class="info-title">Deliver To</p>
+                <p class="info-value">{{ order.address }}, {{ order.city }}</p>
+                <p class="info-value">{{ order.country }}</p>
+            </div>
+        </div>
+
+        <!-- Order Items Table -->
+        <div class="table-responsive mt-4" style="max-height: 400px; overflow-y: auto;">
+            <table class="table table-bordered">
+                <thead class="thead-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Unit Price (USD)</th>
+                        <th>Total (USD)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in order_items %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ item.product.title }}</td>
+                            <td>{{ item.qty }}</td>
+                            <td>${{ item.price }}</td>
+                            <td>${{ item.total }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center">No items found for this order.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="row">
+            <div class="col-md-6 offset-md-6">
+                <div class="d-flex justify-content-between">
+                    <p>Discount:</p>
+                    <p>${{ order.saved }}</p>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <p>Subtotal:</p>
+                    <p>${{ order.price }}</p>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <p>Delivering Cost:</p>
+                    <p>${{ order.shipping_fee }}</p>
+                </div>
+                <hr>
+                <div class="d-flex justify-content-between">
+                    <h5>Grand Total:</h5>
+                    <h5>${{ order.price }}</h5>
+                </div>
+                
+                <div class="d-flex justify-content-between mt-2">
+                    <p>Status:</p>
+                    {% if order.paid_status %}
+                        <span class="badge badge-success p-2">Payment Complete</span>
+                    {% else %}
+                        <span class="badge badge-danger p-2">Payment Incomplete</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock content %}

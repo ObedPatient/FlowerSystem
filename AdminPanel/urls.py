@@ -1,0 +1,30 @@
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('AdminPanel/', views.AdminPanel, name='AdminPanel'),
+    path('products/', views.products, name='products'),
+    path('addProduct/', views.addProduct, name='addProduct'),
+    path('editProduct/<pid>/', views.editProduct, name='editProduct'),
+    path('deleteProduct/<pid>/', views.deleteProduct, name='deleteProduct'),
+    path('delete_image/<image_id>/', views.delete_image, name='delete_image'),
+    path('orders/', views.orders, name='orders'),
+    path('vendor_list/', views.vendor_list, name='vendor_list'),
+    path('vendor_detail/<str:vid>/', views.vendor_detail, name='vendor_detail'),
+    path('order_details/<int:oid>/', views.order_details, name='order_details'),
+    path("update-status/<int:product_id>/", views.update_product_status, name="update_product_status"),
+    path("customers/", views.customers, name="customers"),
+    path("customer_detail_view/<int:cid>/", views.customer_detail_view, name="customer_detail_view"),
+    path("change_paid_status/<int:order_id>/", views.change_paid_status, name="change_paid_status"),
+    path("single_order_detail/<int:order_id>/", views.single_order_detail, name="single_order_detail"),
+    path("changePassword/", views.changePassword, name="changePassword"),
+    path("reviews/", views.reviews, name="reviews"),
+    path("Contacts/", views.Contacts, name="Contacts"),
+    path("order_report/", views.order_report, name="order_report"),
+    path("export_order_report_excel/", views.export_order_report_excel, name="export_order_report_excel"),
+    path("vendor_report/", views.vendor_report, name="vendor_report"),
+    path("export_vendor_report/", views.export_vendor_report_excel, name="export_vendor_report_excel"),
+    path("customer_report/", views.customer_report, name="customer_report"),
+    path("export_customer_report_excel/", views.export_customer_report_excel, name="export_customer_report_excel"),
+    path('createSeller/', views.createSeller, name='createSeller'),
+]

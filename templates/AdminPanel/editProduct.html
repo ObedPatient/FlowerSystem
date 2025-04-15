@@ -1,0 +1,284 @@
+{% extends 'partials/AdminPanelBase.html' %}
+{% load static %}
+{% load l10n humanize %}
+{% block content %}
+
+{{ form.media }}
+<script src="{% static 'assets/ckeditor5/ckeditor5.css' %}"></script>
+<script src="{% static 'assets/ckeditor5/ckeditor5.js' %}"></script>
+
+
+<style>
+
+    
+
+    .buton {
+        background-color: #999999;
+        border: none;
+        padding: 10px;
+        border-radius: 5px;
+        font-weight: bold;
+        color: white;
+    }
+    .link_product a {
+        text-decoration: none;
+        color: white;
+    }
+    .buton:hover {
+        background-color: #bebdb6;
+        cursor: pointer;
+    }
+
+    .card-body-scroll {
+    max-height: 400px; /* Adjust the height as needed */
+    overflow-y: auto;
+    }
+
+    
+
+</style>
+
+<main class="content">
+    <div class="container-fluid p-0">
+        <div class="mb-3 d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="h3 d-inline align-middle">Add New Product</h1>
+            </div>
+            <div class="link_product">
+                <a href="#" class="buton float-end">Publish <i class="fas fa-check-circle"></i></a>
+            </div>
+        </div>
+        <form action="" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-12 col-lg-7">
+                    {% if form.errors %}
+                    <div class="alert alert-danger">
+                        <strong>{{ form.errors }}</strong>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="col-12 col-lg-1">
+                    {% if formset.non_form_errors %}
+                        <div class="alert alert-danger">
+                            {{ formset.non_form_errors }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-lg-7">
+                    <!-- Product Title Card -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Product Title</h5>
+                        </div>
+                        <div class="card-body">
+                            {{ form.title }}
+                        </div>
+                    </div>
+
+                    <!-- Full Description Card -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Description</h5>
+                        </div>
+                        <div class="card-body">
+                            {{ form.description }}  <!-- CKEditor-enabled field -->
+                            {% if form.description.errors %}
+                                <div class="alert alert-danger">
+                                    {{ form.description.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                
+                    <!-- Specifications Field -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Specifications</h5>
+                        </div>
+                        <div class="card-body">
+                            {{ form.specifications }}  <!-- CKEditor-enabled field -->
+                            {% if form.specifications.errors %}
+                                <div class="alert alert-danger">
+                                    {{ form.specifications.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Price and Old Price Card -->
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="id_price" class="form-label">Price</label>
+                                    {{ form.price }}
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="id_old_price" class="form-label">Old Price</label>
+                                    {{ form.old_price }}
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="id_currency" class="form-label">Currency</label>
+                                    {{ form.currency }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stock, Manufactured Date, and Tags Card -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Stock</h5>
+                        </div>
+                        <div class="card-body">
+                            {{ form.in_stock }}
+                        </div>
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Manufactured Date</h5>
+                        </div>
+                        <div class="card-body">
+                            {{ form.mfd }}
+                        </div>
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Tags</h5>
+                        </div>
+                        <div class="card-body">
+                            {{ form.tags }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-lg-5">
+                    <!-- Product Image Card -->
+                    <div class="card shadow-sm rounded">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0">Product Image</h5>
+                        </div>
+                        <div class="d-flex flex-column align-items-center p-3">
+                            <div class="mb-4 text-center">
+                                {% if product.image %}
+                                    <img src="{{ product.image.url }}" alt="Product Image" class="img-thumbnail img-fluid" style="max-width: 100%; height: auto;">
+                                {% else %}
+                                    <p>No Image Available</p>
+                                {% endif %}
+                            </div>
+                            <div class="card-body text-center">
+                                <label for="file-input" class="me-3">
+                                    <i class="fas fa-upload fa-3x"></i>
+                                </label>
+                                {{ form.image }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Product Images Card -->
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0">Product Images</h5>
+                            <i id="add-image" class="fas fa-plus-circle icon-gray fa-2x" style="cursor: pointer;" title="Add Image"></i>
+                        </div>
+
+                        <div class="card-body card-body-scroll">
+                            <div class="table-responsive">
+                                <table id="product-images-table" class="table table-bordered table-hover">
+                                    {{ formset.management_form }}
+                                    <thead>
+                                        <tr>
+                                            <th>Image</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="product-images-body">
+                                        {% for form in formset %}
+                                        <tr class="align-items-center">
+                                            <td class="d-flex align-items-center">
+                                                <div class="me-3">
+                                                    <!-- Check if image exists before rendering -->
+                                                    {% if form.instance.images %}
+                                                        <img src="{{ form.instance.images.url }}" alt="Product Image" class="img-thumbnail" style="max-width: 100px; height: auto;">
+                                                    {% else %}
+                                                        <p class="mb-0">No image</p>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="flex-grow-1">
+                                                    {{ form.id }}  {# Include the hidden input for the ID #}
+                                                    {{ form.images }}  {# Image input #}
+                                                </div>
+                                            </td>
+                                            <td class="text-end">
+                                                {% if form.instance.pk %}
+                                                    <!-- Delete icon with AJAX trigger -->
+                                                    <a href="{% url 'delete_image' form.instance.pk %}" style="color: gray;">
+                                                        <i class="fas fa-trash-alt icon-gray remove-image" style="cursor: pointer;" title="Remove Image"></i>
+                                                    </a>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr>
+                                            <td colspan="2" class="text-center">No forms available</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Category Card -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Category</h5>
+                        </div>
+                        <div class="card-body">
+                            {{ form.category }}
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="link_product">
+                        <button class="buton float-end" type="submit">Create Product</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</main>
+
+<script>
+   document.addEventListener('DOMContentLoaded', function() {
+    let formsetBody = document.getElementById('product-images-body');
+    let addButton = document.getElementById('add-image');
+    let formIdx = {{ formset.total_form_count }}; // Initial index for new forms
+
+    addButton.addEventListener('click', function() {
+        let newRow = document.createElement('tr');
+        newRow.classList.add('align-items-center');
+        newRow.innerHTML = `
+            <td class="d-flex align-items-center">
+                <input type="file" name="form-${formIdx}-images" accept="image/*" class="form-control">
+            </td>
+            <td class="text-end">
+                <i class="fas fa-trash-alt icon-gray remove-image" style="cursor: pointer;" title="Remove Image"></i>
+            </td>
+        `;
+        formsetBody.appendChild(newRow); // Append the new row to the tbody
+        formIdx++;
+    });
+
+    formsetBody.addEventListener('click', function(event) {
+        if (event.target.classList.contains('remove-image')) {
+            event.target.closest('tr').remove();
+        }
+    });
+});
+
+
+
+    
+</script>
+
+{% endblock content %}

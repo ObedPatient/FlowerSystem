@@ -1,0 +1,129 @@
+{% extends 'partials/AdminPanelBase.html' %}
+
+{% block content %}
+<style>
+    .btn-custom {
+        background-color: #999999;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        padding: 10px 20px;
+        text-align: center;
+        font-size: 14px;
+        transition: background-color 0.3s ease;
+    }
+    .btn-custom:hover {
+        background-color: #ffc400;
+        color: #000;
+        cursor: pointer;
+    }
+
+    .card-header {
+        background-color: #f8f9fa;
+    }
+
+    .badge-success {
+        background-color: #28a745;
+    }
+
+    .badge-danger {
+        background-color: #dc3545;
+    }
+
+    .no-customers {
+        font-size: 1.125rem;
+        color: #6c757d;
+    }
+</style>
+
+<main class="content">
+    <div class="container-fluid p-0">
+        <h1 class="h3 mb-3">Customers List</h1>
+        <p class="mb-4">Manage all your customers from here.</p>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="card flex-fill">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Registered Customers</h5>
+                    </div>
+
+                    <div class="card-body">
+                        <!-- Filters Section -->
+                        <form method="get" action="{% url 'customer_report' %}" class="mb-4">
+                            <div class="row g-2">
+                                <div class="col-md-3">
+                                    <label for="start_date" class="form-label">Start Date</label>
+                                    <input type="date" id="start_date" name="start_date" class="form-control" value="{{ request.GET.start_date }}">
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="end_date" class="form-label">End Date</label>
+                                    <input type="date" id="end_date" name="end_date" class="form-control" value="{{ request.GET.end_date }}">
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="search_email" class="form-label">Search</label>
+                                    <input type="text" id="search_email" name="search" placeholder="Search by Name, Email, Contact or Username" class="form-control" value="{{ request.GET.search }}">
+                                </div>
+                                
+                            </div>
+
+                            <div class="row mt-3">
+                                <div class="col">
+                                    <button type="submit" class="btn btn-primary">Apply Filters</button>
+                                    <a href="{% url 'customers' %}" class="btn btn-secondary">Clear Filters</a>
+                                </div>
+                            </div>
+                        </form>
+                        <!-- Replace the existing export link -->
+                        <a href="{% url 'export_customer_report_excel' %}?start_date={{ request.GET.start_date|urlencode }}&end_date={{ request.GET.end_date|urlencode }}&search={{ request.GET.search|urlencode }}"
+                        class="btn btn-success mt-3 mb-4">Export to Excel</a>
+
+                        <!-- Customers Table -->
+                        <div class="table-responsive">
+                            <table class="table table-hover my-0">
+                                <thead>
+                                    <tr>
+                                        <th>Joined Date</th>
+                                        <th>Username</th>
+                                        <th class="d-none d-xl-table-cell">Full Name</th>
+                                        <th class="d-none d-xl-table-cell">Contact</th>
+                                        <th>Email</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for customer in customers %}
+                                    <tr>
+                                        <td>{{ customer.date_joined }}</td>
+                                        <td>{{ customer.username }}</td>
+                                        <td class="d-none d-xl-table-cell">{{ customer.first_name }} {{ customer.last_name }}</td>
+                                        <td class="d-none d-xl-table-cell">{{ customer.phone_number }}</td>
+                                        <td>{{ customer.email }}</td>
+                                        <td>
+                                            {% if customer.is_active %}
+                                            <span class="badge bg-success">Active</span>
+                                            {% else %}
+                                            <span class="badge bg-danger">Not Active</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'customer_detail_view' customer.id %}" class="btn btn-outline-secondary">View Details</a>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="7" class="text-center no-customers">No customers found</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</main>
+{% endblock content %}

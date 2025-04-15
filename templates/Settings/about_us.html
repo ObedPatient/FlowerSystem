@@ -1,0 +1,67 @@
+{% extends 'partials/base.html' %} {% load l10n humanize %}
+{% load static %}
+{% load i18n %}
+{% block title %}About Us - E-MariStore{% endblock %}
+{% block meta_description %}Learn more about E-MariStore - Your trusted e-commerce platform in Rwanda{% endblock %}
+{% block content %}
+
+    <!-- Page Styling -->
+    <style>
+        .about-section {
+            padding: 40px;
+            margin-top: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .about-title {
+            margin-bottom: 20px;
+            font-weight: 700;
+            color: #333;
+            text-align: center;
+        }
+
+        .about-content p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+            color: #555;
+            text-align: justify;
+        }
+
+        .about-content h5 {
+            margin-top: 30px;
+            color: #444;
+            font-weight: 600;
+            padding-bottom: 10px;
+        }
+
+    </style>
+
+    <!-- About Us Section -->
+    <section class="container about-section mb-4">
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="about-title">
+                    <h2>About Us</h2>
+                    <p>Your trusted e-commerce platform in Rwanda</p>
+                </div>
+                <div class="about-content">
+                    <p>E-MariStore is your ultimate destination for online shopping in Rwanda. The name "E-MariStore" reflects the convenience of having essentials readily available, much like items stored in the backyard. Our journey started with a simple yet impactful mission: to make life easier for moms by offering shopping assistance.</p>
+
+                    <p>Recognizing the need for online shopping in Rwanda, along with the country's continuous growth in the ICT sector, our idea was embraced by Rwanda Development. As people’s lives get busier, E-MariStore has become a trusted solution for fulfilling everyday needs.</p>
+
+                    <p>At E-MariStore, we are an e-commerce platform that offers a wide range of products for families, businesses, and individuals. Whether you're looking for groceries, electronics, flowers, fashion, office supplies, or everyday essentials, we’ve got it all in one place. Our platform is designed for busy moms balancing work and family, singles who need fast deliveries, newcomers unfamiliar with local markets, and businesses looking to grow their customer base.</p>
+
+                    <p>We take pride in offering products from trusted local sellers, ensuring that you receive high-quality items at competitive prices. With our user-friendly website and mobile app, you can explore our extensive catalog, compare prices, read reviews, and make informed purchasing decisions from the comfort of your home or while on the go.</p>
+
+                    <p>E-MariStore is more than just an e-commerce platform—it’s a driving force for local economic growth. We are committed to supporting and empowering Rwandan businesses because their success is key to our community’s prosperity. By providing a space for entrepreneurs to showcase their products to a wider audience, we contribute to the growth of a vibrant and sustainable local economy.</p>
+
+                    <p>Customer satisfaction is at the heart of everything we do. Our dedicated customer support team is always ready to assist with any questions or concerns, ensuring a smooth and enjoyable shopping experience. We strive to provide fast, personalized service, making sure every step of your journey with us is exceptional.</p>
+
+                    <p>Join us as we redefine online shopping in Rwanda. Discover the convenience, variety, and reliability that E-MariStore offers. Visit our website or download our app today and explore the endless possibilities of online shopping—right in your own backyard!</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+{% endblock content %}

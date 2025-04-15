@@ -1,0 +1,113 @@
+{% extends 'partials/base.html' %} {% load l10n humanize %}
+{% load static %}
+{% block content %}
+
+<div class="footer-top_area">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="newsletter-area">
+                    <h3 class="title">Vendors List</h3>
+                    <div class="newsletter-form_wrap">
+                        <form action="{% url 'search_vendor' %}" method="get" class="newsletters-form validate" novalidate>
+                            {% csrf_token %}
+                            <div id="mc_embed_signup_scroll">
+                                <div id="mc-form" class="mc-form subscribe-form">
+                                    <input name="q" class="newsletter-input" type="search" autocomplete="on" placeholder="Search Vendor" value="{{ query }}">
+                                    <button class="newsletter-btn" id="mc-submit">Search</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="shop-content_wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-3 col-md-5 order-2">
+                <div class="uren-sidebar-catagories_area"> 
+                </div>
+                <div class="sidebar-banner_area">
+                    <div class="banner-item img-hover_effect">
+                        <a href="javascript:void(0)">
+                            <img src="{% static 'assets/images/shop/1.jpg' %}" alt="E-MariStore Shop Banner Image">
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-9 col-md-7 order-1">
+                <div class="shop-toolbar">
+                    <div class="product-item-selection_area">
+                        
+                        <div class="product-showing">
+                            <label class="select-label">We have {{ vendors.count }} Vendor{{ vendors.count|pluralize }} now</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="shop-product-wrap listview img-hover-effect_area row">
+                    <div class="col-lg-4">
+                        <div class="list-slide_item">
+                            {% for ven in vendors %}
+                            <div class="single-product">
+                                <div class="product-img">
+                                    <a href="single-product.html">
+                                        <img class="primary-img" src="{{ ven.image.url }}" alt="E-MariStore Product Image" >
+                                        <img class="secondary-img" src="{{ ven.image.url }}" alt="E-MariStore Product Image">
+                                    </a>
+                                </div>
+                                <div class="product-content">
+                                    <div class="product-desc_info">
+                                        <div class="price-box">
+                                            <span>Since: {{ ven.joined_date|date:"Y" }}</span>&nbsp;&nbsp;&nbsp;&nbsp;<span>({{ ven.products.all.count }} Product{{ ven.products.all.count|pluralize }})</span>
+                                        </div>
+                                        <h6><a class="product-name" href="#">{{ ven.title }}</a></h6>
+                                        <div class="rating-box">
+                                            <ul>
+                                                <li><i class="ion-android-star"></i></li>
+                                                <li><i class="ion-android-star"></i></li>
+                                                <li><i class="ion-android-star"></i></li>
+                                                <li class="silver-color"><i class="ion-android-star"></i>
+                                                </li>
+                                                <li class="silver-color"><i class="ion-android-star"></i>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <table class="table table-borderless mt-4">
+                                            <thead>
+                                              <tr>
+                                                <th scope="col"><i class="material-icons">call</i>&nbsp;Call Us</th>
+                                                <th scope="col"><i class="material-icons">person_pin_circle</i>&nbsp;Address</th>
+                                              </tr>
+                                            </thead>
+                                            <tbody>
+                                              <tr>
+                                                <td>{{ ven.contact }}</td>
+                                                <td>{{ ven.address }}</td>
+                                              </tr>
+                                            </tbody>
+                                        </table>
+                                        <div>
+                                            <a href="{% url 'vendor_detail_view' ven.vid %}"><button class="custom" style="width: 200px;height: 40px;background-color: #ffc400;text-transform: uppercase;font-weight: 700;padding: 10px;">Visit Store</button></a>
+                                        </div>
+
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                   
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- E-MariStore Shop List Right sidebar Area End Here -->
+
+
+{% endblock %}

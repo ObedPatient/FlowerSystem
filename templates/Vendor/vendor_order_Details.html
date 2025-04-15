@@ -1,0 +1,172 @@
+{% extends 'partials/VendorBase.html' %}
+{% load static %}
+{% load l10n humanize %}
+{% block content %}
+<style>
+    .btn-custom {
+        background-color: #999999;
+        border: none;
+        padding: 10px;
+        border-radius: 5px;
+        font-weight: bold;
+        color: white;
+    }
+    .btn-custom:hover {
+        background-color: #bebdb6;
+        cursor: pointer;
+    }
+    .profile-section img {
+        width: 60px;
+        height: 60px;
+    }
+    .info-title {
+        font-size: 1.1rem;
+        font-weight: bold;
+    }
+    .info-value {
+        font-size: 0.9rem;
+        color: #666;
+    }
+</style>
+
+<div class="container mt-4">
+    <h1 class="h3 mb-0">Order Details</h1>
+    <p>Details for Order: <strong>{{ vendor_order.cart_order.oid }}</strong></p>
+    <div class="card p-4">
+
+        <!-- Order Information Section -->
+        <div class="row">
+            <div class="col-md-6">
+                <p><strong>Order Date:</strong> {{ vendor_order.cart_order.order_date }}</p>
+                <p><strong>Order ID:</strong> {{ vendor_order.cart_order.oid }}</p>
+            </div>
+        </div>
+        <hr>
+
+        <!-- Customer, Order Info, Delivery Address -->
+        <div class="row text-center profile-section">
+            <div class="col-md-4 mb-4">
+                <img src="{{ request.user.profile.profile_image.url }}" class="rounded-circle" alt="Customer">
+                <p class="info-title">{{ vendor_order.cart_order.full_name }}</p>
+                <p class="info-value">{{ vendor_order.cart_order.email }}</p>
+                <p class="info-value">{{ vendor_order.cart_order.phone_number }}</p>
+            </div>
+            <div class="col-md-4 mb-4">
+                <i class="fas fa-shipping-fast fa-2x mb-2"></i>
+                <p class="info-title">Order Info</p>
+                <p class="info-value">Order Status: {{ vendor_order.cart_order.product_status|title }}</p>
+                <p class="info-value">
+                    Payment Status:
+                    {% if vendor_order.cart_order.paid_status %}
+                        <span class="badge badge-success">Paid</span>
+                    {% else %}
+                        <span class="badge badge-danger">Not Paid</span>
+                    {% endif %}
+                </p>
+            </div>
+            <div class="col-md-4 mb-4">
+                <i class="fas fa-map-marker-alt fa-2x mb-2"></i>
+                <p class="info-title">Deliver To</p>
+                <p class="info-value">{{ vendor_order.cart_order.address }}, {{ vendor_order.cart_order.city }}</p>
+                <p class="info-value">{{ vendor_order.cart_order.country }}</p>
+            </div>
+        </div>
+
+        <!-- Select Field to Change Order Status -->
+        <div class="row">
+            <div class="col-md-12">
+                <form method="POST" class="mt-4">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="order_status">Update Order Status:</label>
+                        <select class="form-control" id="order_status" name="order_status">
+                            <option value="processing" {% if vendor_order.cart_order.product_status == 'processing' %}selected{% endif %}>Processing</option>
+                            <option value="out_for_delivery" {% if vendor_order.cart_order.product_status == 'out_for_delivery' %}selected{% endif %}>Out for Delivery</option>
+                            <option value="delivered" {% if vendor_order.cart_order.product_status == 'delivered' %}selected{% endif %}>Delivered</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-custom">Update Status</button>
+                </form>
+                
+            </div>
+        </div>
+
+        <!-- Order Items Table -->
+        <div class="table-responsive mt-4" style="max-height: 400px; overflow-y: auto;">
+            <table class="table table-bordered">
+                <thead class="thead-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Unit Price ({{ selected_currency }})</th>
+                        <th>Total ({{ selected_currency }})</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in cart_order_items %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>
+                                <img src="{{ item.product.image.url }}" class="mr-2" alt="Item" width="60px">&nbsp;{{ item.product.title|truncatechars:80 }}
+                            </td>
+                            <td>{{ item.qty }}</td>
+                            <td>{{ item.converted_price|intcomma }} {{ selected_currency }}</td>
+                            <td>{{ item.converted_total|intcomma }} {{ selected_currency }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center">No items found for this order.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+
+        <!-- Order Summary -->
+        <div class="row">
+            <div class="col-md-6 offset-md-6">
+                <div class="d-flex justify-content-between">
+                    <p>Discount:</p>
+                    <p>{{ saved_converted|intcomma }} {{ selected_currency }}</p>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <p>Subtotal:</p>
+                    <p>{{ cart_order_total_converted|intcomma }} {{ selected_currency }}</p>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <p>Delivering Cost:</p>
+                    <p>{{ shipping_fee|intcomma }} {{ selected_currency }}</p>
+                </div>
+                <hr>
+                <div class="d-flex justify-content-between">
+                    <h5>Grand Total:</h5>
+                    <h5>{{ cart_order_total_converted|intcomma }} {{ selected_currency }}</h5>
+                </div>
+                {% if final_price|floatformat:2 != "0.00" %}
+                    <div class="d-flex justify-content-between">
+                        <h5>Grand Total With Discount:</h5>
+                        <h5>{{ final_price|intcomma }} {{ selected_currency }}</h5>
+                    </div>
+                {% endif %}
+                <div class="d-flex justify-content-between mt-2">
+                    <p>Status:</p>
+                    {% if vendor_order.cart_order.paid_status %}
+                        <span class="badge badge-success p-2">Payment Complete</span>
+                    {% else %}
+                        <span class="badge badge-danger p-2">Payment Incomplete</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Bootstrap JS and dependencies -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+{% endblock content %}

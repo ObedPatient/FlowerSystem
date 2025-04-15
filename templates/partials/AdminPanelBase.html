@@ -1,0 +1,234 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="description" content="Responsive Admin &amp; Dashboard Template based on Bootstrap 5">
+	<meta name="author" content="AdminKit">
+	<meta name="keywords" content="adminkit, bootstrap, bootstrap 5, admin, dashboard, template, responsive, css, sass, html, theme, front-end, ui kit, web">
+
+	<link rel="preconnect" href="https://fonts.gstatic.com">
+	<link rel="shortcut icon" href="assets/Admin/img/icons/icon-48x48.png" />
+
+	<link rel="canonical" href="https://demo-basic.adminkit.io/" />
+
+	<title>AdminPanel | E-Mari Store</title>
+	
+	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+	<!-- Add this in your template before your script -->
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://www.paypal.com/sdk/js?client-id=test&currency={{ selected_currency }}"></script>
+    <script src="https://checkout.flutterwave.com/v3.js"></script>
+    
+
+
+
+	<link href="{% static 'assets/Admin/css/app.css' %}" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+
+<body>
+	<div class="wrapper">
+		<nav id="sidebar" class="sidebar js-sidebar">
+			<div class="sidebar-content js-simplebar">
+				<a class="sidebar-brand" href="">
+					<span class="align-middle">AdminPanel Dashboard</span>
+				</a>
+				<hr>
+				<ul class="sidebar-nav">
+					<li class="sidebar-header">
+						Pages
+					</li>
+
+					<li class="sidebar-item {% if '/AdminPanel/AdminPanel/' in request.path %} active {% endif %}">
+						<a class="sidebar-link" href="{% url 'AdminPanel' %}">
+              <i class="align-middle" data-feather="sliders"></i> <span class="align-middle">Dashboard</span>
+            </a>
+					</li>
+
+					<li class="sidebar-item {% if '/AdminPanel/products/' in request.path %} active {% endif %}">
+						<a class="sidebar-link" href="{% url 'products' %}">
+              <i class="fas fa-shopping-bag"></i> <span class="align-middle">Products</span>
+            </a>
+					</li>
+					<li class="sidebar-item {% if '/AdminPanel/addProduct/' in request.path %} active {% endif %}">
+						<a class="sidebar-link" href="{% url 'addProduct' %}">
+							<i class="fas fa-receipt"></i><span class="align-middle">Add Product</span>
+            			</a>
+					</li>
+
+					<li class="sidebar-item {% if '/AdminPanel/orders/' in request.path %} active {% endif %}">
+						<a class="sidebar-link" href="{% url 'orders' %}">
+							<i class="fas fa-receipt"></i><span class="align-middle">Orders</span>
+            			</a>
+					</li>
+
+					<li class="sidebar-item {% if '/AdminPanel/vendor_list/' in request.path %} active {% endif %}">
+						<a class="sidebar-link" href="{% url 'vendor_list' %}">
+							<i class="fas fa-store"></i><span class="align-middle">Vendors</span>
+            			</a>
+					</li>
+					<li class="sidebar-item {% if '/AdminPanel/customers/' in request.path %} active {% endif %}">
+						<a class="sidebar-link" href="{% url 'customers' %}">
+							<i class="fas fa-user-tie"></i><span class="align-middle">Customers</span>
+            			</a>
+					</li>
+
+					<li class="sidebar-item {% if '/AdminPanel/createSeller/' in request.path %} active {% endif %}">
+						<a class="sidebar-link" href="{% url 'createSeller' %}">
+							<i class="fas fa-hand-holding-usd"></i><span class="align-middle">Create Seller</span>
+            			</a>
+					</li>
+
+					
+					<hr>
+					<!--<li class="sidebar-item "></li>
+						<a class="sidebar-link" href="">
+							<i class="fas fa-mail-bulk"></i><span class="align-middle">NewsLetters</span>
+            			</a>
+					</li>-->
+					<li class="sidebar-item {% if '/AdminPanel/reviews/' in request.path %} active {% endif %}">
+						<a class="sidebar-link" href="{% url 'reviews' %}">
+							<i class="fas fa-comments"></i><span class="align-middle">Reviews</span>
+            			</a>
+					</li>
+					<li class="sidebar-item {% if '/AdminPanel/Contacts/' in request.path %} active {% endif %}">
+						<a class="sidebar-link" href="{% url 'Contacts' %}">
+							<i class="fas fa-envelope"></i><span class="align-middle">Contact Support</span>
+            			</a>
+					</li>
+					<hr>
+					<li class="sidebar-item {% if '/AdminPanel/changePassword/' in request.path %} active {% endif %}" >
+						<a class="sidebar-link" href="{% url 'changePassword' %}">
+							<i class="fa fa-lock"></i><span class="align-middle">Change Password</span>
+            			</a>
+					</li>
+					<li class="sidebar-item">
+						<a class="sidebar-link" href="{% url 'userauths:custom_logout' %}">
+							<i class="fa fa-sign-out-alt"></i><span class="align-middle">Logout</span>
+            			</a>
+					</li>
+
+					
+				</ul>
+
+				
+			</div>
+		</nav>
+
+		<div class="main">
+			<nav class="navbar navbar-expand navbar-light navbar-bg">
+				<a class="sidebar-toggle js-sidebar-toggle">
+					<i class="hamburger align-self-center"></i>
+				</a>
+			
+				<div class="navbar-collapse collapse">
+					<ul class="navbar-nav navbar-align">
+						<li class="nav-item dropdown">
+							<a class="nav-link" href="{% url 'Home' %}">
+								<span class="align-middle">View Site Home</span>
+							</a>
+						</li>
+
+
+			
+						<!-- Currency Dropdown -->
+						<li class="nav-item dropdown">
+							<a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+								{{ selected_currency }}</i> Currency
+							</a>
+							<div class="dropdown-menu dropdown-menu-end">
+								<a class="dropdown-item" href="{% url 'set_currency' 'USD' %}">USD - US Dollar</a>
+								<a class="dropdown-item" href="{% url 'set_currency' 'EUR' %}">EUR - Euro</a>
+								<a class="dropdown-item" href="{% url 'set_currency' 'GBP' %}">GBP - British Pound</a>
+								<a class="dropdown-item" href="{% url 'set_currency' 'RWF' %}">RWF - Rwandan Franc</a>
+							</div>
+						</li>
+			
+						<!-- Profile Dropdown -->
+						<li class="nav-item dropdown">
+							<!-- Dropdown toggle for smaller screens -->
+							<a class="nav-icon dropdown-toggle d-inline-block d-sm-none" href="#" data-bs-toggle="dropdown">
+								<i class="align-middle" data-feather="settings"></i>
+							</a>
+			
+							<!-- Dropdown toggle for larger screens -->
+							<a class="nav-link dropdown-toggle d-none d-sm-inline-block" href="#" data-bs-toggle="dropdown">
+								<img src="{{ request.user.profile.profile_image.url }}" alt="Profile" class="avatar img-fluid rounded me-1" />
+								<span class="text-dark">{{ request.user.username }}</span>
+							</a>
+			
+							<!-- Dropdown menu -->
+							<div class="dropdown-menu dropdown-menu-end">
+								<!-- Settings & Privacy -->
+								<a class="dropdown-item" href="">
+									<i class="align-middle me-1" data-feather="settings"></i> Settings & Privacy
+								</a>
+								<div class="dropdown-divider"></div>
+			
+								<!-- Log out -->
+								<a class="dropdown-item" href="{% url 'userauths:custom_logout' %}">Log out</a>
+							</div>
+						</li>
+			
+					</ul>
+				</div>
+			</nav>
+			
+			{% if messages %}
+                        {% for rs in messages %}
+                        <div class="alert alert-warning mt-4" role="alert" style="margin-left:10px;margin-right:10px">
+                            <strong>{{ rs.tags }}</strong>&nbsp;{{ rs }}
+                        </div>
+                        {% endfor %}
+                {% endif %}
+                <script>
+                    $(document).ready(function() {
+                        setTimeout(() => {
+                            $(".alert").alert("close")
+                        }, 3000);
+                    });
+                </script>
+			<main class="content">
+				{% block content %}
+
+				{% endblock content %}
+			</main>
+            <footer class="footer">
+				<div class="container-fluid">
+					<div class="row text-muted">
+						<div class="col-6 text-start">
+							<p class="mb-0">
+								<a class="text-muted" href="{% url 'AdminPanel' %}" target="_blank"><strong>AdminKit</strong></a> &copy;
+							</p>
+						</div>
+						<div class="col-6 text-end">
+							<ul class="list-inline">
+								<li class="list-inline-item">
+									<a class="text-muted" href="#" target="_blank">Support</a>
+								</li>
+								<li class="list-inline-item">
+									<a class="text-muted" href="#" target="_blank">Help Center</a>
+								</li>
+								<li class="list-inline-item">
+									<a class="text-muted" href="{% url 'policy_privacy' %}" target="_blank">Privacy</a>
+								</li>
+								<li class="list-inline-item">
+									<a class="text-muted" href="#" target="_blank">Terms</a>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</footer>
+		</div>
+	</div>
+
+	<script src="{% static 'assets/Admin/js/app.js' %}"></script>
+</body>
+
+</html>

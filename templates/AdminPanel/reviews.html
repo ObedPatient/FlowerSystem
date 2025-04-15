@@ -1,0 +1,60 @@
+{% extends 'partials/AdminPanelBase.html' %}
+
+{% block content %}
+
+<style>
+    .btn{
+        background-color: #999999;
+    }
+    .btn:hover{
+        background-color: #ffc400;
+        cursor: pointer;
+    }
+</style>
+
+<main class="content">
+    <div class="container-fluid p-0">
+
+        <h1 class="h3 mb-3">Reviews</h1>
+        <p>Manage all your Product reviews</p>
+        <div class="row">
+            <div class="col-12">
+                <div class="card flex-fill">
+                    <div class="card-header">
+
+                        <h5 class="card-title mb-0">Recent Reviews</h5>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover my-0">
+                            <thead>
+                                <tr>
+                                    <th>S/N</th>
+                                    <th class="d-none d-xl-table-cell">Product</th>
+                                    <th class="d-none d-xl-table-cell">Name</th>
+                                    <th>Review</th>
+                                    <th class="d-none d-md-table-cell">Rating</th>
+                                    <th class="d-none d-md-table-cell">Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for r in reviews %}
+                                <tr>
+                                    <td>{{forloop.counter }}</td>
+                                    <td class="d-none d-xl-table-cell">{{ r.product.title }}</td>
+                                    <td class="d-none d-xl-table-cell">{{ r.user.full_name|title}}</td>
+                                    <td class="d-none d-md-table-cell">{{ r.review }}</td>
+                                    <td class="d-none d-md-table-cell">{{ r.rating }} Stars</td>
+                                    <td class="d-none d-md-table-cell">{{ r.date|date:"d M, Y"}}</td>
+                                </tr>
+                                {% endfor %}
+                            
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</main>
+{% endblock content %}

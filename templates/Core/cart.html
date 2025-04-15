@@ -1,0 +1,148 @@
+{% extends 'partials/base.html' %} 
+{% load l10n humanize %}
+{% load static %}
+{% block content %}
+
+<style>
+    .custom-form {
+        width: 100%;
+        padding: 20px;
+    }
+    .form-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 15px;
+    }
+    .half-width {
+        width: 48%;
+    }
+    .full-width {
+        width: 100%;
+        margin-bottom: 15px;
+    }
+    .form-group {
+        margin-bottom: 0;
+    }
+    .form-control {
+        width: 100%;
+        padding: 10px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+    }
+    .btn {
+        padding: 10px 20px;
+        border-radius: 4px;
+        border: none;
+        background-color: #999999;
+        color: white;
+        cursor: pointer;
+    }
+    .btn:hover {
+        background-color: #ffc400
+    }
+    .quantity-input {
+        width: 80px;
+        padding: 5px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+        text-align: center;
+        font-size: 16px;
+    }
+    .quantity-input::-webkit-inner-spin-button,
+    .quantity-input::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+</style>
+
+    <!-- Begin E-MariStore Breadcrumb Area -->
+    <div class="breadcrumb-area">
+        <div class="container">
+            <div class="breadcrumb-content">
+                <h2>Other</h2>
+                <ul>
+                    <li><a href="{% url 'Home' %}">Home</a></li>
+                    <li class="active">Cart</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- E-MariStore Breadcrumb Area End Here -->
+    <!-- Begin E-MariStore Cart Area -->
+    <div class="uren-cart-area" id="cart-list">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <h2>Your Cart</h2>
+                    <p>There are {{ totalcartitems }} products in cart</p>
+                        <div class="table-content table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th class="uren-product-remove">Remove</th>
+                                        <th class="uren-product-remove">Refresh</th>
+                                        <th class="uren-product-thumbnail">Images</th>
+                                        <th class="cart-product-name">Product</th>
+                                        <th class="uren-product-price">Unit Price</th>
+                                        <th class="uren-product-quantity">Quantity</th>
+                                        <th class="uren-product-subtotal">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for product_id, item in cart_data.items %}
+                                    <tr>
+                                        <td class="uren-product-remove"><button class="delete-product" data-product="{{ product_id }}"><i class="fa fa-trash"
+                                            title="Remove"></i></button></td>
+                                        <td class="uren-product-remove"><button class="update-product" data-product="{{ product_id }}"><i class="fa fa-refresh"
+                                            title="Remove"></i></button></td>
+                                        <td class="uren-product-thumbnail"><a href="{% url 'product_detail_view' item.pid item.slug %}"><img src="{{ item.image }}" alt="E-MariStore Cart Thumbnail" width="150px"></a></td>
+                                        <td class="uren-product-name"><a href="{% url 'product_detail_view' item.pid item.slug %}">{{ item.title }}</a></td>
+                                        <td class="uren-product-price"><span class="amount">{{ item.converted_price|floatformat:2|intcomma}} &nbsp;{{ selected_currency }}</span></td>
+                                        <td class="quantity">
+                                            <input class="quantity-input product-qty-{{ product_id }}" value="{{ item.qty }}" type="number">
+                                        </td>
+                                        <td class="product-subtotal"><span class="amount">{% load humanize %}
+                                            {% with calculated_price=item.converted_price|floatformat:2 %}
+                                                {% widthratio calculated_price 1 item.qty as price_per_unit %}
+                                                {{ price_per_unit|intcomma }}
+                                            {% endwith %}
+                                            &nbsp;{{ selected_currency }}</span></td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="row">
+                            <!-- Begin Left Side with Coupon and Custom Form -->
+                            
+                            <!-- Begin Cart Totals on the Right -->
+                            <div class="col-md-6 ml-auto">
+                                <div class="cart-page-total">
+                                    <h2>Cart totals</h2>
+                                    <ul>
+                                        <li>Subtotal <span>{{ cart_total_amount|floatformat:2|intcomma }}&nbsp;{{ selected_currency }}</span></li>
+                                        <li>Shipping <span><strong>0&nbsp;{{ selected_currency }}</strong></span></li>
+                                        <li>Discount <span><strong>0&nbsp;{{ selected_currency }}</strong></span></li>
+                                        <li>Total <span>{{ cart_total_amount|floatformat:2|intcomma }}&nbsp;{{ selected_currency }}</span></li>
+                                    </ul>
+                                    <div class="row mt-4">
+                                        <div class="col-12 text-right">
+                                            <a href="{% url 'checkout' %}" class="btn btn-primary">Proceed to checkout</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- End Cart Totals on the Right -->
+                        </div>
+
+                        <!-- Proceed to Checkout Button -->
+                        
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- E-MariStore Cart Area End Here -->
+
+{% endblock content %}

@@ -1,0 +1,77 @@
+{% extends 'partials/base.html' %} {% load l10n humanize %}
+{% load static %}
+{% block content %}
+
+<div class="container" style="margin-top: 50px;">
+    <br><br>
+
+    <h1 class="display-404 py-lg-3 text-center">Payment Failed <i class="fas fa-times-circle text-danger"></i></h1>
+    
+    <h4 class="text-center mb-4 h3"><span>We were unable to process your payment via PayPal for Order ID </span># {{ order.oid }}</h4>
+    <p class="text-center">Please try again or choose a different payment method.</p>
+
+    <div class="container">
+        <h4 class="mb-4">Order Summary</h4>
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in order_items %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ item.product.title }}</td>
+                    <td>{{ item.qty }}</td>
+                    <td>{{ item.converted_price|intcomma }} {{ selected_currency }} </td>
+                    <td>{{ item.converted_total_price|intcomma }} {{ selected_currency }} </td>
+                </tr>
+                {% endfor %}
+            </tbody>          
+            <tfoot>
+                <tr>
+                    <td colspan="4" style="text-align:right;"><strong>Grand Total:</strong></td>
+                    <td><strong>{{ converted_order_total|intcomma }} {{ selected_currency }}</strong></td>
+                </tr>
+                
+                {% if converted_saved_amount|floatformat:2 != "0.00" %}
+                <tr>
+                    <td colspan="4" style="text-align:right;"><strong>Saved Amount:</strong></td>
+                    <td><strong>{{ converted_saved_amount|intcomma }} {{ selected_currency }}</strong></td>
+                </tr>
+                {% endif %}
+                
+                <tr>
+                    <td colspan="4" style="text-align:right;"><strong>Delivery Cost:</strong></td>
+                    <td><strong>{{ Converted_shipping_fee|intcomma }} {{ selected_currency }}</strong></td>
+                </tr>
+                
+                {% if final_price|floatformat:2 != "0.00" %}
+                <tr>
+                    <td colspan="4" style="text-align:right;"><strong>Final Order Total:</strong></td>
+                    <td><strong>{{ final_price|intcomma }} {{ selected_currency }}</strong></td>
+                </tr>
+                {% endif %}
+            </tfoot>
+        </table>
+
+        <p class="text-center"><a href="{% url 'contact' %}">Contact Us</a> if you have any issues or questions.</p>
+    </div>
+
+    <div class="text-center mb-4">
+        <a href="{% url 'payment_view' order.oid  %}" class="btn btn-secondary">Choose Another Payment Method</a>
+    </div>
+
+    <a href="{% url 'Home' %}" class="mb-4">
+        <div class="order-button-payment">
+            <input value="Back to Home Page" type="submit">
+        </div>
+    </a><br><br><br>
+</div>
+
+{% endblock content %}

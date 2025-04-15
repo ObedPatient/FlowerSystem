@@ -1,0 +1,130 @@
+{% extends 'partials/AdminPanelBase.html' %}
+
+{% block content %}
+
+<style>
+    .customer-card {
+        background: #fff;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+    }
+    .customer-image {
+        border-radius: 50%;
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+    }
+    .status-badge {
+        font-size: 14px;
+        padding: 5px 10px;
+        border-radius: 5px;
+    }
+    .active { background-color: #28a745; color: white; }
+    .inactive { background-color: #dc3545; color: white; }
+    .order-history-card {
+        margin-top: 30px;
+    }
+    .order-count-card {
+        background: #f8f9fa;
+        border: 1px solid #d1d3e2;
+        padding: 20px;
+        border-radius: 10px;
+        margin-top: 20px;
+        text-align: center;
+    }
+</style>
+
+<main class="content">
+    <div class="container-fluid p-0">
+        <h1 class="h3 mb-3">Customer Details</h1>
+        
+        <div class="row">
+            <!-- Customer Info Card -->
+            <div class="col-lg-4">
+                <div class="customer-card text-center">
+                    <img src="{{ profile.profile_image.url }}" class="customer-image mb-3" alt="Customer Image">
+                    <h4>{{ customer.full_name }}</h4>
+                    <p class="text-muted">Joined on {{ customer.date_joined|date:"d M, Y" }}</p>
+                    <span class="status-badge {% if customer.is_active %}active{% else %}inactive{% endif %}">
+                        {% if customer.is_active %}Active{% else %}Inactive{% endif %}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Contact Information Card -->
+            <div class="col-lg-4">
+                <div class="customer-card">
+                    <h5>Contact Information</h5>
+                    <p><strong>Email:</strong> {{ customer.email }}</p>
+                    <p><strong>Phone:</strong> {{ customer.phone_number }}</p>
+                    <p><strong>Address:</strong> {{ address.address }}</p>
+                </div>
+            </div>
+
+            <!-- Order Count Card -->
+            <div class="col-lg-4">
+                <div class="order-count-card">
+                    <h5>Total Orders</h5>
+                    <h3>{{ customer_orders.count }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order History Card -->
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="customer-card order-history-card">
+                    <h5>Order History</h5>
+                    <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Date</th>
+                                    <th>Total Price</th>
+                                    <th>Payment Method</th>
+                                    <th>Payment Status</th>
+                                    <th>Change Payment Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for order in customer_orders %}
+                                <tr>
+                                    <td>{{ order.sku }}</td>
+                                    <td>{{ order.order_date }}</td>
+                                    <td>{{ order.price }}</td>
+                                    <td>{{ order.payment_method }}</td>
+                                    {% if order.paid_status %}
+                                        <td><span class="badge bg-success">Paid</span></td>
+                                    {% else %}
+                                        <td><span class="badge bg-danger">Unpaid</span></td>
+                                    {% endif %}
+                                    <td>
+                                        <!-- Select box for changing paid status -->
+                                        <form method="POST" action="{% url 'change_paid_status' order.id %}">
+                                            {% csrf_token %}
+                                            <select name="paid_status" onchange="this.form.submit()" class="form-select">
+                                                <option value="True" {% if order.paid_status %}selected{% endif %}>Paid</option>
+                                                <option value="False" {% if not order.paid_status %}selected{% endif %}>Unpaid</option>
+                                            </select>
+                                        </form>
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'single_order_detail' order.id %}" class="btn btn-info btn-sm">More Details</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+{% endblock content %}

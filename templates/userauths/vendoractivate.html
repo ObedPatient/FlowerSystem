@@ -1,0 +1,10 @@
+{% autoescape off %}
+
+Hi, {{user.full_name}} Thanks for registering as a seller on the marketplace.
+
+please click This link below to verify your account
+
+http://{{domain}}{% url 'userauths:vendoractivate' uidb64=uid token=token %}
+
+
+{% endautoescape%}

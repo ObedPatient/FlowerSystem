@@ -1,0 +1,19 @@
+/* static/css/forms.css */
+.form-control {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+.custom-textarea {
+    height: 100px;
+    resize: vertical;
+}
+
+.custom-rating {
+    max-width: 100px;
+}
+

@@ -1,0 +1,237 @@
+{% extends 'partials/AdminPanelBase.html' %}
+{% load static %}
+
+{% block content %}
+<main class="content">
+    <div class="container-fluid p-0">
+        <div class="mb-3 d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="h3 d-inline align-middle">Add New Seller</h1>
+            </div>
+        </div>
+
+        {% if messages %}
+            <div class="row">
+                <div class="col-12">
+                    {% for message in messages %}
+                        <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-danger{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+
+        <form action="" method="POST" enctype="multipart/form-data" id="sellerForm" novalidate>
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-12 col-lg-7">
+                    <!-- First Name -->
+                    <div class="card">
+                        <div class="card-header"><h5 class="card-title mb-0">First Name</h5></div>
+                        <div class="card-body">
+                            <input type="text" name="first_name" class="form-control" required placeholder="Enter first name">
+                            <div class="error-message text-danger"></div>
+                        </div>
+                    </div>
+
+                    <!-- Last Name -->
+                    <div class="card">
+                        <div class="card-header"><h5 class="card-title mb-0">Last Name</h5></div>
+                        <div class="card-body">
+                            <input type="text" name="last_name" class="form-control" required placeholder="Enter last name">
+                            <div class="error-message text-danger"></div>
+                        </div>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="card">
+                        <div class="card-header"><h5 class="card-title mb-0">Email</h5></div>
+                        <div class="card-body">
+                            <input type="email" name="email" class="form-control" required placeholder="Enter email">
+                            <div class="error-message text-danger"></div>
+                        </div>
+                    </div>
+
+                    <!-- Password -->
+                    <div class="card">
+                        <div class="card-body row">
+                            <div class="col-md-6 mb-3">
+                                <label>Password</label>
+                                <input type="password" name="password" id="password" class="form-control" required>
+                                <div class="error-message text-danger"></div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label>Confirm Password</label>
+                                <input type="password" name="confirm_password" id="confirm_password" class="form-control" required>
+                                <div class="error-message text-danger"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="card">
+                        <div class="card-header"><h5 class="card-title mb-0">Vendor Description</h5></div>
+                        <div class="card-body">
+                            <textarea name="description" rows="3" class="form-control" placeholder="Short vendor bio..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Address -->
+                    <div class="card">
+                        <div class="card-header"><h5 class="card-title mb-0">Address</h5></div>
+                        <div class="card-body">
+                            <input type="text" name="address" class="form-control" placeholder="Vendor address" value="28 St Avenue">
+                            <div class="error-message text-danger"></div>
+                        </div>
+                    </div>
+
+                    <!-- Contact -->
+                    <div class="card">
+                        <div class="card-header"><h5 class="card-title mb-0">Contact Number</h5></div>
+                        <div class="card-body">
+                            <input type="text" name="contact" id="contact" class="form-control" placeholder="+2507..." value="+250784958773" required>
+                            <div class="error-message text-danger"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-lg-5">
+                    <!-- Profile Image -->
+                    <div class="card">
+                        <div class="card-header"><h5 class="card-title mb-0">Profile Image</h5></div>
+                        <div class="card-body">
+                            <input type="file" name="image" id="profile_image" class="form-control" accept="image/*">
+                            <div class="error-message text-danger"></div>
+                        </div>
+                    </div>
+
+                    <!-- ID Image -->
+                    <div class="card">
+                        <div class="card-header"><h5 class="card-title mb-0">ID Document</h5></div>
+                        <div class="card-body">
+                            <input type="file" name="id_image" id="id_image" class="form-control" accept="image/*">
+                            <div class="error-message text-danger"></div>
+                        </div>
+                    </div>
+
+                    <!-- Role -->
+                    <div class="card">
+                        <div class="card-header"><h5 class="card-title mb-0">Make this user a seller?</h5></div>
+                        <div class="card-body">
+                            <input type="checkbox" name="is_seller" id="is_seller" value="yes">
+                            <label for="is_seller">Yes, add to sellers group</label>
+                        </div>
+                    </div>
+
+                    <!-- Submit -->
+                    <div class="link_product mt-3">
+                        <button class="buton float-end" type="submit">Create Seller</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</main>
+
+<style>
+    .buton {
+        background-color: #999999;
+        border: none;
+        padding: 10px;
+        border-radius: 5px;
+        font-weight: bold;
+        color: white;
+    }
+    .buton:hover {
+        background-color: #bebdb6;
+        cursor: pointer;
+    }
+    .error-message {
+        font-size: 0.875rem;
+        margin-top: 5px;
+    }
+    .form-control.is-invalid {
+        border-color: #dc3545;
+    }
+</style>
+
+<script>
+document.getElementById('sellerForm').addEventListener('submit', function(event) {
+    event.preventDefault(); // Prevent form submission until validation passes
+    let isValid = true;
+    clearErrors();
+
+    // Phone number validation: +2507 followed by 7 digits
+    const contact = document.getElementById('contact').value;
+    const phoneRegex = /^\+2507\d{8}$/;
+    if (!phoneRegex.test(contact)) {
+        showError('contact', 'Phone number must be in the format +2507XXXXXXX (e.g., +2507849587).');
+        isValid = false;
+    }
+
+    // Password validation: At least 8 characters, one uppercase, one lowercase
+    const password = document.getElementById('password').value;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
+    if (!passwordRegex.test(password)) {
+        showError('password', 'Password must be at least 8 characters long and contain at least one uppercase and one lowercase letter.');
+        isValid = false;
+    }
+
+    // Confirm password validation
+    const confirmPassword = document.getElementById('confirm_password').value;
+    if (password !== confirmPassword) {
+        showError('confirm_password', 'Passwords do not match.');
+        isValid = false;
+    }
+
+    // File validation: Ensure profile_image and id_image are images
+    const profileImage = document.getElementById('profile_image').files[0];
+    if (profileImage) {
+        const validImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/jpg'];
+        if (!validImageTypes.includes(profileImage.type)) {
+            showError('profile_image', 'Profile image must be a valid image file (JPG, PNG, GIF).');
+            isValid = false;
+        }
+    }
+
+    const idImage = document.getElementById('id_image').files[0];
+    if (idImage) {
+        const validImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/jpg'];
+        if (!validImageTypes.includes(idImage.type)) {
+            showError('id_image', 'ID document must be a valid image file (JPG, PNG, GIF).');
+            isValid = false;
+        }
+    }
+
+    // Required fields: first_name, last_name, email
+    const requiredFields = ['first_name', 'last_name', 'email'];
+    requiredFields.forEach(field => {
+        const input = document.querySelector(`[name="${field}"]`);
+        if (!input.value.trim()) {
+            showError(field, `${field.replace('_', ' ').toUpperCase()} is required.`);
+            isValid = false;
+        }
+    });
+
+    if (isValid) {
+        this.submit(); // Submit the form if all validations pass
+    }
+});
+
+function showError(fieldId, message) {
+    const field = document.getElementById(fieldId) || document.querySelector(`[name="${fieldId}"]`);
+    const errorDiv = field.parentElement.querySelector('.error-message');
+    errorDiv.textContent = message;
+    field.classList.add('is-invalid');
+}
+
+function clearErrors() {
+    const errorMessages = document.querySelectorAll('.error-message');
+    errorMessages.forEach(div => div.textContent = '');
+    const invalidFields = document.querySelectorAll('.is-invalid');
+    invalidFields.forEach(field => field.classList.remove('is-invalid'));
+}
+</script>
+
+{% endblock %}

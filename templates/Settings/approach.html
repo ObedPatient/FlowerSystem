@@ -1,0 +1,87 @@
+{% extends 'partials/base.html' %} {% load l10n humanize %}
+{% load static %}
+{% load i18n %}
+{% block title %}E-MariStore - Eco-friendly Approach{% endblock %}
+{% block meta_description %}E-MariStore - Empowering Sustainable Consumption{% endblock %}
+{% block content %}
+
+    <!-- Page Styling -->
+    <style>
+        .eco-section {
+            padding: 40px;
+            margin-top: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .eco-title {
+            margin-bottom: 20px;
+            font-weight: 700;
+            color: #333;
+            text-align: center;
+        }
+
+        .eco-content h4, .eco-content h5 {
+            margin-top: 30px;
+            color: #444;
+            font-weight: 600;
+            border-bottom: 2px solid #e2e2e2;
+            padding-bottom: 10px;
+        }
+
+        .eco-content p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .eco-content ul, .eco-content ol {
+            margin-left: 20px;
+            padding: 10px;
+        }
+
+        .eco-content ul li, .eco-content ol li {
+            margin-bottom: 10px;
+        }
+
+        .contact-email {
+            color: #007bff;
+            text-decoration: underline;
+        }
+
+        .contact-email:hover {
+            text-decoration: none;
+        }
+        
+    </style>
+
+    <!-- Eco-friendly Approach Section -->
+    <section class="container eco-section mb-4">
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="eco-title">
+                    <h2>Our Eco-friendly Approach</h2>
+                </div>
+                <div class="eco-content">
+                    <p>At E-MariStore, we understand the urgent need to protect our environment and embrace sustainable practices. That's why we've introduced an eco-friendly approach aimed at fostering a culture of reuse and reducing waste within our community. Our approach offers an innovative platform for individuals to sell gently used goods, providing them the opportunity to earn extra income while promoting the reuse of items that are still in excellent condition.</p>
+                    
+                    <h5>Marketplace for Pre-loved Items</h5>
+                    <p>The core of our eco-friendly approach is the creation of a marketplace where individuals can resell their pre-loved items, extending the lifecycle of these products and reducing their environmental impact. By acting as intermediaries between sellers and buyers, we ensure that both parties benefit while maintaining the integrity and sustainability of our services.</p>
+                    
+                    <h4>Vendor Requirements</h4>
+                    <p>For those interested in becoming vendors, we’ve established specific requirements to maintain the quality of the items sold. Products must be in excellent condition, similar to new, and vendors are asked to provide a detailed history of the product, including its original purchase price. This level of transparency builds buyer confidence and fosters trust within our community.</p>
+
+                    <h4>Efficient Payment Handling</h4>
+                    <p>To simplify the selling process, we handle payments on behalf of the vendor, ensuring they receive their earnings promptly once the customer confirms the purchase. Additionally, to address any concerns about purchasing second-hand goods, we offer a curated collection of pre-owned items, making it easy for customers to browse and shop with confidence.</p>
+
+                    <h4>Commitment to Sustainability</h4>
+                    <p>Our commitment to sustainability goes beyond transactions; it’s about promoting a mindset of conscious consumption and responsible resource use. By encouraging the reuse of goods and supporting a circular economy, we are taking meaningful steps towards reducing waste and minimizing our environmental footprint.</p>
+
+                    <h4>Join Our Mission</h4>
+                    <p>Through E-MariStore's eco-friendly approach, we’re not only providing a platform for individuals to monetize their unused items but also contributing to the broader goal of building a more sustainable future. Together, we can make a difference—one purchase, one sale, and one act of environmental responsibility at a time. Join us in our mission to create a greener, more sustainable world for future generations.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+{% endblock content %}

@@ -1,0 +1,75 @@
+{% extends 'partials/base.html' %} {% load l10n humanize %}
+{% load static %}
+{% block content %}
+
+
+        <!-- Begin E-MariStore Breadcrumb Area -->
+        <div class="breadcrumb-area">
+            <div class="container">
+                <div class="breadcrumb-content">
+                    <h2>Other</h2>
+                    <ul>
+                        <li><a href="{% url 'Home' %}">Home</a></li>
+                        <li class="active">Login</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- E-MariStore Breadcrumb Area End Here -->
+        <!-- Begin E-MariStore Login Register Area -->
+        <div class="uren-login-register_area">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-12 col-md-12 col-xs-12 col-lg-6">
+                        <!-- Login Form s-->
+                        <form action="#" method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" name="next" value="{{ next }}">
+                            <div class="login-form">
+                                <h4 class="login-title">Login</h4>
+                                <div class="row">
+                                    <div class="col-md-12 col-12">
+                                        <label>Email Address*</label>
+                                        <input type="email" placeholder="Email Address" name="email" required>
+                                    </div>
+                                    <div class="col-12 mb--20">
+                                        <label>Password</label>
+                                        <input type="password" placeholder="Your Password" name="password" required>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <div class="check-box">
+                                            <input type="checkbox" id="remember_me">
+                                            <label for="remember_me">Remember me</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="forgotton-password_info">
+                                            <a href="{% url 'userauths:request_reset_email' %}"> Forgotten password?</a>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <button type="submit" class="uren-login_btn">Login</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-sm-12 col-md-12 col-lg-6 col-xs-12">
+                        <div class="banner-item img-hover_effect">
+                            <br><br><br>
+                            <center>
+                                <div class="banner-content">
+                                    <h3>New Member ?</h3>
+                                    <p>Welcome To Our MarketPlace. <span>Click button Below to Sign Up</span></p>
+                                    <div class="uren-btn-ps_left">
+                                        <a class="uren-btn" href="{% url 'userauths:sign-up' %}" style="width:300px;" >Create New Account</a>
+                                    </div>
+                                </div>
+                            </center>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- E-MariStore Login Register Area  End Here -->
+        {% endblock content %}

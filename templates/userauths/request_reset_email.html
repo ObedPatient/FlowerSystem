@@ -1,0 +1,38 @@
+{% extends 'partials/base.html' %} {% load l10n humanize %}
+{% load static %}
+{% block content %}
+
+
+<section class="section-content padding-y">
+
+    <!-- ============================ COMPONENT REGISTER   ================================= -->
+        <div class="card mx-auto" style="max-width:520px; margin-top:40px;">
+          <article class="card-body">
+        
+            <header class="mb-4"><h4 class="card-title">Request a link to activate</h4></header>
+            <form action="{% url 'userauths:request_reset_email' %}" method="POST">
+                {% csrf_token  %}
+                    <div class="form-row">
+                        <div class="col form-group">
+                            <label>Email</label>
+                            <input type="email" name="email" class="form-control" required>
+                              
+                        </div> <!-- form-group end.// -->
+                </div>
+                <br>
+                    <div class="form-group">
+                        <button type="submit" name="" class="btn uren-btn_dark btn-block"> Send link </button>
+                    <!-- form-group// -->
+        
+                </form>
+                <p class="mt-2">Go Back <a href="{% url 'userauths:custom_login' %}">Login</a></p>
+            </article><!-- card-body.// -->
+        </div> <!-- card .// -->
+        
+    
+        <br><br>
+    <!-- ============================ COMPONENT REGISTER  END.// ================================= -->
+    
+    
+    </section>
+   {% endblock content %}

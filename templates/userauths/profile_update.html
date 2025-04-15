@@ -1,0 +1,87 @@
+{% extends 'partials/base.html' %} {% load l10n humanize %}
+{% load static %}
+{% block content %}
+
+<body class="template-color-1">
+    <div class="breadcrumb-area">
+        <div class="container">
+            <div class="breadcrumb-content">
+                <h2>Other</h2>
+                <ul>
+                    <li><a href="{% url 'Home' %}">Home</a></li>
+                    <li class="active">My Account</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- E-MariStore Breadcrumb Area End Here -->
+    <!-- Begin E-MariStore Page Content Area -->
+    <main class="page-content">
+        <!-- Begin E-MariStore Account Page Area -->
+        <div class="account-page-area">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-3">
+                        <ul class="nav myaccount-tab-trigger" id="account-page-tab" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="account-profile-tab" data-toggle="tab" href="#account-profile" role="tab" aria-controls="account-profile" aria-selected="true"><img src="{% static 'assets/images/banner/user.png' %}" alt="dashboard" width="20px">&nbsp;Profile</a>
+                            </li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" id="account-logout-tab" href="{% url 'userauths:custom_logout' %}" role="tab" aria-selected="false"><img src="{% static 'assets/images/banner/logout.png' %}" alt="dashboard" width="20px">&nbsp;Logout</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-9">
+                        <div class="tab-content myaccount-tab-content" id="account-page-tab-content">
+                            <div class="tab-pane fade show active" id="account-profile" role="tabpanel" aria-labelledby="account-profile-tab">
+                                <div class="myaccount-profile border-bottom">
+                                    <h3>Update Profile</h3>   
+                                </div>
+                                {% if form.errors %}
+                                <div class="alert-danger">
+                                    <strong>{{ form.errors }}</strong>
+                                </div>
+                                {% endif %}
+                                <div class="myaccount-details">
+                                    <form action="#" class="uren-form" method="POST" enctype="multipart/form-data">
+                                        {% csrf_token %}
+                                        <div class="uren-form-inner">
+                                            <div class="single-input">
+                                                {% if profile.profile_image %}
+                                                <img src="{{ profile.profile_image.url }}" alt="" width="100px" style="border-radius: 50%;">
+                                                {% else %}
+                                                <img src="{% static 'assets/images/banner/default.png' %}" alt="" width="100px" style="border-radius: 50%;">
+                                                {% endif %}
+                                            </div>
+                                            <div class="single-input">
+                                                {{ form.profile_image }}
+                                            </div>
+                                            <div class="single-input">
+                                                {{ form.full_name }}
+                                            </div>
+                                            <div class="single-input">
+                                                {{ form.bio }}
+                                            </div>
+                                            <div class="single-input">
+                                                {{ form.phone }}
+                                            </div>
+                                            <div class="single-input">
+                                                <button class="uren-btn uren-btn_dark" type="submit"><span>Save Changes</span></button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- E-MariStore Account Page Area End Here -->
+    </main>
+</body>
+
+
+{% endblock content %}

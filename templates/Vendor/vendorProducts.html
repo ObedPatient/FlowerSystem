@@ -1,0 +1,176 @@
+{% extends 'partials/VendorBase.html' %}
+{% load humanize %}
+
+{% block content %}
+<style>
+    .buton {
+        background-color: #999999;
+        border: none;
+        padding: 10px;
+        border-radius: 5px;
+        font-weight: bold;
+    }
+    .link_product a {
+        text-decoration: none;
+        color: white;
+    }
+    .buton:hover {
+        background-color: #bebdb6;
+        cursor: pointer;
+    }
+    .currency-selector {
+        margin-bottom: 20px;
+    }
+    .search-container {
+        margin-bottom: 15px;
+    }
+    .search-container form {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    .search-container input,
+    .search-container select {
+        max-width: 300px;
+    }
+</style>
+
+<main class="content">
+    <div class="container-fluid p-0">
+        <div class="mb-3 d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="h3 d-inline align-middle">Products</h1>
+                <p>Manage all your Products from here</p>
+            </div>
+            <div class="link_product">
+                <a href="" class="buton float-end">Create Product</a>
+            </div>
+        </div>
+
+        <!-- Currency Selector -->
+        <div class="currency-selector">
+            <form method="post" action="">
+                {% csrf_token %}
+                <label for="currency">Currency: </label>
+                <select name="currency" id="currency" class="form-select d-inline w-auto" onchange="this.form.submit()">
+                    <option value="RWF" {% if selected_currency == 'RWF' %}selected{% endif %}>RWF</option>
+                    <option value="USD" {% if selected_currency == 'USD' %}selected{% endif %}>USD</option>
+                    <option value="EUR" {% if selected_currency == 'EUR' %}selected{% endif %}>EUR</option>
+                    <option value="GBP" {% if selected_currency == 'GBP' %}selected{% endif %}>GBP</option>
+                </select>
+            </form>
+        </div>
+
+        <!-- Search Form -->
+        <div class="search-container">
+            <form method="get" action="">
+                <input type="text" name="q" id="product-search" class="form-control" placeholder="Search by product or category title" value="{{ search_query|default:'' }}">
+                <select name="category" id="category-filter" class="form-select">
+                    <option value="" {% if not category_filter %}selected{% endif %}>All Categories</option>
+                    {% for category in all_categories %}
+                        <option value="{{ category.id }}" {% if category_filter == category.id|stringformat:"s" %}selected{% endif %}>{{ category.title }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="btn btn-primary">Search</button>
+            </form>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="card flex-fill">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">All Products</h5>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover my-0">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th class="d-none d-xl-table-cell">Product Title</th>
+                                    <th class="d-none d-xl-table-cell">Price</th>
+                                    <th class="d-none d-xl-table-cell">Old Price</th>
+                                    <th class="d-none d-md-table-cell">Category</th>
+                                    <th class="d-none d-md-table-cell">Stock</th>
+                                    <th class="d-none d-md-table-cell">Product Status</th>
+                                    <th class="d-none d-md-table-cell">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for p in page_obj %}
+                                <tr>
+                                    <td>
+                                        {% if p.image %}
+                                            <img src="{{ p.image.url }}" alt="{{ p.title }}" width="80px">
+                                        {% else %}
+                                            No Image
+                                        {% endif %}
+                                    </td>
+                                    <td class="d-none d-xl-table-cell">{{ p.title }}</td>
+                                    <td class="d-none d-xl-table-cell">
+                                        {{ currency_symbols.selected_currency }}
+                                        {% if selected_currency == 'RWF' %}
+                                            {{ p.converted_price|intcomma }}
+                                        {% else %}
+                                            {{ p.converted_price|floatformat:2 }}
+                                        {% endif %}
+                                    </td>
+                                    <td class="d-none d-xl-table-cell">
+                                        {{ currency_symbols.selected_currency }}
+                                        {% if selected_currency == 'RWF' %}
+                                            {{ p.converted_old_price|intcomma }}
+                                        {% else %}
+                                            {{ p.converted_old_price|floatformat:2 }}
+                                        {% endif %}
+                                    </td>
+                                    <td class="d-none d-xl-table-cell">{{ p.category.title|default:"No Category" }}</td>
+                                    <td class="d-none d-xl-table-cell">{{ p.in_stock }}</td>
+                                    <td class="d-none d-xl-table-cell">{{ p.product_status }}</td>
+                                    <td class="d-none d-xl-table-cell d-flex">
+                                        <a href="" class="btn btn-success me-2">
+                                            <span><i class="fas fa-eye"></i> View</span>
+                                        </a>
+                                        
+                                    </td>
+                                    
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="9">No products found.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        {% if page_obj.has_previous or page_obj.has_next %}
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&q={{ search_query|urlencode }}{% endif %}{% if category_filter %}&category={{ category_filter|urlencode }}{% endif %}" aria-label="Previous">
+                            <span aria-hidden="true">«</span>
+                        </a>
+                    </li>
+                {% endif %}
+                <li class="page-item disabled">
+                    <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                </li>
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&q={{ search_query|urlencode }}{% endif %}{% if category_filter %}&category={{ category_filter|urlencode }}{% endif %}" aria-label="Next">
+                            <span aria-hidden="true">»</span>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</main>
+
+{% endblock content %}

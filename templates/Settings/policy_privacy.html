@@ -1,0 +1,125 @@
+{% extends 'partials/base.html' %} {% load l10n humanize %}
+{% load static %}
+{% load i18n %}
+{% block title %}E-MariStore - Privacy Policy{% endblock %}
+{% block meta_description %}E-MariStore{% endblock %}
+{% block content %}
+    
+    <style>
+        .policy-section {
+            padding: 40px;
+            margin-top: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: #ffffff;
+        }
+
+        .policy-title {
+            margin-bottom: 20px;
+            font-weight: 700;
+            color: #333;
+            text-align: center;
+        }
+
+        .policy-content h3, .policy-content h4 {
+            margin-top: 30px;
+            color: #444;
+            font-weight: 600;
+            border-bottom: 2px solid #e2e2e2;
+            padding-bottom: 10px;
+        }
+
+        .policy-content p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .policy-content ul, .policy-content ol {
+            margin-left: 20px;
+            padding: 10px;
+        }
+
+        .policy-content ul li, .policy-content ol li {
+            margin-bottom: 10px;
+        }
+
+        .contact-email {
+            color: #007bff;
+            text-decoration: underline;
+        }
+
+        .contact-email:hover {
+            text-decoration: none;
+        }
+
+        address {
+            font-style: normal;
+            line-height: 1.6;
+            color: #555;
+        }
+        
+        .footer-section {
+            background-color: #343a40;
+            color: #ffffff;
+            padding: 30px;
+            text-align: center;
+            margin-top: 40px;
+        }
+    </style>
+
+    <!-- Privacy Policy Section -->
+    <section class="container policy-section mb-4">
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="policy-title">
+                    <h2>Privacy Policy - E-MariStore</h2>
+                </div>
+                <div class="policy-content">
+                    <p>
+                        This Privacy Policy outlines how your personal information is collected, used, and shared when you visit or make a purchase from E-mariStore.com.
+                    </p>
+
+                    <h3>Personal Information We Collect</h3>
+                    <p>
+                        When you visit the website, we automatically collect specific details about your device, such as your web browser, IP address, time zone, and certain cookies installed on your device. Additionally, we gather information about the web pages or products you view, the websites or search terms that referred you, and details on how you interact with our site. We refer to this as "Device Information."
+                    </p>
+                    <p>
+                        When you make a purchase or attempt to make a purchase through our site, we collect your name, billing and shipping address, payment details, email address, and phone number, which we refer to as "Order Information."
+                    </p>
+
+                    <h3>How Do We Use Your Personal Information?</h3>
+                    <p>
+                        We primarily use the Order Information collected to fulfill orders placed through the site, including processing payment, arranging shipping, and providing invoices or order confirmations. Additionally, we use this Order Information to communicate with you, screen orders for potential risks or fraud, and provide information or advertising related to our products or services.
+                    </p>
+
+                    <h3>Sharing Your Personal Information</h3>
+                    <p>
+                        We share your Personal Information with third parties to help us utilize it as outlined above. For example, we use Shopify to power our online store, and Google Analytics to understand how customers use our site.
+                    </p>
+
+                    <h3>Behavioral Advertising</h3>
+                    <p>
+                        We use your Personal Information to provide targeted advertisements or marketing communications that we believe may interest you.
+                    </p>
+
+                    <h3>Your Rights</h3>
+                    <p>
+                        If you are a European resident, you have the right to access, update, or delete any personal information we hold about you.
+                    </p>
+
+                    <h3>Contact Us</h3>
+                    <p>
+                        For more information about our privacy practices, questions, or to make a complaint, please contact us via email at <a href="mailto:info@e-maristore.com" class="contact-email">info@e-maristore.com</a> or by mail at:
+                    </p>
+                    <address>
+                        <strong>E-MariStore</strong><br>
+                        Kk 28 ave, Gatenga, Kicukiro,<br>
+                        Kigali City, Rwanda
+                    </address>
+                </div>
+            </div>
+        </div>
+    </section>
+
+{% endblock content %}

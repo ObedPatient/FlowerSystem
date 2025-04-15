@@ -1,0 +1,219 @@
+{% extends 'partials/AdminPanelBase.html' %}
+
+{% block content %}
+
+<style>
+    .vendor-card {
+        background: #fff;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .vendor-image {
+        border-radius: 50%;
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+    }
+    .status-badge {
+        font-size: 14px;
+        padding: 5px 10px;
+        border-radius: 5px;
+    }
+    .approved { background-color: #28a745; color: white; }
+    .pending { background-color: #ffc107; color: black; }
+    .rejected { background-color: #dc3545; color: white; }
+</style>
+
+<main class="content">
+    <div class="container-fluid p-0">
+        <h1 class="h3 mb-3">Vendor Details</h1>
+        
+        
+
+        <!-- Revenue Card -->
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <div class="vendor-card text-center">
+                    <h5>Total Revenue</h5>
+                    <h3 class="text-success">$ {{ vendor.total_revenue }}</h3>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="vendor-card text-center">
+                    <img src="{{ vendor.image.url }}" class="vendor-image mb-3" alt="Vendor Image">
+                    <h4>{{ vendor.title }}</h4>
+                    <p class="text-muted">Joined on {{ vendor.joined_date|date:"d M, Y" }}</p>
+                    <span class="status-badge {{ vendor.status }}">{{ vendor.get_status_display }}</span>
+                    
+                    <!-- Status Form -->
+                    <form method="post" class="mt-3">
+                        {% csrf_token %}
+                        <input type="hidden" name="status_form" value="true">
+                        <div class="form-group">
+                            <label for="status">Status</label>
+                            <select name="status" id="status" class="form-control">
+                                <option value="pending" {% if vendor.status == 'pending' %}selected{% endif %}>Pending Approval</option>
+                                <option value="approved" {% if vendor.status == 'approved' %}selected{% endif %}>Approved</option>
+                                <option value="rejected" {% if vendor.status == 'rejected' %}selected{% endif %}>Rejected</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-sm">Update Status</button>
+                    </form>
+                </div>
+            </div>
+            <div class="col-lg-8">
+                <div class="vendor-card">
+                    <h5>Contact Information</h5>
+                    <p><strong>Email:</strong> {{ vendor.email }}</p>
+                    <p><strong>Phone:</strong> {{ vendor.contact }}</p>
+                    <p><strong>Address:</strong> {{ vendor.address }}</p>
+                    <hr>
+                    <h5>Additional Information</h5>
+                    <p><strong>Documents:</strong> 
+                        {% if vendor.documents %}
+                            <a href="{{ vendor.documents.url }}" target="_blank" class="btn btn-primary btn-sm">View Document</a>
+                        {% else %}
+                            No documents uploaded
+                        {% endif %}
+                    </p>
+                    <!-- Payment Form -->
+                    <h5>Payment Status</h5>
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="payment_form" value="true">
+                        <div class="form-group form-check">
+                            <input type="checkbox" name="has_paid_fee" id="has_paid_fee" class="form-check-input" 
+                                {% if vendor.has_paid_fee %}checked{% endif %}>
+                            <label for="has_paid_fee" class="form-check-label">Has Paid Fee</label>
+                        </div>
+                        <div class="form-group">
+                            <label for="payment_status">Payment Status</label>
+                            <select name="payment_status" id="payment_status" class="form-control">
+                                <option value="pending" {% if vendor.payment_status == 'pending' %}selected{% endif %}>Pending</option>
+                                <option value="approved" {% if vendor.payment_status == 'approved' %}selected{% endif %}>Approved</option>
+                                <option value="rejected" {% if vendor.payment_status == 'rejected' %}selected{% endif %}>Rejected</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-sm">Update Payment</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Vendor Orders Table -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="vendor-card">
+                    <h5>Vendor Orders</h5>
+                    <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Billing Name</th>
+                                    <th>Date</th>
+                                    <th>Total Price</th>
+                                    <th>Commission</th>
+                                    <th>Net Amount</th>
+                                    <th>Payment Method</th>
+                                    <th>Payment Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for order in vendor_orders %}
+                                <tr>
+                                    <td>#{{ order.cart_order.sku }}</td>
+                                    <td>{{ order.cart_order.full_name }}</td>
+                                    <td>{{ order.order_date }}</td>
+                                    <td>${{ order.total_amount }}</td>
+                                    <td>${{ order.commission }}</td>
+                                    <td>${{ order.net_amount }}</td>
+                                    <td>
+                                        {% if order.cart_order.payment_method == 'cod' %}
+                                            Cash On Delivery
+                                        {% else %}
+                                            {{ order.cart_order.payment_method }}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if order.cart_order.paid_status %}
+                                            <span class="badge bg-success">Paid</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">Not Paid</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'order_details' order.id %}" class="btn btn-primary">View</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Subscription Payments Table -->
+        <!-- Subscription Payments Table -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="vendor-card">
+                    <h5>Subscription Payments</h5>
+                    <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Payment ID</th>
+                                    <th>Amount</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Payment Method</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="subscription-payments-body">
+                                {% for payment in subscription_payments %}
+                                <tr data-payment-id="{{ payment.id }}">
+                                    <td>#{{ payment.transaction_id|slice:":10" }}</td>
+                                    <td>${{ payment.amount }}</td>
+                                    <td>{{ payment.created_at }}</td>
+                                    <td>{{ payment.status }}</td>
+                                    <td>{{ payment.payment_method }}</td>
+                                    <td>
+                                        <form method="POST" action="{% url 'update_subs_payment_status' %}">
+                                            {% csrf_token %}
+                                            <div class="input-group input-group-sm">
+                                                <input type="hidden" name="payment_id" value="{{ payment.id }}">
+                                                <input type="hidden" name="vid" value="{{ vid }}">
+                                                <select name="status" class="form-control">
+                                                    {% for value, label in status_choices %}
+                                                        <option value="{{ value }}" {% if payment.status == value %}selected{% endif %}>{{ label }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                                <div class="input-group-append">
+                                                    <button type="submit" class="btn btn-primary">Save</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
+
+            </div>
+        </main>
+
+{% endblock content %}

@@ -1,0 +1,243 @@
+{% extends 'partials/base.html' %} {% load l10n humanize %}
+{% load static %}
+{% block content %}
+
+<style>
+    /* Adjust the styling for better alignment */
+    .iti {
+        width: 100%;
+    }
+</style>
+
+<!-- Begin Breadcrumb Area -->
+<div class="breadcrumb-area">
+    <div class="container">
+        <div class="breadcrumb-content text-center">
+            <h2>Checkout</h2>
+            <ul>
+                <li><a href="{% url 'Home' %}">Home</a> / </li>
+                <li class="active">Checkout</li>
+            </ul>
+        </div>
+    </div>
+</div>
+<!-- Breadcrumb Area End -->
+
+<div class="container my-5">
+    <!-- Go Back to Cart Button -->
+    <div class="mb-4">
+        <a href="{% url 'cart' %}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left"></i>&nbsp;Go Back to Cart
+        </a>
+    </div>
+    <div class="row">
+        <div class="col-lg-12 mb-4">
+            <h1>Checkout</h1>
+            <p>There are {{ totalcartitems }} products </p>
+        </div>
+    </div>
+    <!--<div class="coupon-accordion">
+        <h3>Have a coupon? <span id="showcoupon">Click here to enter your code</span></h3>
+        <div id="checkout_coupon" class="coupon-checkout-content">
+            <form action="" method="POST">
+                <div class="coupon-info">
+                    <p class="checkout-coupon">
+                        {% csrf_token %}
+                        <input placeholder="Coupon code" type="text" name="code">
+                        <input class="coupon-inner_btn" value="Apply Coupon" type="submit">
+                    </p>
+                </div>
+            </form>
+        </div>
+    </div>-->
+    
+    <hr>
+
+    <form id="checkout-form" action="{% url 'place_order' %}" method="POST">
+        {% csrf_token %}
+        
+        <div class="row">
+            <!-- Contact and Delivery Information -->
+            <div class="col-md-6">
+                <h4 class="mb-4">Delivery Details</h4>
+                <div class="mb-3">
+                    <label for="full_name" class="form-label">Full Name</label>
+                    <input type="text" name="full_name" class="form-control" id="full_name" required>
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" name="email" id="email" required>
+                </div>
+                <div class="mb-3">
+                    <label for="address" class="form-label">Address</label>
+                    <input type="text" class="form-control" name="address" id="address" required>
+                </div>
+                <div class="mb-3">
+                    <label for="city" class="form-label">City</label>
+                    <select class="form-control" name="city" id="city" required>
+                        <option value="">Select City</option>
+                    </select>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="country" class="form-label">Country</label>
+                    <select class="form-control" name="country" id="country" required readonly>
+                        <option value="Rwanda" selected>Rwanda</option>
+                    </select>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="phone" class="form-label">Phone</label>
+                    <!-- Added a wrapper div to match other fields' structure -->
+                    <div class="intl-tel-input">
+                        <input id="phone" type="tel" class="form-control" name="phone_number" required>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Summary -->
+            <div class="col-md-6">
+                <div class="card shadow-sm rounded mb-4 p-4">
+                    <!-- Title of Order Summary -->
+                    <h5 class="card-title mb-4"><strong>Order Summary</strong></h5>
+                    
+                    <!-- Order Items Table with Responsive Design -->
+                    <div class="table-responsive">
+                        <table class="table table-borderless table-hover align-middle">
+                            <thead class="border-bottom">
+                                <tr>
+                                    <th class="text-center">Product</th>
+                                    <th class="text-center">Title</th>
+                                    <th class="text-center">Quantity</th>
+                                    <th class="text-center">Unit Price</th>
+                                    <th class="text-center">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for product_id, item in cart_data.items %}
+                                {% if item.pid %}
+                                <tr>
+                                    <td class="text-center">
+                                        <img src="{{ item.image }}" alt="{{ item.title|truncatechars:10 }}" class="rounded img-fluid" style="max-width: 50px;">
+                                    </td>
+                                    <td class="text-center">
+                                        <strong>{{ item.title|truncatechars:10 }}</strong>
+                                    </td>
+                                    <td class="text-center">
+                                        <strong>X {{ item.qty }}</strong>
+                                    </td>
+                                    <td class="text-center text-muted">
+                                         {{ item.price|floatformat:2|intcomma }}&nbsp;{{ selected_currency }}
+                                    </td>
+                                    <td class="text-center">
+                                        <strong>{{ item.total|floatformat:2|intcomma }}&nbsp;{{ selected_currency }}</strong>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <!-- Display Message for Missing Product ID -->
+                                <div class="order-summary-item d-flex justify-content-between align-items-center border-bottom py-2 mb-3">
+                                    <span>Product ID is missing for item: {{ item.title }}</span>
+                                </div>
+                                {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+            
+                    <!-- Order Summary Breakdown -->
+                    <div class="border-top pt-3 mt-3">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Subtotal</span>
+                            <span><strong>{{ cart_total_amount|floatformat:2|intcomma }}&nbsp;{{ selected_currency }}</strong></span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Shipping Fee</span>
+                            <span><strong>0.00&nbsp;{{ selected_currency }}</strong></span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Discount</span>
+                            <span><strong>- 0.00&nbsp;{{ selected_currency }}</strong></span>
+                        </div>
+                        <div class="d-flex justify-content-between fw-bold">
+                            <span>Total</span>
+                            <span><strong>{{ cart_total_amount|floatformat:2|intcomma }}&nbsp;{{ selected_currency }}</strong></span>
+                        </div>
+                    </div>
+            
+                    <!-- Order Button with Full Width and Styling -->
+                    <button class="btn btn-danger w-100 mt-4 rounded-pill" type="submit">
+                        Place Your Order
+                    </button>
+                </div>
+            </div>
+            
+        </div>
+    </form>
+</div>
+
+<script>
+    const phoneInputField = document.querySelector("#phone");
+    const phoneInput = window.intlTelInput(phoneInputField, {
+        initialCountry: "auto",
+        geoIpLookup: function(success, failure) {
+            fetch('https://ipinfo.io/json', {cache: 'reload'}).then(response => {
+                if (response.ok) return response.json();
+                throw new Error('Failed to load country info');
+            }).then(json => success(json.country)).catch(() => success("us"));
+        },
+        utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js"
+    });
+    // List of all districts in Rwanda
+    const rwandaDistricts = [
+        "Kigali City",
+        "Nyarugenge",
+        "Gasabo",
+        "Kicukiro",
+        "Muhanga",
+        "Kamonyi",
+        "Ruhango",
+        "Nyanza",
+        "Huye",
+        "Gisagara",
+        "Nyaruguru",
+        "Nyamagabe",
+        "Rusizi",
+        "Nyamasheke",
+        "Karongi",
+        "Rutsiro",
+        "Rubavu",
+        "Nyabihu",
+        "Ngororero",
+        "Rwamagana",
+        "Kayonza",
+        "Kirehe",
+        "Ngoma",
+        "Bugesera",
+        "Gatsibo",
+        "Nyagatare",
+        "Musanze",
+        "Burera",
+        "Gakenke",
+        "Rulindo",
+        "Gicumbi"
+    ];
+
+    // Populate the city dropdown with Rwanda's districts
+    const citySelect = document.getElementById('city');
+
+    // Function to populate city dropdown
+    function populateCityDropdown() {
+        rwandaDistricts.forEach(district => {
+            let option = document.createElement('option');
+            option.value = district;
+            option.text = district;
+            citySelect.appendChild(option);
+        });
+    }
+
+    // Populate the city dropdown on page load
+    window.onload = populateCityDropdown;
+
+</script>
+
+{% endblock content %}
