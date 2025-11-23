@@ -24,9 +24,9 @@ from django.views.generic import TemplateView
 
 urlpatterns = [
     # Your non-i18n URLs here
-    path('admin/', include('admin_honeypot.urls', namespace='admin_honeypot')),
-    path('grappelli/', include('grappelli.urls')),
-    path('securelogin/', admin.site.urls),
+    #path('admin/', include('admin_honeypot.urls', namespace='admin_honeypot')),
+    #path('grappelli/', include('grappelli.urls')),
+    path('admin/', admin.site.urls),
     path('', include('core.urls')),
     path('Vendors/', include("Vendor.urls")),
     path('NewsLetter/', include('NewsLetter.urls')),

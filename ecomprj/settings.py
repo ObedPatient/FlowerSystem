@@ -64,7 +64,7 @@ INSTALLED_APPS = [
     'taggit',
     'django_ckeditor_5',
     'crispy_forms',
-    'admin_honeypot',
+    #'admin_honeypot',
     'mptt',
     'NewsLetter',
     'sslserver',
